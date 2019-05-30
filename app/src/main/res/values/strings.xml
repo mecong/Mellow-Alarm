@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Tender Alarm</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="title_activity_alarm_receiver">AlarmReceiver</string>
+
+    <string name="delete">Delete</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="mo">Mo</string>
+    <string name="tu">Tu</string>
+    <string name="we">We</string>
+    <string name="th">Th</string>
+    <string name="fr">Fr</string>
+    <string name="sa">Sa</string>
+    <string name="su">Su</string>
+
+    <string-array name="days_array">
+        <item>@string/mo</item>
+        <item>@string/tu</item>
+        <item>@string/we</item>
+        <item>@string/th</item>
+        <item>@string/fr</item>
+        <item>@string/sa</item>
+        <item>@string/su</item>
+    </string-array>
+
+
+    <string name="alarm_time">%02d:%02d</string>
+    <string name="alarm_date">%D</string>
+    <string name="work_days">Work days</string>
+    <string name="every_day">Every day</string>
+    <string name="single_day">%1$td.%1$tm.%1$tY</string>
+    <string name="logs">Logs</string>
+
+    <string name="ticks">Ticks %d minutes before alarm</string>
+    <string name="all_alarms_are_off">All alarms are off</string>
+    <string name="next_alarm">Alarm in %d days</string>
+    <string name="next_alarm_soon">Alarm will go off soon</string>
+    <string name="next_alarm_today">Alarm in %d hours %d minutes</string>
+    <string name="next_alarm_within_hour">Alarm in %d minutes</string>
+    <string name="next_alarm_date">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
+    <string name="clear_logs">Clear Logs</string>
+</resources>
