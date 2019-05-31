@@ -16,9 +16,16 @@ import com.mecong.myalarm.model.SQLiteDBHelper;
 
 import java.util.Calendar;
 
+import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static com.mecong.myalarm.SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME;
+
 public class AlarmUtils {
     public static final String TAG = "A.L.A.R.M.A";
-    public static final String COM_MECONG_MYALARM_ALARM_ID = "com.mecong.myalarm.alarm_id";
+    public static final String ALARM_ID_PARAM = "com.mecong.myalarm.alarm_id";
+    public static final int MINUTE = 60 * 1000;
+    public static final int HOUR = 60 * MINUTE;
+    public static final int DAY = 24 * HOUR;
 
     public static void setUpNextAlarm(String alarmId, Context context, boolean manually) {
         AlarmEntity entity = new SQLiteDBHelper(context).getAlarmById(alarmId);
@@ -30,12 +37,12 @@ public class AlarmUtils {
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         if (alarmCalendar != null) {
             Intent intentToFire = new Intent(context, AlarmReceiver.class);
-            intentToFire.putExtra(COM_MECONG_MYALARM_ALARM_ID, String.valueOf(alarmEntity.getId()));
+            intentToFire.putExtra(ALARM_ID_PARAM, String.valueOf(alarmEntity.getId()));
             HyperLog.v(TAG, "Intent: " + intentToFire);
             HyperLog.v(TAG, "Intent extra: " + intentToFire.getExtras());
             int requestCode = getRequestCode(alarmEntity);
             PendingIntent alarmIntent = PendingIntent.getActivity(context,
-                    requestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT);
+                    requestCode, intentToFire, FLAG_UPDATE_CURRENT);
 
             AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -43,16 +50,37 @@ public class AlarmUtils {
                     + context.getString(R.string.next_alarm_date, alarmCalendar.getTime()));
             long nextAlarmTime = alarmCalendar.getTimeInMillis();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC,
+                alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
                         nextAlarmTime, alarmIntent);
             } else {
-                alarmMgr.setExact(AlarmManager.RTC, nextAlarmTime, alarmIntent);
+                alarmMgr.setExact(AlarmManager.RTC_WAKEUP, nextAlarmTime, alarmIntent);
             }
 
             sqLiteDBHelper
                     .updateNextAlarmTimeAndCode(alarmEntity.getId(), nextAlarmTime, requestCode);
         } else {
             sqLiteDBHelper.toggleAlarmActive(String.valueOf(alarmEntity.getId()), false);
+        }
+
+        setUpSleepTimeAlarm(context);
+    }
+
+    public static void setUpSleepTimeAlarm(Context context) {
+        AlarmEntity nextMorningAlarm = new SQLiteDBHelper(context).getNextMorningAlarm();
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(context, SleepTimeAlarmReceiver.class);
+        PendingIntent operation = PendingIntent
+                .getBroadcast(context, 1, intent, 0);
+        if (nextMorningAlarm != null) {
+            Calendar now = Calendar.getInstance();
+            long triggerAt = nextMorningAlarm.getNextTime() - RECOMMENDED_SLEEP_TIME * HOUR - now.getTimeInMillis();
+            alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAt,
+                    INTERVAL_FIFTEEN_MINUTES, operation);
+            HyperLog.i(TAG, "Sleep time alarm set to " + triggerAt + " ms");
+        } else {
+            alarmMgr.cancel(operation);
+            HyperLog.i(TAG, "Sleep time alarm removed");
         }
     }
 
@@ -63,6 +91,8 @@ public class AlarmUtils {
     static void resetupAllAlarms(Context context) {
         // TODO: implement
         Toast.makeText(context, "Alarms Was not reset", Toast.LENGTH_LONG).show();
+
+        setUpSleepTimeAlarm(context);
     }
 
     public static void cancelNextAlarms(String id, Context context) {
@@ -71,13 +101,15 @@ public class AlarmUtils {
 
         Intent intentToFire = new Intent(context, AlarmReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getActivity(context,
-                entity.getNextRequestCode(), intentToFire, PendingIntent.FLAG_UPDATE_CURRENT);
+                entity.getNextRequestCode(), intentToFire, FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         alarmMgr.cancel(alarmIntent);
 
         HyperLog.i(TAG, "Next alarm with[id=" + id + "] canceled");
+
+        setUpSleepTimeAlarm(context);
     }
 
 

@@ -3,6 +3,7 @@
     package="com.mecong.myalarm">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -16,12 +17,16 @@
 
         <activity
             android:name=".activity.AlarmReceiver"
+            android:showOnLockScreen="true"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
+            android:name=".SleepTimeAlarmReceiver"
+            android:enabled="true" />
+
+        <receiver
             android:name=".DeviceBootReceiver"
-            android:enabled="false"
-            android:showOnLockScreen="true">
+            android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -40,9 +45,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".SleepTimeJob"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

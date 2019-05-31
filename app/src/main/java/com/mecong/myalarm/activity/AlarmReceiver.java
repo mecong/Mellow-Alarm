@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +22,9 @@ import com.mecong.myalarm.model.SQLiteDBHelper;
 
 import java.io.IOException;
 
-import static com.mecong.myalarm.AlarmUtils.COM_MECONG_MYALARM_ALARM_ID;
+import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
 import static com.mecong.myalarm.AlarmUtils.TAG;
+import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
 
 public class AlarmReceiver extends AppCompatActivity {
 
@@ -32,8 +34,6 @@ public class AlarmReceiver extends AppCompatActivity {
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
 
-//        setShowWhenLocked(true);
-//        setTurnScreenOn(true);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                 | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -41,7 +41,7 @@ public class AlarmReceiver extends AppCompatActivity {
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
 
-        String alarmId = getIntent().getStringExtra(COM_MECONG_MYALARM_ALARM_ID);
+        String alarmId = getIntent().getStringExtra(ALARM_ID_PARAM);
         HyperLog.i(TAG, "Running alarm with extras: " + getIntent().getExtras());
         HyperLog.i(TAG, "Running alarm with id: " + alarmId);
         final Context context = getApplicationContext();
@@ -61,8 +61,9 @@ public class AlarmReceiver extends AppCompatActivity {
             sqLiteDBHelper.toggleAlarmActive(alarmId, false);
         }
 
+        setUpSleepTimeAlarm(context);
+
         setContentView(R.layout.activity_alarm_receiver);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         TextView alarmInfo = findViewById(R.id.alarm_info);
         alarmInfo.setText(entity.getMessage());
@@ -116,6 +117,9 @@ public class AlarmReceiver extends AppCompatActivity {
                     ticksMediaPlayer.stop();
                     ticksMediaPlayer.reset();
                     ticksMediaPlayer.release();
+
+                    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    vibrator.vibrate(2000);
 
                     volume[0] = 0.01f;
                     alarmMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);

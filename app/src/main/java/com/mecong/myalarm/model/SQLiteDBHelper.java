@@ -8,50 +8,61 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.hypertrack.hyperlog.HyperLog;
 
+import java.util.Calendar;
+import java.util.Locale;
+
+import static com.mecong.myalarm.AlarmUtils.HOUR;
 import static com.mecong.myalarm.AlarmUtils.TAG;
+import static java.lang.String.format;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
+    private static final int DATABASE_VERSION = 1;
     private static final String TABLE_ALARMS = "alarms";
 
+    private static final String SELECT_ALL_ALARMS = "SELECT * FROM " + TABLE_ALARMS;
+
+    private static final String SELECT_NEXT_ALARM = format(
+            "SELECT * FROM %s WHERE active=1 ORDER BY next_time LIMIT 1", TABLE_ALARMS);
+
     private static final String DATABASE_NAME = "my_alarm_database";
-    private static final int DATABASE_VERSION = 1;
 
     public SQLiteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public Cursor getAllAlarms() {
-        return this.getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_ALARMS, null);
+        return this.getReadableDatabase().rawQuery(SELECT_ALL_ALARMS, null);
+    }
+
+    private AlarmEntity getAlarmEntity(String sql) {
+        Cursor cursor = this.getReadableDatabase().rawQuery(sql, null);
+
+        AlarmEntity entity = null;
+        if (cursor.moveToFirst()) {
+            entity = new AlarmEntity(cursor);
+        }
+        cursor.close();
+        return entity;
     }
 
     public AlarmEntity getNextActiveAlarm() {
-        Cursor cursor = this.getReadableDatabase()
-                .rawQuery("SELECT * FROM " + TABLE_ALARMS + " WHERE active=1 ORDER BY next_time", null);
-
-        AlarmEntity alarmEntity = null;
-        if (cursor.moveToFirst()) {
-            alarmEntity = new AlarmEntity(cursor);
-        }
-        cursor.close();
-
-        return alarmEntity;
+        return getAlarmEntity(SELECT_NEXT_ALARM);
     }
 
     public AlarmEntity getAlarmById(String id) {
-        Cursor cursor = this.getReadableDatabase()
-                .rawQuery("SELECT * FROM " + TABLE_ALARMS + " WHERE _id=?", new String[]{id});
+        return getAlarmEntity(format("SELECT * FROM %s WHERE _id=%s LIMIT 1", TABLE_ALARMS, id));
+    }
 
-        AlarmEntity alarmEntity = null;
-        if (cursor.moveToFirst()) {
-            alarmEntity = new AlarmEntity(cursor);
-        }
-        cursor.close();
-
-        return alarmEntity;
+    public AlarmEntity getNextMorningAlarm() {
+        Calendar now = Calendar.getInstance();
+        return getAlarmEntity(format(Locale.getDefault(),
+                "SELECT * FROM %s WHERE active=1 " +
+                        " AND hour>1 AND hour<11 " +
+                        " AND (next_time-%d)>%d" +
+                        " ORDER BY next_time LIMIT 1", TABLE_ALARMS, now.getTimeInMillis(), 4 * HOUR));
     }
 
     public long addAlarm(AlarmEntity entity) {
-
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("hour", entity.getHour());
@@ -64,7 +75,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     public void toggleAlarmActive(String id, boolean active) {
         SQLiteDatabase writableDatabase = this.getWritableDatabase();
-        String whereClause = "_id=" + id;
 
         ContentValues updateValues = new ContentValues(1);
         updateValues.put("active", active ? 1 : 0);
@@ -72,18 +82,17 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
             updateValues.put("next_time", -1);
             updateValues.put("next_request_code", -1);
         }
-        writableDatabase.update(TABLE_ALARMS, updateValues, whereClause, null);
+        writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id});
         HyperLog.i(TAG, "Alarm [id=" + id + "] toggled to: " + active);
     }
 
     public void updateNextAlarmTimeAndCode(long id, long nextTime, int requestCode) {
         SQLiteDatabase writableDatabase = this.getWritableDatabase();
-        String whereClause = "_id=" + id;
 
         ContentValues updateValues = new ContentValues(1);
         updateValues.put("next_time", nextTime);
         updateValues.put("next_request_code", requestCode);
-        writableDatabase.update(TABLE_ALARMS, updateValues, whereClause, null);
+        writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id + ""});
         HyperLog.i(TAG, "Alarm [id=" + id + "] updated. next_time=" + nextTime
                 + ", next_request_code=" + requestCode);
     }
@@ -95,7 +104,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createTableSQL = String.format("CREATE TABLE %s ("
+        String createTableSQL = format("CREATE TABLE %s ("
                 + "_id INTEGER PRIMARY KEY,"
                 + "hour TINYINT,"
                 + "minute TINYINT,"

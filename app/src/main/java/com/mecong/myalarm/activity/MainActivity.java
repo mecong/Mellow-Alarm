@@ -1,7 +1,11 @@
 package com.mecong.myalarm.activity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,10 +28,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import static com.mecong.myalarm.AlarmUtils.MINUTE;
+import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
+
 public class MainActivity extends AppCompatActivity {
-    public static final int MINUTE = 60 * 1000;
-    public static final int HOUR = 60 * MINUTE;
-    public static final int DAY = 24 * HOUR;
+    public static final int SLEEP_TIME_JOB_ID = 1;
+    public static final String CHANNEL_ID = "CHANNEL_ID";
     private static final int ALARM_ADDING = 42;
     private SQLiteDBHelper sqLiteDBHelper;
     private AlarmsListCursorAdapter alarmsAdapter;
@@ -40,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
 
+        Context context = this.getApplicationContext();
+        createNotificationChannel();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
         textNextAlarm = findViewById(R.id.textNextAlarm);
         textNextAlarmDate = findViewById(R.id.textNextAlarmDate);
 
-        sqLiteDBHelper = new SQLiteDBHelper(this.getApplicationContext());
+        sqLiteDBHelper = new SQLiteDBHelper(context);
         Cursor cursor = sqLiteDBHelper.getAllAlarms();
         alarmsAdapter =
-                new AlarmsListCursorAdapter(this, this.getApplicationContext(), cursor);
+                new AlarmsListCursorAdapter(this, context, cursor);
 
         ListView alarmsList = findViewById(R.id.alarms_list);
         alarmsList.setAdapter(alarmsAdapter);
@@ -69,10 +78,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     private void updateNextActiveAlarm() {
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
+        Context context = getApplicationContext();
         if (nextActiveAlarm != null) {
-            AlarmUtils.setBootReceiverActive(getApplicationContext());
+            AlarmUtils.setBootReceiverActive(context);
 
             Calendar calendar = Calendar.getInstance();
             long nextAlarmTime = nextActiveAlarm.getNextTime() + nextActiveAlarm.getTicksTime() * MINUTE;
@@ -81,23 +107,25 @@ public class MainActivity extends AppCompatActivity {
             calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             if (difference < MINUTE) {
-                textNextAlarm.setText(getApplicationContext().getString(R.string.next_alarm_soon));
-            } else if (difference < HOUR) {
-                textNextAlarm.setText(getApplicationContext().getString(R.string.next_alarm_within_hour,
+                textNextAlarm.setText(context.getString(R.string.next_alarm_soon));
+            } else if (difference < AlarmUtils.HOUR) {
+                textNextAlarm.setText(context.getString(R.string.next_alarm_within_hour,
                         calendar.get(Calendar.MINUTE)));
-            } else if (difference < DAY) {
-                textNextAlarm.setText(getApplicationContext().getString(R.string.next_alarm_today,
+            } else if (difference < AlarmUtils.DAY) {
+                textNextAlarm.setText(context.getString(R.string.next_alarm_today,
                         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)));
             } else {
-                textNextAlarm.setText(getApplicationContext().getString(R.string.next_alarm,
+                textNextAlarm.setText(context.getString(R.string.next_alarm,
                         calendar.get(Calendar.DAY_OF_YEAR)));
             }
-            textNextAlarmDate.setText(getApplicationContext()
+            textNextAlarmDate.setText(context
                     .getString(R.string.next_alarm_date, nextAlarmTime));
         } else {
             textNextAlarm.setText(R.string.all_alarms_are_off);
             textNextAlarmDate.setText("");
         }
+
+        setUpSleepTimeAlarm(context);
     }
 
     @Override

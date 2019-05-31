@@ -26,7 +26,6 @@
         <item>@string/su</item>
     </string-array>
 
-
     <string name="alarm_time">%02d:%02d</string>
     <string name="alarm_date">%D</string>
     <string name="work_days">Work days</string>
@@ -42,4 +41,9 @@
     <string name="next_alarm_within_hour">Alarm in %d minutes</string>
     <string name="next_alarm_date">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
     <string name="clear_logs">Clear Logs</string>
+    <string name="channel_name">Tender Alarm</string>
+    <string name="channel_description">Tender alarm notifications</string>
+    <string name="goto_bed_notification_header">Time to sleep</string>
+    <string name="goto_bed_notification">
+        There are only %1$tH hours %1$tM minutes until your morning alarm</string>
 </resources>
