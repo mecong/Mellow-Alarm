@@ -61,16 +61,21 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
         TextView textRow2 = view.findViewById(R.id.textRow2);
 
         String daysMessage;
-        int days = cursor.getInt(cursor.getColumnIndex("days"));
-        if (days == 254) {
-            daysMessage = context.getString(R.string.every_day);
-        } else if (days == 248) {
-            daysMessage = context.getString(R.string.work_days);
-        } else if (days == 0) {
-            daysMessage = context.getString(R.string.single_day, nextTime);
+        if (nextTime.getTime() == -1) {
+            daysMessage = context.getString(R.string.never);
         } else {
-            daysMessage = String.valueOf(days);//TODO: print days
+            int days = cursor.getInt(cursor.getColumnIndex("days"));
+            if (days == 254) {
+                daysMessage = context.getString(R.string.every_day);
+            } else if (days == 248) {
+                daysMessage = context.getString(R.string.work_days);
+            } else if (days == 0) {
+                daysMessage = context.getString(R.string.single_day, nextTime);
+            } else {
+                daysMessage = String.valueOf(days);//TODO: print days
+            }
         }
+
         textRow2.setText(daysMessage);
     }
 }

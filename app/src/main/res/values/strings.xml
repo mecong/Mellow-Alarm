@@ -26,10 +26,14 @@
         <item>@string/su</item>
     </string-array>
 
+    <string name="time_to_sleep_channel_name">Time to sleep</string>
+    <string name="time_to_sleep_channel_description">Kindly reminder about upcoming morning alarm when not much sleep time remain</string>
+
     <string name="alarm_time">%02d:%02d</string>
     <string name="alarm_date">%D</string>
     <string name="work_days">Work days</string>
     <string name="every_day">Every day</string>
+    <string name="never">Never</string>
     <string name="single_day">%1$td.%1$tm.%1$tY</string>
     <string name="logs">Logs</string>
 
@@ -45,5 +49,6 @@
     <string name="channel_description">Tender alarm notifications</string>
     <string name="goto_bed_notification_header">Time to sleep</string>
     <string name="goto_bed_notification">
-        There are only %1$tH hours %1$tM minutes until your morning alarm</string>
+        There are only %1$tH hours %1$tM minutes until your morning alarm. Tap to open the Sleep Assistant.</string>
+    <string name="play">Play</string>
 </resources>

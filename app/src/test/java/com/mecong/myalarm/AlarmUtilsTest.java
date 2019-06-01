@@ -23,7 +23,9 @@ class AlarmUtilsTest {
         expectedCalendar.set(Calendar.HOUR_OF_DAY, 17);
         expectedCalendar.set(Calendar.MINUTE, 54);
 
-        Calendar actualCalendar = entity.getNextAlarmDate(true);
+        entity.updateNextAlarmDate(true);
+        Calendar actualCalendar = Calendar.getInstance();
+        actualCalendar.setTimeInMillis(entity.getNextTime());
 
         assertEquals(expectedCalendar.get(Calendar.HOUR_OF_DAY), actualCalendar.get(Calendar.HOUR_OF_DAY));
         assertEquals(expectedCalendar.get(Calendar.MINUTE), actualCalendar.get(Calendar.MINUTE));

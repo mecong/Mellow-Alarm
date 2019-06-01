@@ -1,5 +1,6 @@
 package com.mecong.myalarm;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.activity.MainActivity;
+import com.mecong.myalarm.activity.SleepAssistantActivity;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
@@ -23,7 +25,12 @@ import static com.mecong.myalarm.AlarmUtils.TAG;
 public class SleepTimeAlarmReceiver extends BroadcastReceiver {
 
     public static final int RECOMMENDED_SLEEP_TIME = 9;
-    private int notificationId = 1;
+    private static final int TIME_TO_SLEEP_NOTIFICATION_ID = 1;
+
+    public static void cancelNotification(Context context) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel(TIME_TO_SLEEP_NOTIFICATION_ID);
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -52,19 +59,25 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
         }
     }
 
-
     private void showNotification(Calendar calendar, Context context) {
+        Intent intent = new Intent(context, SleepAssistantActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+        String message = context.getString(R.string.goto_bed_notification, calendar);
         NotificationCompat.Builder builder = new NotificationCompat
                 .Builder(context, MainActivity.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_info_black_24dp)
                 .setContentTitle(context.getString(R.string.goto_bed_notification_header))
-                .setContentText(context.getString(R.string.goto_bed_notification, calendar))
+                .setContentText(message)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-        // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(notificationId, builder.build());
+        notificationManager.notify(TIME_TO_SLEEP_NOTIFICATION_ID, builder.build());
         Toast.makeText(context, context.getString(R.string.goto_bed_notification_header), Toast.LENGTH_SHORT).show();
     }
 

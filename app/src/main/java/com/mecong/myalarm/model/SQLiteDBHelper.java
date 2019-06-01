@@ -69,8 +69,20 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         values.put("minute", entity.getMinute());
         values.put("message", entity.getMessage());
         values.put("days", entity.getDays());
+        values.put("exact_date", (Long) null);
         values.put("ticks_time", entity.getTicksTime());
         return database.insert(SQLiteDBHelper.TABLE_ALARMS, null, values);
+    }
+
+    public void updateAlarm(AlarmEntity alarmEntity) {
+        SQLiteDatabase writableDatabase = this.getWritableDatabase();
+        ContentValues updateValues = new ContentValues(1);
+        updateValues.put("exact_date", alarmEntity.getExactDate());
+        updateValues.put("next_time", alarmEntity.getNextTime());
+        updateValues.put("next_request_code", alarmEntity.getNextRequestCode());
+        writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?",
+                new String[]{alarmEntity.getId() + ""});
+        HyperLog.i(TAG, "Alarm updated :: " + alarmEntity.toString());
     }
 
     public void toggleAlarmActive(String id, boolean active) {
@@ -86,17 +98,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         HyperLog.i(TAG, "Alarm [id=" + id + "] toggled to: " + active);
     }
 
-    public void updateNextAlarmTimeAndCode(long id, long nextTime, int requestCode) {
-        SQLiteDatabase writableDatabase = this.getWritableDatabase();
-
-        ContentValues updateValues = new ContentValues(1);
-        updateValues.put("next_time", nextTime);
-        updateValues.put("next_request_code", requestCode);
-        writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id + ""});
-        HyperLog.i(TAG, "Alarm [id=" + id + "] updated. next_time=" + nextTime
-                + ", next_request_code=" + requestCode);
-    }
-
     public void deleteAlarm(String id) {
         this.getWritableDatabase().delete(TABLE_ALARMS, "_id=?", new String[]{id});
         HyperLog.i(TAG, "Alarm [id=" + id + "] deleted");
@@ -109,7 +110,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                 + "hour TINYINT,"
                 + "minute TINYINT,"
                 + "days TINYINT,"
-                + "exact_date TEXT,"
+                + "exact_date LONG,"
                 + "message TEXT,"
                 + "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
                 + "light_time TINYINT," // for how long before main alarm start light (null - not light)

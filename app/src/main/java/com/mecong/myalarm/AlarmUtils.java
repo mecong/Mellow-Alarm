@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.hypertrack.hyperlog.HyperLog;
@@ -33,34 +34,31 @@ public class AlarmUtils {
     }
 
     public static void setUpNextAlarm(AlarmEntity alarmEntity, Context context, boolean manually) {
-        Calendar alarmCalendar = alarmEntity.getNextAlarmDate(manually);
+        alarmEntity.updateNextAlarmDate(manually);
+
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
-        if (alarmCalendar != null) {
-            Intent intentToFire = new Intent(context, AlarmReceiver.class);
-            intentToFire.putExtra(ALARM_ID_PARAM, String.valueOf(alarmEntity.getId()));
-            HyperLog.v(TAG, "Intent: " + intentToFire);
-            HyperLog.v(TAG, "Intent extra: " + intentToFire.getExtras());
-            int requestCode = getRequestCode(alarmEntity);
-            PendingIntent alarmIntent = PendingIntent.getActivity(context,
-                    requestCode, intentToFire, FLAG_UPDATE_CURRENT);
 
-            AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intentToFire = new Intent(context, AlarmReceiver.class);
+        intentToFire.putExtra(ALARM_ID_PARAM, String.valueOf(alarmEntity.getId()));
+        HyperLog.v(TAG, "Intent: " + intentToFire);
+        HyperLog.v(TAG, "Intent extra: " + intentToFire.getExtras());
+        PendingIntent alarmIntent = PendingIntent.getActivity(context,
+                alarmEntity.getNextRequestCode(), intentToFire, FLAG_UPDATE_CURRENT);
 
-            HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
-                    + context.getString(R.string.next_alarm_date, alarmCalendar.getTime()));
-            long nextAlarmTime = alarmCalendar.getTimeInMillis();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
-                        nextAlarmTime, alarmIntent);
-            } else {
-                alarmMgr.setExact(AlarmManager.RTC_WAKEUP, nextAlarmTime, alarmIntent);
-            }
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            sqLiteDBHelper
-                    .updateNextAlarmTimeAndCode(alarmEntity.getId(), nextAlarmTime, requestCode);
+        HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
+                + context.getString(R.string.next_alarm_date, alarmEntity.getNextTime()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                    alarmEntity.getNextTime(), alarmIntent);
         } else {
-            sqLiteDBHelper.toggleAlarmActive(String.valueOf(alarmEntity.getId()), false);
+            alarmMgr.setExact(AlarmManager.RTC_WAKEUP, alarmEntity.getNextTime(), alarmIntent);
         }
+
+        sqLiteDBHelper.updateAlarm(alarmEntity);
+//                .updateNextAlarmTimeAndCode(alarmEntity.getId(), nextAlarmTime, requestCode);
+
 
         setUpSleepTimeAlarm(context);
     }
@@ -73,11 +71,16 @@ public class AlarmUtils {
         PendingIntent operation = PendingIntent
                 .getBroadcast(context, 1, intent, 0);
         if (nextMorningAlarm != null) {
-            Calendar now = Calendar.getInstance();
-            long triggerAt = nextMorningAlarm.getNextTime() - RECOMMENDED_SLEEP_TIME * HOUR - now.getTimeInMillis();
-            alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAt,
+
+            long triggerAfter = SystemClock.elapsedRealtime()
+                    + nextMorningAlarm.getNextTime()
+                    - RECOMMENDED_SLEEP_TIME * HOUR
+                    - Calendar.getInstance().getTimeInMillis();
+
+            triggerAfter = Math.max(0, triggerAfter);
+            alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     INTERVAL_FIFTEEN_MINUTES, operation);
-            HyperLog.i(TAG, "Sleep time alarm set to " + triggerAt + " ms");
+            HyperLog.i(TAG, "Sleep time will start in " + triggerAfter + " ms");
         } else {
             alarmMgr.cancel(operation);
             HyperLog.i(TAG, "Sleep time alarm removed");

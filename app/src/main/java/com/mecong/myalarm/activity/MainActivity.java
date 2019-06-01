@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,8 +33,7 @@ import static com.mecong.myalarm.AlarmUtils.MINUTE;
 import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
 
 public class MainActivity extends AppCompatActivity {
-    public static final int SLEEP_TIME_JOB_ID = 1;
-    public static final String CHANNEL_ID = "CHANNEL_ID";
+    public static final String CHANNEL_ID = "TIME_TO_SLEEP";
     private static final int ALARM_ADDING = 42;
     private SQLiteDBHelper sqLiteDBHelper;
     private AlarmsListCursorAdapter alarmsAdapter;
@@ -55,6 +55,14 @@ public class MainActivity extends AppCompatActivity {
 
         textNextAlarm = findViewById(R.id.textNextAlarm);
         textNextAlarmDate = findViewById(R.id.textNextAlarmDate);
+        View viewById = findViewById(R.id.alarmsInfo);
+        viewById.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent addAlarmIntent = new Intent(MainActivity.this, SleepAssistantActivity.class);
+                MainActivity.this.startActivity(addAlarmIntent);
+            }
+        });
 
         sqLiteDBHelper = new SQLiteDBHelper(context);
         Cursor cursor = sqLiteDBHelper.getAllAlarms();
@@ -69,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
                 Intent addAlarmIntent = new Intent(MainActivity.this, AlarmAdding.class);
                 MainActivity.this.startActivityForResult(addAlarmIntent, ALARM_ADDING);
             }
@@ -82,8 +87,9 @@ public class MainActivity extends AppCompatActivity {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
+            Context context = getApplicationContext();
+            CharSequence name = context.getString(R.string.time_to_sleep_channel_name);
+            String description = context.getString(R.string.time_to_sleep_channel_description);
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
@@ -136,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
                 updateNextActiveAlarm();
+                Snackbar.make(findViewById(R.id.alarms_list),
+                        "New alarm created", Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
             }
         }
     }

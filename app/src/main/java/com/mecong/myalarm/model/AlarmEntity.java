@@ -4,7 +4,6 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +34,9 @@ public class AlarmEntity {
     int hour;
     int minute;
 
-    //    @Getter(AccessLevel.NONE)
     Integer days;
 
-    Date exactDate;
+    long exactDate;
     String message;
     boolean active;
     Integer lightTime;
@@ -58,7 +56,7 @@ public class AlarmEntity {
         this.hour = cursor.getInt(cursor.getColumnIndex("hour"));
         this.minute = cursor.getInt(cursor.getColumnIndex("minute"));
         this.days = cursor.getInt(cursor.getColumnIndex("days"));
-        this.exactDate = null;// todo: set from appropriate format
+        this.exactDate = cursor.getLong(cursor.getColumnIndex("exact_date"));
         this.message = cursor.getString(cursor.getColumnIndex("message"));
         this.active = cursor.getInt(cursor.getColumnIndex("active")) == 1;
         this.lightTime = cursor.getInt(cursor.getColumnIndex("light_time"));
@@ -105,12 +103,11 @@ public class AlarmEntity {
         return d;
     }
 
-    public Calendar getNextAlarmDate(boolean manually) {
+    public void updateNextAlarmDate(boolean manually) {
         Calendar calendar = Calendar.getInstance();
         Calendar calendarNow = Calendar.getInstance();
 
-        if (exactDate == null) {
-            calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        if (exactDate == 0) {
             calendar.set(Calendar.HOUR_OF_DAY, hour);
             calendar.set(Calendar.MINUTE, minute);
             calendar.set(Calendar.SECOND, 0);
@@ -141,19 +138,23 @@ public class AlarmEntity {
                 }
             }
         } else {
-            if (exactDate.after(calendarNow.getTime())) {
-                calendar.setTime(exactDate);
-            } else {
-                calendar = null;
+            calendar.setTimeInMillis(exactDate);
+            if (calendar.before(calendarNow)) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                exactDate = calendar.getTimeInMillis();
             }
         }
 
-
-        if (calendar != null && ticksTime > 0) {
+        if (ticksTime > 0) {
             calendar.add(Calendar.MINUTE, -ticksTime);
         }
 
-        return calendar;
+        this.nextTime = calendar.getTimeInMillis();
+        this.nextRequestCode = getRequestCode();
+    }
+
+    private int getRequestCode() {
+        return (int) id * 100000;
     }
 
     private List<Boolean> allDaysAsList() {

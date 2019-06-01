@@ -4,8 +4,10 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.AlarmUtils;
 import com.mecong.myalarm.R;
+import com.mecong.myalarm.SleepTimeAlarmReceiver;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
@@ -34,13 +37,6 @@ public class AlarmReceiver extends AppCompatActivity {
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
 
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-
-
         String alarmId = getIntent().getStringExtra(ALARM_ID_PARAM);
         HyperLog.i(TAG, "Running alarm with extras: " + getIntent().getExtras());
         HyperLog.i(TAG, "Running alarm with id: " + alarmId);
@@ -51,17 +47,24 @@ public class AlarmReceiver extends AppCompatActivity {
             System.exit(0);
         }
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
+
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
         HyperLog.i(TAG, "Running alarm: " + entity);
 
-        if (entity.getDays() > 0 || entity.getExactDate() != null) {
+        if (entity.getDays() > 0) {
             AlarmUtils.setUpNextAlarm(entity, context, false);
         } else {
             sqLiteDBHelper.toggleAlarmActive(alarmId, false);
         }
 
         setUpSleepTimeAlarm(context);
+        SleepTimeAlarmReceiver.cancelNotification(context);
 
         setContentView(R.layout.activity_alarm_receiver);
 
@@ -118,9 +121,6 @@ public class AlarmReceiver extends AppCompatActivity {
                     ticksMediaPlayer.reset();
                     ticksMediaPlayer.release();
 
-                    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(2000);
-
                     volume[0] = 0.01f;
                     alarmMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
                     alarmMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
@@ -163,6 +163,12 @@ public class AlarmReceiver extends AppCompatActivity {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(2000, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+                    vibrator.vibrate(2000);
+                }
                 alarmMediaPlayer.stop();
                 alarmMediaPlayer.reset();
                 alarmMediaPlayer.release();
