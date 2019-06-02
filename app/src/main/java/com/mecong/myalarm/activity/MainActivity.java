@@ -33,7 +33,8 @@ import static com.mecong.myalarm.AlarmUtils.MINUTE;
 import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String CHANNEL_ID = "TIME_TO_SLEEP";
+    public static final String TIME_TO_SLEEP_CHANNEL_ID = "TIME_TO_SLEEP";
+    public static final String BEFORE_ALARM_CHANNEL_ID = "BEFORE_ALARM_CHANNEL_ID";
     private static final int ALARM_ADDING = 42;
     private SQLiteDBHelper sqLiteDBHelper;
     private AlarmsListCursorAdapter alarmsAdapter;
@@ -88,15 +89,23 @@ public class MainActivity extends AppCompatActivity {
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Context context = getApplicationContext();
-            CharSequence name = context.getString(R.string.time_to_sleep_channel_name);
-            String description = context.getString(R.string.time_to_sleep_channel_description);
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
+            NotificationChannel timeToSleepChannel = new NotificationChannel(
+                    TIME_TO_SLEEP_CHANNEL_ID,
+                    context.getString(R.string.time_to_sleep_channel_name),
+                    NotificationManager.IMPORTANCE_LOW);
+            timeToSleepChannel.setDescription(context.getString(R.string.time_to_sleep_channel_description));
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
+
+            NotificationChannel beforeAlarmChannel = new NotificationChannel(
+                    BEFORE_ALARM_CHANNEL_ID,
+                    context.getString(R.string.time_to_sleep_channel_name),
+                    NotificationManager.IMPORTANCE_LOW);
+            timeToSleepChannel.setDescription(context.getString(R.string.time_to_sleep_channel_description));
+
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(timeToSleepChannel);
+            notificationManager.createNotificationChannel(beforeAlarmChannel);
         }
     }
 
@@ -150,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void deleteAlarm(String id) {
-        AlarmUtils.cancelNextAlarms(id, getApplicationContext());
+        AlarmUtils.cancelNextAlarm(id, getApplicationContext());
         sqLiteDBHelper.deleteAlarm(id);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
         updateNextActiveAlarm();
@@ -160,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         if (active) {
             AlarmUtils.setUpNextAlarm(id, getApplicationContext(), true);
         } else {
-            AlarmUtils.cancelNextAlarms(id, getApplicationContext());
+            AlarmUtils.cancelNextAlarm(id, getApplicationContext());
         }
         sqLiteDBHelper.toggleAlarmActive(id, active);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());

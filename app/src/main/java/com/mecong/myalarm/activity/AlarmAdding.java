@@ -114,6 +114,9 @@ public class AlarmAdding extends AppCompatActivity {
                 .message("Ooops... alarma")
                 .days(days)
                 .ticksTime(seekBarTicks.getProgress())
+                .beforeAlarmNotification(true)
+                .exactDate(0)
+                .canceledNextAlarms(0)
                 .build();
 
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());

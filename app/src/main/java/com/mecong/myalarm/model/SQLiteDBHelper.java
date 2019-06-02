@@ -16,7 +16,7 @@ import static com.mecong.myalarm.AlarmUtils.TAG;
 import static java.lang.String.format;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
     private static final String TABLE_ALARMS = "alarms";
 
     private static final String SELECT_ALL_ALARMS = "SELECT * FROM " + TABLE_ALARMS;
@@ -35,14 +35,9 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     }
 
     private AlarmEntity getAlarmEntity(String sql) {
-        Cursor cursor = this.getReadableDatabase().rawQuery(sql, null);
-
-        AlarmEntity entity = null;
-        if (cursor.moveToFirst()) {
-            entity = new AlarmEntity(cursor);
+        try (Cursor cursor = this.getReadableDatabase().rawQuery(sql, null)) {
+            return cursor.moveToFirst() ? new AlarmEntity(cursor) : null;
         }
-        cursor.close();
-        return entity;
     }
 
     public AlarmEntity getNextActiveAlarm() {
@@ -69,8 +64,12 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         values.put("minute", entity.getMinute());
         values.put("message", entity.getMessage());
         values.put("days", entity.getDays());
-        values.put("exact_date", (Long) null);
         values.put("ticks_time", entity.getTicksTime());
+        values.put("canceled_next_alarms", entity.getCanceledNextAlarms());
+
+        values.put("exact_date", entity.getExactDate());
+        values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
+
         return database.insert(SQLiteDBHelper.TABLE_ALARMS, null, values);
     }
 
@@ -80,6 +79,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         updateValues.put("exact_date", alarmEntity.getExactDate());
         updateValues.put("next_time", alarmEntity.getNextTime());
         updateValues.put("next_request_code", alarmEntity.getNextRequestCode());
+        updateValues.put("canceled_next_alarms", alarmEntity.getCanceledNextAlarms());
         writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?",
                 new String[]{alarmEntity.getId() + ""});
         HyperLog.i(TAG, "Alarm updated :: " + alarmEntity.toString());
@@ -113,11 +113,13 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                 + "exact_date LONG,"
                 + "message TEXT,"
                 + "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
+                + "before_alarm_notification BOOLEAN NOT NULL CHECK (before_alarm_notification IN (0,1)) DEFAULT 1,"
                 + "light_time TINYINT," // for how long before main alarm start light (null - not light)
                 + "ticks_time TINYINT," // for how long before main alarm to play ticks (null - not play)
                 + "melody TEXT,"
                 + "vibration_type TEXT,"
                 + "volume INTEGER,"
+                + "canceled_next_alarms INTEGER DEFAULT 0,"
                 + "snooze_interval TINYINT DEFAULT 5,"
                 + "snooze_times TINYINT DEFAULT 3,"
                 + "next_time INTEGER,"

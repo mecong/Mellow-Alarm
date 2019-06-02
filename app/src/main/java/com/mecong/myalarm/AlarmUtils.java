@@ -36,19 +36,16 @@ public class AlarmUtils {
     public static void setUpNextAlarm(AlarmEntity alarmEntity, Context context, boolean manually) {
         alarmEntity.updateNextAlarmDate(manually);
 
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
-
         Intent intentToFire = new Intent(context, AlarmReceiver.class);
         intentToFire.putExtra(ALARM_ID_PARAM, String.valueOf(alarmEntity.getId()));
-        HyperLog.v(TAG, "Intent: " + intentToFire);
-        HyperLog.v(TAG, "Intent extra: " + intentToFire.getExtras());
         PendingIntent alarmIntent = PendingIntent.getActivity(context,
                 alarmEntity.getNextRequestCode(), intentToFire, FLAG_UPDATE_CURRENT);
 
+        HyperLog.v(TAG, "Intent: " + intentToFire);
+        HyperLog.v(TAG, "Intent extra: " + intentToFire.getExtras());
+
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
-                + context.getString(R.string.next_alarm_date, alarmEntity.getNextTime()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
                     alarmEntity.getNextTime(), alarmIntent);
@@ -56,11 +53,34 @@ public class AlarmUtils {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, alarmEntity.getNextTime(), alarmIntent);
         }
 
-        sqLiteDBHelper.updateAlarm(alarmEntity);
-//                .updateNextAlarmTimeAndCode(alarmEntity.getId(), nextAlarmTime, requestCode);
-
+        new SQLiteDBHelper(context).updateAlarm(alarmEntity);
+        HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
+                + context.getString(R.string.next_alarm_date, alarmEntity.getNextTime()));
 
         setUpSleepTimeAlarm(context);
+
+        if (alarmEntity.isBeforeAlarmNotification()) {
+            setupUpcomingAlarmNotification(context, alarmEntity);
+        }
+    }
+
+    private static void setupUpcomingAlarmNotification(Context context, AlarmEntity alarmEntity) {
+        Intent intentToFire = new Intent(context, UpcomingAlarmNotificationReceiver.class);
+        intentToFire.putExtra(ALARM_ID_PARAM, String.valueOf(alarmEntity.getId()));
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
+                alarmEntity.getNextRequestCode(), intentToFire, FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        long at = SystemClock.elapsedRealtime()
+                + alarmEntity.getNextTime() - HOUR
+                - Calendar.getInstance().getTimeInMillis();
+
+        at = Math.max(0, at);
+
+        HyperLog.i(TAG, "Upcoming alarm notification will start in " + at + " ms");
+
+        alarmMgr.set(AlarmManager.ELAPSED_REALTIME, at, alarmIntent);
     }
 
     public static void setUpSleepTimeAlarm(Context context) {
@@ -73,8 +93,7 @@ public class AlarmUtils {
         if (nextMorningAlarm != null) {
 
             long triggerAfter = SystemClock.elapsedRealtime()
-                    + nextMorningAlarm.getNextTime()
-                    - RECOMMENDED_SLEEP_TIME * HOUR
+                    + nextMorningAlarm.getNextTime() - RECOMMENDED_SLEEP_TIME * HOUR
                     - Calendar.getInstance().getTimeInMillis();
 
             triggerAfter = Math.max(0, triggerAfter);
@@ -87,10 +106,6 @@ public class AlarmUtils {
         }
     }
 
-    private static int getRequestCode(AlarmEntity alarmEntity) {
-        return (int) alarmEntity.getId() * 100000;
-    }
-
     static void resetupAllAlarms(Context context) {
         // TODO: implement
         Toast.makeText(context, "Alarms Was not reset", Toast.LENGTH_LONG).show();
@@ -98,7 +113,7 @@ public class AlarmUtils {
         setUpSleepTimeAlarm(context);
     }
 
-    public static void cancelNextAlarms(String id, Context context) {
+    public static void cancelNextAlarm(String id, Context context) {
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(id);
 

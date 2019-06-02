@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.SleepAssistantActivity"></activity>
+        <activity android:name=".activity.SleepAssistantActivity" />
         <activity android:name=".activity.LogsActivity" />
         <activity
             android:name=".activity.AlarmReceiver"
@@ -21,6 +21,9 @@
 
         <receiver
             android:name=".SleepTimeAlarmReceiver"
+            android:enabled="true" />
+        <receiver
+            android:name=".UpcomingAlarmNotificationReceiver"
             android:enabled="true" />
         <receiver
             android:name=".DeviceBootReceiver"

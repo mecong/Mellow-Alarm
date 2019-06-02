@@ -1,6 +1,7 @@
 package com.mecong.myalarm.activity;
 
 import android.content.Context;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.AlarmUtils;
 import com.mecong.myalarm.R;
 import com.mecong.myalarm.SleepTimeAlarmReceiver;
+import com.mecong.myalarm.UpcomingAlarmNotificationReceiver;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
@@ -34,6 +36,7 @@ public class AlarmReceiver extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
 
@@ -47,12 +50,6 @@ public class AlarmReceiver extends AppCompatActivity {
             System.exit(0);
         }
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-
-
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
         HyperLog.i(TAG, "Running alarm: " + entity);
@@ -65,13 +62,27 @@ public class AlarmReceiver extends AppCompatActivity {
 
         setUpSleepTimeAlarm(context);
         SleepTimeAlarmReceiver.cancelNotification(context);
+        UpcomingAlarmNotificationReceiver.cancelNotification(context);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
+        this.setShowWhenLocked(true);
+        this.setTurnScreenOn(true);
+//        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         setContentView(R.layout.activity_alarm_receiver);
 
         TextView alarmInfo = findViewById(R.id.alarm_info);
         alarmInfo.setText(entity.getMessage());
 
         Button closeButton = findViewById(R.id.alarm_ok);
+
+        final AudioAttributes audioAttributesAlarm = new AudioAttributes
+                .Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .build();
 
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
@@ -83,7 +94,7 @@ public class AlarmReceiver extends AppCompatActivity {
 
         final MediaPlayer ticksMediaPlayer = new MediaPlayer();
         try {
-            ticksMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+            ticksMediaPlayer.setAudioAttributes(audioAttributesAlarm);
             ticksMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
                     + context.getPackageName() + "/" + R.raw.metal_knock));
             ticksMediaPlayer.prepare();
@@ -122,7 +133,8 @@ public class AlarmReceiver extends AppCompatActivity {
                     ticksMediaPlayer.release();
 
                     volume[0] = 0.01f;
-                    alarmMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+
+                    alarmMediaPlayer.setAudioAttributes(audioAttributesAlarm);
                     alarmMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
                             + context.getPackageName() + "/" + R.raw.long_music));
                     alarmMediaPlayer.prepare();

@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
+import static java.lang.Math.max;
+
 @Data
 @Builder
 @ToString
@@ -39,6 +41,7 @@ public class AlarmEntity {
     long exactDate;
     String message;
     boolean active;
+    boolean beforeAlarmNotification;
     Integer lightTime;
     int ticksTime;
     String melody;
@@ -46,6 +49,7 @@ public class AlarmEntity {
     Integer volume;
     Integer snoozeInterval;
     Integer snoozeTimes;
+    Integer canceledNextAlarms;
 
     Long nextTime;
     Integer nextRequestCode;
@@ -59,6 +63,7 @@ public class AlarmEntity {
         this.exactDate = cursor.getLong(cursor.getColumnIndex("exact_date"));
         this.message = cursor.getString(cursor.getColumnIndex("message"));
         this.active = cursor.getInt(cursor.getColumnIndex("active")) == 1;
+        this.beforeAlarmNotification = cursor.getInt(cursor.getColumnIndex("before_alarm_notification")) == 1;
         this.lightTime = cursor.getInt(cursor.getColumnIndex("light_time"));
         this.ticksTime = cursor.getInt(cursor.getColumnIndex("ticks_time"));
         this.melody = cursor.getString(cursor.getColumnIndex("melody"));
@@ -66,6 +71,7 @@ public class AlarmEntity {
         this.volume = cursor.getInt(cursor.getColumnIndex("volume"));
         this.snoozeInterval = cursor.getInt(cursor.getColumnIndex("snooze_interval"));
         this.snoozeTimes = cursor.getInt(cursor.getColumnIndex("snooze_times"));
+        this.canceledNextAlarms = cursor.getInt(cursor.getColumnIndex("canceled_next_alarms"));
         this.nextTime = cursor.getLong(cursor.getColumnIndex("next_time"));
         this.nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code"));
     }
@@ -118,7 +124,7 @@ public class AlarmEntity {
             }
 
             if (calendar.before(calendarNow)) {
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
+                calendar.add(Calendar.DAY_OF_YEAR, max(canceledNextAlarms, 1));
             }
 
             if (days > 0) {

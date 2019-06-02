@@ -64,11 +64,11 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        String message = context.getString(R.string.goto_bed_notification, calendar);
+        String message = context.getString(R.string.time_to_sleep_notification_message, calendar);
         NotificationCompat.Builder builder = new NotificationCompat
-                .Builder(context, MainActivity.CHANNEL_ID)
+                .Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_info_black_24dp)
-                .setContentTitle(context.getString(R.string.goto_bed_notification_header))
+                .setContentTitle(context.getString(R.string.time_to_sleep_notification_title))
                 .setContentText(message)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setContentIntent(pendingIntent)
@@ -78,7 +78,7 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
         notificationManager.notify(TIME_TO_SLEEP_NOTIFICATION_ID, builder.build());
-        Toast.makeText(context, context.getString(R.string.goto_bed_notification_header), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, context.getString(R.string.time_to_sleep_notification_title), Toast.LENGTH_SHORT).show();
     }
 
     private Calendar timeToGoToBed(AlarmEntity nextActiveAlarm) {

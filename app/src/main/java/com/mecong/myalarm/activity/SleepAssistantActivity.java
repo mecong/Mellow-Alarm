@@ -1,5 +1,6 @@
 package com.mecong.myalarm.activity;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -15,6 +16,8 @@ import java.io.IOException;
 public class SleepAssistantActivity extends AppCompatActivity {
 
 
+    //    private final static String stream = "https://www.ssaurel.com/tmp/mymusic.mp3";
+//    private final static String stream = "http://radio.4duk.ru/4duk128.mp3";
     private final static String stream = "http://listen2.myradio24.com:9000/8226";
     static Button play;
     static MediaPlayer mediaPlayer;
@@ -32,6 +35,13 @@ public class SleepAssistantActivity extends AppCompatActivity {
         play = findViewById(R.id.play);
         play.setEnabled(false);
         play.setText("Loading..");
+
+
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, streamMaxVolume, 0);
+
+
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
@@ -52,7 +62,7 @@ public class SleepAssistantActivity extends AppCompatActivity {
             }
         });
 
-        new PlayTask().execute(stream);
+        new PlayTask(getApplicationContext()).execute(stream);
     }
 
     @Override
@@ -77,14 +87,26 @@ public class SleepAssistantActivity extends AppCompatActivity {
     }
 
     private static class PlayTask extends AsyncTask<String, Void, Boolean> {
+        Context context;
+
+        public PlayTask(Context applicationContext) {
+            this.context = applicationContext;
+        }
 
         @Override
         protected Boolean doInBackground(String... strings) {
 
             try {
+
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+//                mediaPlayer.release();
                 mediaPlayer.setDataSource(strings[0]);
-                mediaPlayer.prepareAsync();
-                mediaPlayer.setVolume(1,1);
+//                mediaPlayer.setDataSource(context, Uri.parse(strings[0]));
+
+//                mediaPlayer.setDataSource(context, Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.long_music));
+                mediaPlayer.prepare();
+                mediaPlayer.setVolume(1, 1);
                 prepared = true;
             } catch (IOException e) {
                 e.printStackTrace();
