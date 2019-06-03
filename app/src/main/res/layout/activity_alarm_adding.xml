@@ -99,7 +99,8 @@
         <Button
             android:id="@+id/ok_button"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="200dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
@@ -113,7 +114,8 @@
         <Button
             android:id="@+id/btnCancel"
             style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="200dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:text="@string/cancel" />
     </LinearLayout>

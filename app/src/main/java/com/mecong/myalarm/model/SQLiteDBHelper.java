@@ -10,13 +10,13 @@ import com.hypertrack.hyperlog.HyperLog;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
-import static com.mecong.myalarm.AlarmUtils.HOUR;
 import static com.mecong.myalarm.AlarmUtils.TAG;
 import static java.lang.String.format;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String TABLE_ALARMS = "alarms";
 
     private static final String SELECT_ALL_ALARMS = "SELECT * FROM " + TABLE_ALARMS;
@@ -54,35 +54,34 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                 "SELECT * FROM %s WHERE active=1 " +
                         " AND hour>1 AND hour<11 " +
                         " AND (next_time-%d)>%d" +
-                        " ORDER BY next_time LIMIT 1", TABLE_ALARMS, now.getTimeInMillis(), 4 * HOUR));
+                        " ORDER BY next_time LIMIT 1", TABLE_ALARMS, now.getTimeInMillis(), TimeUnit.HOURS.toMillis(4)));
     }
 
-    public long addAlarm(AlarmEntity entity) {
-        SQLiteDatabase database = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("hour", entity.getHour());
-        values.put("minute", entity.getMinute());
-        values.put("message", entity.getMessage());
-        values.put("days", entity.getDays());
-        values.put("ticks_time", entity.getTicksTime());
-        values.put("canceled_next_alarms", entity.getCanceledNextAlarms());
+    public long addAOrUpdateAlarm(AlarmEntity entity) {
+        try (SQLiteDatabase database = this.getWritableDatabase()) {
+            ContentValues values = new ContentValues();
+            values.put("hour", entity.getHour());
+            values.put("minute", entity.getMinute());
+            values.put("message", entity.getMessage());
+            values.put("days", entity.getDays());
+            values.put("ticks_time", entity.getTicksTime());
+            values.put("canceled_next_alarms", entity.getCanceledNextAlarms());
+            values.put("active", entity.isActive() ? 1 : 0);
+            values.put("exact_date", entity.getExactDate());
+            values.put("next_time", entity.getNextTime());
+            values.put("next_request_code", entity.getNextRequestCode());
+            values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
 
-        values.put("exact_date", entity.getExactDate());
-        values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
-
-        return database.insert(SQLiteDBHelper.TABLE_ALARMS, null, values);
-    }
-
-    public void updateAlarm(AlarmEntity alarmEntity) {
-        SQLiteDatabase writableDatabase = this.getWritableDatabase();
-        ContentValues updateValues = new ContentValues(1);
-        updateValues.put("exact_date", alarmEntity.getExactDate());
-        updateValues.put("next_time", alarmEntity.getNextTime());
-        updateValues.put("next_request_code", alarmEntity.getNextRequestCode());
-        updateValues.put("canceled_next_alarms", alarmEntity.getCanceledNextAlarms());
-        writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?",
-                new String[]{alarmEntity.getId() + ""});
-        HyperLog.i(TAG, "Alarm updated :: " + alarmEntity.toString());
+            if (entity.getId() == 0) {
+                HyperLog.i(TAG, "Alarm added :: " + values.toString());
+                return database.insert(SQLiteDBHelper.TABLE_ALARMS, null, values);
+            } else {
+                database.update(TABLE_ALARMS, values, "_id=?",
+                        new String[]{entity.getId() + ""});
+                HyperLog.i(TAG, "Alarm updated :: " + values.toString());
+                return entity.getId();
+            }
+        }
     }
 
     public void toggleAlarmActive(String id, boolean active) {

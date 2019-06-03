@@ -16,6 +16,7 @@ import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
@@ -24,9 +25,9 @@ import static com.mecong.myalarm.SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME;
 public class AlarmUtils {
     public static final String TAG = "A.L.A.R.M.A";
     public static final String ALARM_ID_PARAM = "com.mecong.myalarm.alarm_id";
-    public static final int MINUTE = 60 * 1000;
-    public static final int HOUR = 60 * MINUTE;
-    public static final int DAY = 24 * HOUR;
+    public static final long MINUTE = TimeUnit.MINUTES.toMillis(1);
+    public static final long HOUR = TimeUnit.HOURS.toMillis(1);
+    public static final long DAY = TimeUnit.DAYS.toMillis(1);
 
     public static void setUpNextAlarm(String alarmId, Context context, boolean manually) {
         AlarmEntity entity = new SQLiteDBHelper(context).getAlarmById(alarmId);
@@ -53,7 +54,7 @@ public class AlarmUtils {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, alarmEntity.getNextTime(), alarmIntent);
         }
 
-        new SQLiteDBHelper(context).updateAlarm(alarmEntity);
+        new SQLiteDBHelper(context).addAOrUpdateAlarm(alarmEntity);
         HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
                 + context.getString(R.string.next_alarm_date, alarmEntity.getNextTime()));
 

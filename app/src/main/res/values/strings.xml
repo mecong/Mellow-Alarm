@@ -56,4 +56,8 @@
     <string name="next_alarm_date">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
     <string name="clear_logs">Clear Logs</string>
     <string name="play">Play</string>
+    <string name="clear_list">Clear list</string>
+    <string name="close_sleep_assistant">Close sleep assistant</string>
+    <string name="random">Random</string>
+    <string name="add">Add</string>
 </resources>

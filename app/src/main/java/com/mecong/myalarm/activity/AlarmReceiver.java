@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
@@ -26,12 +27,43 @@ import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
 import static com.mecong.myalarm.AlarmUtils.TAG;
 import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
 
 public class AlarmReceiver extends AppCompatActivity {
+
+    public void turnScreenOnThroughKeyguard() {
+        userPowerManagerWakeup();
+        useWindowFlags();
+        useActivityScreenMethods();
+    }
+
+    private void useActivityScreenMethods() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            try {
+                this.setTurnScreenOn(true);
+                this.setShowWhenLocked(true);
+            } catch (NoSuchMethodError e) {
+                HyperLog.e(TAG, "Enable setTurnScreenOn and setShowWhenLocked is not present on device!", e);
+            }
+        }
+    }
+
+    private void useWindowFlags() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    }
+
+    private void userPowerManagerWakeup() {
+        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, this.getLocalClassName());
+        wakeLock.acquire(TimeUnit.SECONDS.toMillis(5));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,13 +96,8 @@ public class AlarmReceiver extends AppCompatActivity {
         SleepTimeAlarmReceiver.cancelNotification(context);
         UpcomingAlarmNotificationReceiver.cancelNotification(context);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        turnScreenOnThroughKeyguard();
 
-        this.setShowWhenLocked(true);
-        this.setTurnScreenOn(true);
-//        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         setContentView(R.layout.activity_alarm_receiver);
 
         TextView alarmInfo = findViewById(R.id.alarm_info);

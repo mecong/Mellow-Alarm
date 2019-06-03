@@ -14,6 +14,7 @@ import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
 import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
+import static com.mecong.myalarm.AlarmUtils.MINUTE;
 import static com.mecong.myalarm.AlarmUtils.TAG;
 
 public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
@@ -47,7 +48,8 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
         intent.putExtra(ALARM_ID_PARAM, String.valueOf(entity.getId()));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-        String message = context.getString(R.string.upcoming_alarm_notification_message, entity.getNextTime());
+        String message = context.getString(R.string.upcoming_alarm_notification_message,
+                entity.getNextTime() + entity.getTicksTime() * MINUTE);
         NotificationCompat.Builder builder = new NotificationCompat
                 .Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_info_black_24dp)

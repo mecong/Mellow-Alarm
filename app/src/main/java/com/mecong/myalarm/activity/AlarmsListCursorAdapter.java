@@ -2,6 +2,7 @@ package com.mecong.myalarm.activity;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,56 +13,51 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.mecong.myalarm.R;
+import com.mecong.myalarm.model.AlarmEntity;
 
-import java.util.Date;
+import java.util.Map;
 
 public class AlarmsListCursorAdapter extends CursorAdapter {
     private MainActivity mainActivity;
 
-    AlarmsListCursorAdapter(MainActivity mainActivity, Context context, Cursor c) {
-        super(context, c, 0);
+    AlarmsListCursorAdapter(MainActivity mainActivity, Cursor c) {
+        super(mainActivity.getApplicationContext(), c, 0);
         this.mainActivity = mainActivity;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        int alarmRowItem = R.layout.alarm_row_item;
+    public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
         return LayoutInflater.from(context)
-                .inflate(alarmRowItem, parent, false);
+                .inflate(R.layout.alarm_row_item, parent, false);
     }
 
     @Override
-    public void bindView(View view, final Context context, final Cursor cursor) {
+    public void bindView(final View view, final Context context, final Cursor cursor) {
+
+        final AlarmEntity entity = new AlarmEntity(cursor);
         ImageButton btnDeleteAlarm = view.findViewById(R.id.btnDeleteAlarm);
-        final String id = cursor.getString(cursor.getColumnIndex("_id"));
         btnDeleteAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.deleteAlarm(id);
+                mainActivity.deleteAlarm(String.valueOf(entity.getId()));
             }
         });
 
         Switch switchToggleAlarm = view.findViewById(R.id.switchToggleAlarm);
-        boolean active = 1 == cursor.getInt(cursor.getColumnIndex("active"));
-        switchToggleAlarm.setChecked(active);
+        switchToggleAlarm.setChecked(entity.isActive());
         switchToggleAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mainActivity.setActive(id, isChecked);
+                mainActivity.setActive(String.valueOf(entity.getId()), isChecked);
             }
         });
 
         TextView textViewPersonName = view.findViewById(R.id.textRow1);
-        int hour = cursor.getInt(cursor.getColumnIndex("hour"));
-        int minute = cursor.getInt(cursor.getColumnIndex("minute"));
-        Date nextTime = new Date(cursor.getLong(cursor.getColumnIndex("next_time")));
+        textViewPersonName.setText(context.getString(R.string.alarm_time, entity.getHour(), entity.getMinute()));
 
-        textViewPersonName.setText(context.getString(R.string.alarm_time, hour, minute));
-
-        TextView textRow2 = view.findViewById(R.id.textRow2);
 
         String daysMessage;
-        if (nextTime.getTime() == -1) {
+        if (entity.getNextTime() == -1) {
             daysMessage = context.getString(R.string.never);
         } else {
             int days = cursor.getInt(cursor.getColumnIndex("days"));
@@ -70,12 +66,32 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
             } else if (days == 248) {
                 daysMessage = context.getString(R.string.work_days);
             } else if (days == 0) {
-                daysMessage = context.getString(R.string.single_day, nextTime);
+                daysMessage = context.getString(R.string.single_day, entity.getNextTime());
             } else {
-                daysMessage = String.valueOf(days);//TODO: print days
+                daysMessage = getDaysHtml(entity, context);
             }
         }
 
-        textRow2.setText(daysMessage);
+        TextView textRow2 = view.findViewById(R.id.textRow2);
+        textRow2.setText(Html.fromHtml(daysMessage));
+    }
+
+    private String getDaysHtml(AlarmEntity entity, final Context context) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Integer, Boolean> day : entity.daysAsMap().entrySet()) {
+            if (day.getValue()) {
+                builder.append("<font color='#222222'>")
+                        .append(context.getString(day.getKey()).toUpperCase())
+                        .append("</font>");
+            } else {
+                builder.append("<font color='#DDDDDD'>")
+                        .append(context.getString(day.getKey()).toUpperCase())
+                        .append("</font>");
+            }
+            builder.append(" &nbsp;");
+        }
+
+        return builder.toString();
+
     }
 }

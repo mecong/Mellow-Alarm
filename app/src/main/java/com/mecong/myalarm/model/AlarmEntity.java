@@ -2,6 +2,8 @@ package com.mecong.myalarm.model;
 
 import android.database.Cursor;
 
+import com.mecong.myalarm.R;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -54,7 +56,7 @@ public class AlarmEntity {
     Long nextTime;
     Integer nextRequestCode;
 
-    AlarmEntity(Cursor cursor) {
+    public AlarmEntity(Cursor cursor) {
 
         this.id = cursor.getLong(cursor.getColumnIndex("_id"));
         this.hour = cursor.getInt(cursor.getColumnIndex("hour"));
@@ -215,42 +217,42 @@ public class AlarmEntity {
 
     }
 
-    private Map<Integer, Boolean> daysAsMap() {
+    public Map<Integer, Boolean> daysAsMap() {
         Map<Integer, Boolean> daysMap = new LinkedHashMap<>();
-        daysMap.put(Calendar.SUNDAY, false);
-        daysMap.put(Calendar.MONDAY, false);
-        daysMap.put(Calendar.TUESDAY, false);
-        daysMap.put(Calendar.WEDNESDAY, false);
-        daysMap.put(Calendar.THURSDAY, false);
-        daysMap.put(Calendar.FRIDAY, false);
-        daysMap.put(Calendar.SATURDAY, false);
+        daysMap.put(R.string.su, false);
+        daysMap.put(R.string.mo, false);
+        daysMap.put(R.string.tu, false);
+        daysMap.put(R.string.we, false);
+        daysMap.put(R.string.th, false);
+        daysMap.put(R.string.fr, false);
+        daysMap.put(R.string.sa, false);
 
         if ((days & SU_BINARY) == SU_BINARY) {
-            daysMap.put(Calendar.SUNDAY, true);
+            daysMap.put(R.string.su, true);
         }
 
         if ((days & MO_BINARY) == MO_BINARY) {
-            daysMap.put(Calendar.MONDAY, true);
+            daysMap.put(R.string.mo, true);
         }
 
         if ((days & TU_BINARY) == TU_BINARY) {
-            daysMap.put(Calendar.TUESDAY, true);
+            daysMap.put(R.string.tu, true);
         }
 
         if ((days & WE_BINARY) == WE_BINARY) {
-            daysMap.put(Calendar.WEDNESDAY, true);
+            daysMap.put(R.string.we, true);
         }
 
         if ((days & TH_BINARY) == TH_BINARY) {
-            daysMap.put(Calendar.THURSDAY, true);
+            daysMap.put(R.string.th, true);
         }
 
         if ((days & FR_BINARY) == FR_BINARY) {
-            daysMap.put(Calendar.FRIDAY, true);
+            daysMap.put(R.string.fr, true);
         }
 
         if ((days & SA_BINARY) == SA_BINARY) {
-            daysMap.put(Calendar.SATURDAY, true);
+            daysMap.put(R.string.sa, true);
         }
 
         return daysMap;

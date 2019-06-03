@@ -107,23 +107,24 @@ public class AlarmAdding extends AppCompatActivity {
         }
         int days = daysMarshaling(checkBoxMo.isChecked(), checkBoxTu.isChecked(), checkBoxWe.isChecked(), checkBoxTh.isChecked(), checkBoxFr.isChecked(), checkBoxSa.isChecked(), checkBoxSu.isChecked());
 
-
         AlarmEntity alarmEntity = AlarmEntity.builder()
                 .hour(hour)
                 .minute(minute)
                 .message("Ooops... alarma")
                 .days(days)
+                .active(true)
                 .ticksTime(seekBarTicks.getProgress())
                 .beforeAlarmNotification(true)
                 .exactDate(0)
                 .canceledNextAlarms(0)
+                .nextTime(-1L)
+                .nextRequestCode(-1)
                 .build();
 
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
-        long id = sqLiteDBHelper.addAlarm(alarmEntity);
+        long id = sqLiteDBHelper.addAOrUpdateAlarm(alarmEntity);
         alarmEntity.setId(id);
 
         AlarmUtils.setUpNextAlarm(alarmEntity, getApplicationContext(), true);
-
     }
 }

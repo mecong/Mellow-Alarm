@@ -4,7 +4,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +27,7 @@ import com.mecong.myalarm.model.SQLiteDBHelper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static com.mecong.myalarm.AlarmUtils.MINUTE;
 import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
@@ -35,8 +35,7 @@ import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
 public class MainActivity extends AppCompatActivity {
     public static final String TIME_TO_SLEEP_CHANNEL_ID = "TIME_TO_SLEEP";
     public static final String BEFORE_ALARM_CHANNEL_ID = "BEFORE_ALARM_CHANNEL_ID";
-    private static final int ALARM_ADDING = 42;
-    private SQLiteDBHelper sqLiteDBHelper;
+    private static final int ALARM_ADDING_REQUEST_CODE = 42;
     private AlarmsListCursorAdapter alarmsAdapter;
     private TextView textNextAlarm, textNextAlarmDate;
 
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
-
         Context context = this.getApplicationContext();
         createNotificationChannel();
 
@@ -65,10 +63,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        sqLiteDBHelper = new SQLiteDBHelper(context);
-        Cursor cursor = sqLiteDBHelper.getAllAlarms();
+        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         alarmsAdapter =
-                new AlarmsListCursorAdapter(this, context, cursor);
+                new AlarmsListCursorAdapter(this, sqLiteDBHelper.getAllAlarms());
 
         ListView alarmsList = findViewById(R.id.alarms_list);
         alarmsList.setAdapter(alarmsAdapter);
@@ -79,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent addAlarmIntent = new Intent(MainActivity.this, AlarmAdding.class);
-                MainActivity.this.startActivityForResult(addAlarmIntent, ALARM_ADDING);
+                MainActivity.this.startActivityForResult(addAlarmIntent, ALARM_ADDING_REQUEST_CODE);
             }
         });
     }
@@ -110,13 +107,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateNextActiveAlarm() {
+        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
         Context context = getApplicationContext();
         if (nextActiveAlarm != null) {
             AlarmUtils.setBootReceiverActive(context);
 
             Calendar calendar = Calendar.getInstance();
-            long nextAlarmTime = nextActiveAlarm.getNextTime() + nextActiveAlarm.getTicksTime() * MINUTE;
+            long nextAlarmTime = nextActiveAlarm.getNextTime()
+                    + TimeUnit.MINUTES.toMillis(nextActiveAlarm.getTicksTime());
             long difference = nextAlarmTime - calendar.getTimeInMillis();
             calendar.setTime(new Date(difference));
             calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -145,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+
         // Check which request we're responding to
-        if (requestCode == ALARM_ADDING) {
+        if (requestCode == ALARM_ADDING_REQUEST_CODE) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
@@ -159,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void deleteAlarm(String id) {
+        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+
         AlarmUtils.cancelNextAlarm(id, getApplicationContext());
         sqLiteDBHelper.deleteAlarm(id);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
@@ -166,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setActive(String id, boolean active) {
+        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+
         if (active) {
             AlarmUtils.setUpNextAlarm(id, getApplicationContext(), true);
         } else {
