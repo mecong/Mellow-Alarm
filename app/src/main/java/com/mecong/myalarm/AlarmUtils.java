@@ -24,7 +24,7 @@ import static com.mecong.myalarm.SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME;
 
 public class AlarmUtils {
     public static final String TAG = "A.L.A.R.M.A";
-    static final String ALARM_ID_PARAM = "com.mecong.myalarm.alarm_id";
+    public static final String ALARM_ID_PARAM = "com.mecong.myalarm.alarm_id";
     public static final long MINUTE = TimeUnit.MINUTES.toMillis(1);
     public static final long HOUR = TimeUnit.HOURS.toMillis(1);
     public static final long DAY = TimeUnit.DAYS.toMillis(1);
