@@ -8,13 +8,13 @@
 
     <string name="delete">Delete</string>
     <string name="dismiss">DISMISS</string>
-    <string name="mo">Mo</string>
-    <string name="tu">Tu</string>
-    <string name="we">We</string>
-    <string name="th">Th</string>
-    <string name="fr">Fr</string>
-    <string name="sa">Sa</string>
-    <string name="su">Su</string>
+    <string name="mo">M</string>
+    <string name="tu">T</string>
+    <string name="we">W</string>
+    <string name="th">T</string>
+    <string name="fr">F</string>
+    <string name="sa">S</string>
+    <string name="su">S</string>
 
     <string-array name="days_array">
         <item>@string/mo</item>
@@ -60,4 +60,9 @@
     <string name="close_sleep_assistant">Close sleep assistant</string>
     <string name="random">Random</string>
     <string name="add">Add</string>
+    <string name="time">Time</string>
+    <string name="sleep_minutes">%d minutes</string>
+    <string name="volume">Volume</string>
+    <string name="volume_percent">%d%%</string>
+    <string name="next_s_cancel">Next %d cancel</string>
 </resources>

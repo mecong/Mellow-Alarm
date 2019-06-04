@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     void deleteAlarm(String id) {
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
 
-        AlarmUtils.cancelNextAlarm(id, getApplicationContext());
+        AlarmUtils.turnOffAlarm(id, getApplicationContext());
         sqLiteDBHelper.deleteAlarm(id);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
         updateNextActiveAlarm();
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         if (active) {
             AlarmUtils.setUpNextAlarm(id, getApplicationContext(), true);
         } else {
-            AlarmUtils.cancelNextAlarm(id, getApplicationContext());
+            AlarmUtils.turnOffAlarm(id, getApplicationContext());
         }
         sqLiteDBHelper.toggleAlarmActive(id, active);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());

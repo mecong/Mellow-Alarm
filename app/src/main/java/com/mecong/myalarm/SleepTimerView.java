@@ -16,6 +16,9 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SleepTimerView extends View {
     int max, currentValue;
@@ -47,6 +50,10 @@ public class SleepTimerView extends View {
 
         changingPaint.setColor(Color.GRAY);
         changingPaint.setStrokeWidth(5);
+
+        for (SleepTimerViewValueListener listener : listeners) {
+            listener.onValueChanged(currentValue);
+        }
     }
 
     public void addListener(SleepTimerViewValueListener listener) {
@@ -69,6 +76,9 @@ public class SleepTimerView extends View {
 
     public void setCurrentValue(int currentValue) {
         this.currentValue = currentValue;
+        for (SleepTimerViewValueListener listener : listeners) {
+            listener.onValueChanged(currentValue);
+        }
         invalidate();
         requestLayout();
     }
@@ -78,7 +88,6 @@ public class SleepTimerView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
 
         frame = bounds();
-        frame.inset(1, 1);
 
         frameHeightDivMax = (float) frame.height() / max;
         maxDivFrameHeight = max / (float) frame.height();
@@ -130,11 +139,11 @@ public class SleepTimerView extends View {
             invalidate();
             result = true;
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            currentValue = (int) ((frame.height() - event.getY()) * maxDivFrameHeight);
-            invalidate();
-            for (SleepTimerViewValueListener listener : listeners) {
-                listener.onValueChanged(currentValue);
-            }
+            int newValue = (int) ((frame.height() - event.getY()) * maxDivFrameHeight);
+            newValue = min(newValue, max);
+            newValue = max(newValue, 5);
+
+            setCurrentValue(newValue);
             result = true;
         }
         return result;

@@ -8,17 +8,22 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.hypertrack.hyperlog.HyperLog;
+import com.mecong.myalarm.AlarmUtils;
 import com.mecong.myalarm.R;
+import com.mecong.myalarm.SleepTimerView;
 
 import java.io.IOException;
 
-public class SleepAssistantActivity extends AppCompatActivity {
+public class SleepAssistantActivity extends AppCompatActivity implements MediaPlayer.OnErrorListener {
 
 
     //    private final static String stream = "https://www.ssaurel.com/tmp/mymusic.mp3";
 //    private final static String stream = "http://radio.4duk.ru/4duk128.mp3";
-    private final static String stream = "http://listen2.myradio24.com:9000/8226";
+//    private final static String stream = "http://listen2.myradio24.com:9000/8226";
+    private final static String stream = "http://uk3.internet-radio.com:8405/live";
     static Button play;
     static MediaPlayer mediaPlayer;
     static boolean prepared = false;
@@ -31,6 +36,29 @@ public class SleepAssistantActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sleep_assistant);
+        final Context context = getApplicationContext();
+
+        final TextView textViewMinutes = findViewById(R.id.textViewMinutes);
+        SleepTimerView sliderSleepTime = findViewById(R.id.slliderSleepTime);
+        sliderSleepTime.addListener(new SleepTimerView.SleepTimerViewValueListener() {
+            @Override
+            public void onValueChanged(int newValue) {
+                textViewMinutes.setText(context.getString(R.string.sleep_minutes, newValue));
+            }
+        });
+        sliderSleepTime.setCurrentValue(30);
+
+
+        final TextView textViewVolumePercent = findViewById(R.id.textViewVolumePercent);
+        SleepTimerView sliderVolume = findViewById(R.id.sliderVolume);
+        sliderVolume.addListener(new SleepTimerView.SleepTimerViewValueListener() {
+            @Override
+            public void onValueChanged(int newValue) {
+                textViewVolumePercent.setText(context.getString(R.string.volume_percent, newValue));
+            }
+        });
+        sliderVolume.setCurrentValue(50);
+
 
         play = findViewById(R.id.play);
         play.setEnabled(false);
@@ -43,6 +71,7 @@ public class SleepAssistantActivity extends AppCompatActivity {
 
 
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         play.setOnClickListener(new View.OnClickListener() {
@@ -86,6 +115,12 @@ public class SleepAssistantActivity extends AppCompatActivity {
         // mediaPlayer.release();
     }
 
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        HyperLog.e(AlarmUtils.TAG, "what: " + what + " extra:" + extra);
+        return false;
+    }
+
     private static class PlayTask extends AsyncTask<String, Void, Boolean> {
         Context context;
 
@@ -98,13 +133,16 @@ public class SleepAssistantActivity extends AppCompatActivity {
 
             try {
 
-                mediaPlayer.stop();
+//                mediaPlayer.stop();
                 mediaPlayer.reset();
+
 //                mediaPlayer.release();
-                mediaPlayer.setDataSource(strings[0]);
+//                mediaPlayer.setDataSource(strings[0]);
+                mediaPlayer.setDataSource("http://uk3.internet-radio.com:8405/live");
 //                mediaPlayer.setDataSource(context, Uri.parse(strings[0]));
 
-//                mediaPlayer.setDataSource(context, Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.long_music));
+//                mediaPlayer.setDataSourc
+//               e(context, Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.long_music));
                 mediaPlayer.prepare();
                 mediaPlayer.setVolume(1, 1);
                 prepared = true;

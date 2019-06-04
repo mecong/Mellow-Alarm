@@ -16,6 +16,7 @@ import com.mecong.myalarm.model.SQLiteDBHelper;
 import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
 import static com.mecong.myalarm.AlarmUtils.MINUTE;
 import static com.mecong.myalarm.AlarmUtils.TAG;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
     private static final int UPCOMING_ALARM_NOTIFICATION_ID = 2;
@@ -33,9 +34,12 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
 
         if ((context.getPackageName() + "CANCEL_ALARM").equals(intent.getAction())) {
             HyperLog.i(TAG, "Canceling alarm: " + entity);
-            AlarmUtils.cancelNextAlarm(String.valueOf(entity.getId()), context);
+            entity.setCanceledNextAlarms(1);
+            sqLiteDBHelper.addAOrUpdateAlarm(entity);
+//            AlarmUtils.turnOffAlarm(String.valueOf(entity.getId()), context);
             Toast.makeText(context, context.getString(R.string.upcoming_alarm_canceled_toast,
-                    entity.getNextTime()), Toast.LENGTH_LONG).show();
+                    entity.getNextTime() + MINUTES.toMillis(entity.getTicksTime())),
+                    Toast.LENGTH_LONG).show();
         } else {
             HyperLog.i(TAG, "Before alarm notification: " + entity);
             showNotification(entity, context);
@@ -46,7 +50,7 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, this.getClass());
         intent.setAction(context.getPackageName() + "CANCEL_ALARM");
         intent.putExtra(ALARM_ID_PARAM, String.valueOf(entity.getId()));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, entity.getNextRequestCode() + 1, intent, 0);
 
         String message = context.getString(R.string.upcoming_alarm_notification_message,
                 entity.getNextTime() + entity.getTicksTime() * MINUTE);

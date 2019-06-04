@@ -177,84 +177,15 @@ public class AlarmEntity {
         return allDaysAsList;
     }
 
-    private List<Integer> daysAsList() {
-        List<Integer> daysList = new ArrayList<>(8);
-
-
-        if ((days & SU_BINARY) == SU_BINARY) {
-            daysList.add(Calendar.SUNDAY);
-        }
-
-        if ((days & MO_BINARY) == MO_BINARY) {
-            daysList.add(Calendar.MONDAY);
-        }
-
-        if ((days & TU_BINARY) == TU_BINARY) {
-            daysList.add(Calendar.TUESDAY);
-        }
-
-        if ((days & WE_BINARY) == WE_BINARY) {
-            daysList.add(Calendar.WEDNESDAY);
-        }
-
-        if ((days & TH_BINARY) == TH_BINARY) {
-            daysList.add(Calendar.THURSDAY);
-        }
-
-        if ((days & FR_BINARY) == FR_BINARY) {
-            daysList.add(Calendar.FRIDAY);
-        }
-
-        if ((days & SA_BINARY) == SA_BINARY) {
-            daysList.add(Calendar.SATURDAY);
-        }
-
-        if ((days & SU_BINARY) == SU_BINARY) {
-            daysList.add(Calendar.SUNDAY);
-        }
-
-        return daysList;
-
-    }
-
     public Map<Integer, Boolean> daysAsMap() {
         Map<Integer, Boolean> daysMap = new LinkedHashMap<>();
-        daysMap.put(R.string.su, false);
-        daysMap.put(R.string.mo, false);
-        daysMap.put(R.string.tu, false);
-        daysMap.put(R.string.we, false);
-        daysMap.put(R.string.th, false);
-        daysMap.put(R.string.fr, false);
-        daysMap.put(R.string.sa, false);
-
-        if ((days & SU_BINARY) == SU_BINARY) {
-            daysMap.put(R.string.su, true);
-        }
-
-        if ((days & MO_BINARY) == MO_BINARY) {
-            daysMap.put(R.string.mo, true);
-        }
-
-        if ((days & TU_BINARY) == TU_BINARY) {
-            daysMap.put(R.string.tu, true);
-        }
-
-        if ((days & WE_BINARY) == WE_BINARY) {
-            daysMap.put(R.string.we, true);
-        }
-
-        if ((days & TH_BINARY) == TH_BINARY) {
-            daysMap.put(R.string.th, true);
-        }
-
-        if ((days & FR_BINARY) == FR_BINARY) {
-            daysMap.put(R.string.fr, true);
-        }
-
-        if ((days & SA_BINARY) == SA_BINARY) {
-            daysMap.put(R.string.sa, true);
-        }
-
+        daysMap.put(R.string.mo, (days & MO_BINARY) == MO_BINARY);
+        daysMap.put(R.string.tu, (days & TU_BINARY) == TU_BINARY);
+        daysMap.put(R.string.we, (days & WE_BINARY) == WE_BINARY);
+        daysMap.put(R.string.th, (days & TH_BINARY) == TH_BINARY);
+        daysMap.put(R.string.fr, (days & FR_BINARY) == FR_BINARY);
+        daysMap.put(R.string.sa, (days & SA_BINARY) == SA_BINARY);
+        daysMap.put(R.string.su, (days & SU_BINARY) == SU_BINARY);
         return daysMap;
     }
 }

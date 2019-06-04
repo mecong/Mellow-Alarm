@@ -92,6 +92,8 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         if (!active) {
             updateValues.put("next_time", -1);
             updateValues.put("next_request_code", -1);
+        } else {
+            updateValues.put("canceled_next_alarms", 0);
         }
         writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id});
         HyperLog.i(TAG, "Alarm [id=" + id + "] toggled to: " + active);

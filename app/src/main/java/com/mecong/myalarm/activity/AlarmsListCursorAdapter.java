@@ -35,6 +35,7 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
     public void bindView(final View view, final Context context, final Cursor cursor) {
 
         final AlarmEntity entity = new AlarmEntity(cursor);
+
         ImageButton btnDeleteAlarm = view.findViewById(R.id.btnDeleteAlarm);
         btnDeleteAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,8 +53,13 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
             }
         });
 
-        TextView textViewPersonName = view.findViewById(R.id.textRow1);
-        textViewPersonName.setText(context.getString(R.string.alarm_time, entity.getHour(), entity.getMinute()));
+        TextView time = view.findViewById(R.id.textRow1);
+        time.setText(context.getString(R.string.alarm_time, entity.getHour(), entity.getMinute()));
+
+        TextView textViewCanceled = view.findViewById(R.id.textViewCanceled);
+        textViewCanceled.setText(entity.getCanceledNextAlarms() > 0 ?
+                context.getString(R.string.next_s_cancel, entity.getCanceledNextAlarms())
+                : "");
 
 
         String daysMessage;
@@ -88,7 +94,7 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
                         .append(context.getString(day.getKey()).toUpperCase())
                         .append("</font>");
             }
-            builder.append(" &nbsp;");
+            builder.append(" ");
         }
 
         return builder.toString();

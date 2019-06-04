@@ -6,34 +6,69 @@
     android:layout_height="match_parent"
     tools:context=".activity.SleepAssistantActivity">
 
+    <com.mecong.myalarm.SleepTimerView
+        android:id="@+id/slliderSleepTime"
+        android:layout_width="0dp"
+
+        android:layout_height="0dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintDimensionRatio="w,9:16"
+        app:layout_constraintEnd_toStartOf="@+id/sliderVolume"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:max="60" />
+
+    <com.mecong.myalarm.SleepTimerView
+        android:id="@+id/sliderVolume"
+        android:layout_width="0dp"
+
+        android:layout_height="0dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintDimensionRatio="w,9:16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/slliderSleepTime"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:max="100" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/logsList"
         android:layout_width="0dp"
-        android:layout_height="240dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="84dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="@string/play"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.339" />
+        app:layout_constraintTop_toBottomOf="@+id/slliderSleepTime" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         style="?android:attr/buttonBarStyle"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -69,46 +104,61 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="9dp"
         android:text="@string/random"
-        app:layout_constraintBottom_toTopOf="@+id/logsList"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/buttonAdd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/buttonAdd" />
 
     <Button
         android:id="@+id/buttonAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="10dp"
         android:text="@string/add"
-        app:layout_constraintBottom_toTopOf="@+id/logsList"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="299dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/play"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
 
-        <com.mecong.myalarm.SleepTimerView
-            android:id="@+id/sleepTimerView"
-            android:layout_width="100dp"
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
 
-            android:layout_height="200dp"
-            android:layout_marginStart="44dp"
-            android:layout_marginTop="48dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/textViewTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time"
+        app:layout_constraintBottom_toTopOf="@+id/slliderSleepTime"
+        app:layout_constraintStart_toStartOf="@+id/slliderSleepTime" />
 
+    <TextView
+        android:id="@+id/textViewMinutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sleep_minutes"
+        app:layout_constraintEnd_toEndOf="@+id/slliderSleepTime"
+        app:layout_constraintStart_toStartOf="@+id/slliderSleepTime"
+        app:layout_constraintTop_toBottomOf="@+id/slliderSleepTime" />
 
-    </android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/textViewVolume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:text="@string/volume"
+        app:layout_constraintBottom_toTopOf="@+id/sliderVolume"
+        app:layout_constraintStart_toStartOf="@+id/sliderVolume" />
+
+    <TextView
+        android:id="@+id/textViewVolumePercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/volume_percent"
+        app:layout_constraintEnd_toEndOf="@+id/sliderVolume"
+        app:layout_constraintStart_toStartOf="@+id/sliderVolume"
+        app:layout_constraintTop_toBottomOf="@+id/sliderVolume" />
 
 </android.support.constraint.ConstraintLayout>
