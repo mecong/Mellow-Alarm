@@ -1,6 +1,10 @@
 package com.mecong.myalarm.activity;
 
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -29,7 +33,13 @@ import java.util.concurrent.TimeUnit;
 import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
 import static com.mecong.myalarm.AlarmUtils.TAG;
 
-public class AlarmReceiver extends AppCompatActivity {
+public class AlarmReceiver extends AppCompatActivity implements SensorEventListener {
+    private static final float SHAKE_THRESHOLD = 5f; // m/S**2
+    private static final int MIN_TIME_BETWEEN_SHAKES_MILLISECS = 1000;
+    private long mLastShakeTime;
+    private TextView alarmInfo;
+    private MediaPlayer alarmMediaPlayer;
+    private int shakeCount = 3;
 
     public void turnScreenOnThroughKeyguard() {
         userPowerManagerWakeup();
@@ -77,6 +87,7 @@ public class AlarmReceiver extends AppCompatActivity {
             HyperLog.e(TAG, "Alarm id is null");
             System.exit(0);
         }
+        initializeShaker();
 
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
@@ -87,7 +98,7 @@ public class AlarmReceiver extends AppCompatActivity {
 
         setContentView(R.layout.activity_alarm_receiver);
 
-        TextView alarmInfo = findViewById(R.id.alarm_info);
+        alarmInfo = findViewById(R.id.alarm_info);
         alarmInfo.setText(entity.getMessage());
 
         Button closeButton = findViewById(R.id.alarm_ok);
@@ -118,7 +129,7 @@ public class AlarmReceiver extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        final MediaPlayer alarmMediaPlayer = new MediaPlayer();
+        alarmMediaPlayer = new MediaPlayer();
 
 
         final Runnable runnableCode = new Runnable() {
@@ -189,18 +200,82 @@ public class AlarmReceiver extends AppCompatActivity {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(1000,
-                            VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    vibrator.vibrate(1000);
-                }
-                alarmMediaPlayer.stop();
-                alarmMediaPlayer.reset();
-                alarmMediaPlayer.release();
-                System.exit(0);
+                turnOffAlarm();
             }
         });
+    }
+
+    private void turnOffAlarm() {
+        Vibrator vibrator = (Vibrator) getApplicationContext()
+                .getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(1000,
+                    VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(1000);
+        }
+        alarmMediaPlayer.stop();
+        alarmMediaPlayer.reset();
+        alarmMediaPlayer.release();
+        System.exit(0);
+    }
+
+    public void initializeShaker() {
+        // Get a sensor manager to listen for shakes
+        SensorManager mSensorMgr = (SensorManager) getSystemService(SENSOR_SERVICE);
+        if (mSensorMgr == null) {
+            throw new UnsupportedOperationException("Sensors not supported");
+        }
+
+        // Listen for shakes
+        Sensor accelerometer = mSensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null) {
+            boolean supported = mSensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            if (!supported) {
+                mSensorMgr.unregisterListener(this, accelerometer);
+                throw new UnsupportedOperationException("Accelerometer not supported");
+            }
+        }
+    }
+
+
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            long curTime = System.currentTimeMillis();
+            if ((curTime - mLastShakeTime) > MIN_TIME_BETWEEN_SHAKES_MILLISECS) {
+
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+
+                double acceleration = Math.sqrt(Math.pow(x, 2) +
+                        Math.pow(y, 2) +
+                        Math.pow(z, 2)) - SensorManager.GRAVITY_EARTH;
+                Log.d(TAG, "Acceleration is " + acceleration + "m/s^2");
+//                alarmInfo.setText("Acceleration is " + acceleration + "m/s^2");
+
+                if (acceleration > SHAKE_THRESHOLD) {
+                    mLastShakeTime = curTime;
+                    Log.d(TAG, "Shake, Rattle, and Roll");
+                    shakeCount--;
+                    Vibrator vibrator = (Vibrator) getApplicationContext()
+                            .getSystemService(Context.VIBRATOR_SERVICE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(50,
+                                VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
+                        vibrator.vibrate(50);
+                    }
+                    if (shakeCount <= 0) {
+                        turnOffAlarm();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

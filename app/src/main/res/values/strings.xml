@@ -1,20 +1,20 @@
 <resources>
     <string name="app_name">Tender Alarm</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings" translatable="false">Settings</string>
 
-    <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
-    <string name="title_activity_alarm_receiver">AlarmReceiver</string>
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="title_activity_alarm_receiver" translatable="false">AlarmReceiver</string>
 
-    <string name="delete">Delete</string>
-    <string name="dismiss">DISMISS</string>
-    <string name="mo">M</string>
-    <string name="tu">T</string>
+    <string name="delete" translatable="false">Delete</string>
+    <string name="dismiss" translatable="false">DISMISS</string>
+    <string name="mo" translatable="false">M</string>
+    <string name="tu" translatable="false">T</string>
     <string name="we">W</string>
-    <string name="th">T</string>
-    <string name="fr">F</string>
-    <string name="sa">S</string>
-    <string name="su">S</string>
+    <string name="th" translatable="false">T</string>
+    <string name="fr" translatable="false">F</string>
+    <string name="sa" translatable="false">S</string>
+    <string name="su" translatable="false">S</string>
 
     <string-array name="days_array">
         <item>@string/mo</item>
@@ -26,43 +26,43 @@
         <item>@string/su</item>
     </string-array>
 
-    <string name="upcoming_alarm_channel_name">Upcoming alarm</string>
-    <string name="upcoming_alarm_channel_description">Kindly reminder about upcoming alarm</string>
-    <string name="upcoming_alarm_notification_title">😼 Upcoming alarm</string>
-    <string name="upcoming_alarm_notification_message">Cancel upcoming alarm at %1$tH:%1$tM</string>
-    <string name="upcoming_alarm_canceled_toast">Upcoming alarm at %1$tH:%1$tM canceled</string>
+    <string name="upcoming_alarm_channel_name" translatable="false">Upcoming alarm</string>
+    <string name="upcoming_alarm_channel_description" translatable="false">Kindly reminder about upcoming alarm</string>
+    <string name="upcoming_alarm_notification_title">☕️ Upcoming alarm</string>
+    <string name="upcoming_alarm_notification_message" translatable="false">Cancel upcoming alarm at %1$tH:%1$tM</string>
+    <string name="upcoming_alarm_canceled_toast" translatable="false">Upcoming alarm at %1$tH:%1$tM canceled</string>
 
-    <string name="time_to_sleep_channel_name">Time to sleep</string>
-    <string name="time_to_sleep_channel_description">Kindly reminder about upcoming morning alarm when not much sleep time remain</string>
-    <string name="time_to_sleep_notification_title">Time to sleep</string>
-    <string name="time_to_sleep_notification_message">
-        There are only %1$tH hours %1$tM minutes until your morning alarm. Tap to open the Sleep Assistant.</string>
+    <string name="time_to_sleep_channel_name" translatable="false">🛏 Time to sleep</string>
+    <string name="time_to_sleep_channel_description" translatable="false">Kindly reminder about upcoming morning alarm when not much sleep time remain</string>
+    <string name="time_to_sleep_notification_title" translatable="false">🛏 Time to sleep</string>
+    <string name="time_to_sleep_notification_message" translatable="false">
+       😼 There are only %1$tH hours %1$tM minutes until your morning alarm. Tap to open the Sleep Assistant.</string>
 
 
     <string name="alarm_time">%02d:%02d</string>
     <string name="alarm_date">%D</string>
     <string name="work_days">Work days</string>
-    <string name="every_day">Every day</string>
-    <string name="never">Never</string>
-    <string name="single_day">%1$td.%1$tm.%1$tY</string>
-    <string name="logs">Logs</string>
+    <string name="every_day" translatable="false">Every day</string>
+    <string name="never" translatable="false">Never</string>
+    <string name="single_day" translatable="false">%1$td.%1$tm.%1$tY</string>
+    <string name="logs" translatable="false">Logs</string>
 
-    <string name="ticks">Ticks %d minutes before alarm</string>
+    <string name="ticks" translatable="false">Ticks %d minutes before alarm</string>
     <string name="all_alarms_are_off">All alarms are off</string>
-    <string name="next_alarm">Alarm in %d days</string>
-    <string name="next_alarm_soon">Alarm will go off soon</string>
-    <string name="next_alarm_today">Alarm in %d hours %d minutes</string>
-    <string name="next_alarm_within_hour">Alarm in %d minutes</string>
-    <string name="next_alarm_date">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
-    <string name="clear_logs">Clear Logs</string>
-    <string name="play">Play</string>
-    <string name="clear_list">Clear list</string>
-    <string name="close_sleep_assistant">Close sleep assistant</string>
-    <string name="random">Random</string>
+    <string name="next_alarm" translatable="false">Alarm in %d days</string>
+    <string name="next_alarm_soon" translatable="false">Alarm will go off soon</string>
+    <string name="next_alarm_today" translatable="false">Alarm in %d hours %d minutes</string>
+    <string name="next_alarm_within_hour" translatable="false">Alarm in %d minutes</string>
+    <string name="next_alarm_date" translatable="false">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
+    <string name="clear_logs" translatable="false">Clear Logs</string>
+    <string name="play" translatable="false">Play</string>
+    <string name="clear_list" translatable="false">Clear list</string>
+    <string name="close_sleep_assistant" translatable="false">Close sleep assistant</string>
+    <string name="random" translatable="false">Random</string>
     <string name="add">Add</string>
-    <string name="time">Time</string>
-    <string name="sleep_minutes">%d minutes</string>
+    <string name="time" translatable="false">Time</string>
+    <string name="sleep_minutes" translatable="false">%d minutes</string>
     <string name="volume">Volume</string>
     <string name="volume_percent">%d%%</string>
-    <string name="next_s_cancel">Next %d cancel</string>
+    <string name="next_s_cancel" translatable="false">Next %d cancel</string>
 </resources>

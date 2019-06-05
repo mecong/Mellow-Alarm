@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tender Alarm</string>
+    <string name="volume">Громкость</string>
+    <string name="volume_percent">%d%%</string>
+    <string name="we">C</string>
+    <string name="upcoming_alarm_notification_title">Будильник</string>
+    <string name="add">Добавить</string>
+    <string name="alarm_date">%D</string>
+    <string name="alarm_time">%02d:%02d</string>
+    <string name="all_alarms_are_off">Все будильники выключены</string>
+    <string name="work_days">Рабочие дни</string>
+
+</resources>
