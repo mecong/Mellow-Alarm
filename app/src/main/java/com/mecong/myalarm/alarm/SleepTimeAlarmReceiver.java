@@ -1,26 +1,27 @@
-package com.mecong.myalarm;
+package com.mecong.myalarm.alarm;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import com.hypertrack.hyperlog.HyperLog;
-import com.mecong.myalarm.activity.MainActivity;
-import com.mecong.myalarm.activity.SleepAssistantActivity;
+import com.mecong.myalarm.R;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
+import com.mecong.myalarm.sleep_assistant.SleepAssistantActivity;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import static com.mecong.myalarm.AlarmUtils.HOUR;
-import static com.mecong.myalarm.AlarmUtils.TAG;
+import static com.mecong.myalarm.alarm.AlarmUtils.HOUR;
+import static com.mecong.myalarm.alarm.AlarmUtils.TAG;
 
 public class SleepTimeAlarmReceiver extends BroadcastReceiver {
 
@@ -45,7 +46,7 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
         if (nextActiveAlarm == null) return;
 
         if (nextActiveAlarm.getNextTime() - Calendar.getInstance().getTimeInMillis() < 4 * HOUR) {
-            AlarmUtils.setUpSleepTimeAlarm(context);
+            AlarmUtils.setUpNextSleepTimeNotification(context);
         }
 
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);

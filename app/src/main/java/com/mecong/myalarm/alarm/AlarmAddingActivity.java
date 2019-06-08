@@ -1,10 +1,9 @@
-package com.mecong.myalarm.activity;
+package com.mecong.myalarm.alarm;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -12,7 +11,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.mecong.myalarm.AlarmUtils;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mecong.myalarm.R;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
@@ -23,7 +23,7 @@ import lombok.experimental.FieldDefaults;
 import static com.mecong.myalarm.model.AlarmEntity.daysMarshaling;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AlarmAdding extends AppCompatActivity {
+public class AlarmAddingActivity extends AppCompatActivity {
     TimePicker timePicker;
     CheckBox checkBoxMo;
     CheckBox checkBoxTu;

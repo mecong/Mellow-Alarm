@@ -1,4 +1,4 @@
-package com.mecong.myalarm.activity;
+package com.mecong.myalarm.alarm;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -6,11 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,19 +13,26 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.hypertrack.hyperlog.HyperLog;
-import com.mecong.myalarm.AlarmUtils;
+import com.mecong.myalarm.LogsActivity;
 import com.mecong.myalarm.R;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
+import com.mecong.myalarm.sleep_assistant.SleepAssistantActivity;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-import static com.mecong.myalarm.AlarmUtils.MINUTE;
-import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
+import static com.mecong.myalarm.alarm.AlarmUtils.MINUTE;
+import static com.mecong.myalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TIME_TO_SLEEP_CHANNEL_ID = "TIME_TO_SLEEP";
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addAlarmIntent = new Intent(MainActivity.this, AlarmAdding.class);
+                Intent addAlarmIntent = new Intent(MainActivity.this, AlarmAddingActivity.class);
                 MainActivity.this.startActivityForResult(addAlarmIntent, ALARM_ADDING_REQUEST_CODE);
             }
         });
@@ -140,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             textNextAlarmDate.setText("");
         }
 
-        setUpSleepTimeAlarm(context);
+        setUpNextSleepTimeNotification(context);
     }
 
     @Override

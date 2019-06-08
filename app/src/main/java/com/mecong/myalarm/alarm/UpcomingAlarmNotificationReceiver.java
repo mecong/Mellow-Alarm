@@ -1,25 +1,28 @@
-package com.mecong.myalarm;
+package com.mecong.myalarm.alarm;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import com.hypertrack.hyperlog.HyperLog;
-import com.mecong.myalarm.activity.MainActivity;
+import com.mecong.myalarm.R;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
-import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
-import static com.mecong.myalarm.AlarmUtils.MINUTE;
-import static com.mecong.myalarm.AlarmUtils.TAG;
+import static com.mecong.myalarm.alarm.AlarmUtils.ALARM_ID_PARAM;
+import static com.mecong.myalarm.alarm.AlarmUtils.MINUTE;
+import static com.mecong.myalarm.alarm.AlarmUtils.TAG;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
     private static final int UPCOMING_ALARM_NOTIFICATION_ID = 2;
+    private String actionCancelAlarm = UpcomingAlarmNotificationReceiver.class.getCanonicalName() + "--CANCEL_ALARM";
+
 
     public static void cancelNotification(Context context) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
@@ -32,11 +35,10 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
 
-        if ((context.getPackageName() + "CANCEL_ALARM").equals(intent.getAction())) {
+        if ((actionCancelAlarm).equals(intent.getAction())) {
             HyperLog.i(TAG, "Canceling alarm: " + entity);
             entity.setCanceledNextAlarms(1);
             sqLiteDBHelper.addAOrUpdateAlarm(entity);
-//            AlarmUtils.turnOffAlarm(String.valueOf(entity.getId()), context);
             Toast.makeText(context, context.getString(R.string.upcoming_alarm_canceled_toast,
                     entity.getNextTime() + MINUTES.toMillis(entity.getTicksTime())),
                     Toast.LENGTH_LONG).show();
@@ -48,7 +50,7 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
 
     private void showNotification(AlarmEntity entity, Context context) {
         Intent intent = new Intent(context, this.getClass());
-        intent.setAction(context.getPackageName() + "CANCEL_ALARM");
+        intent.setAction(actionCancelAlarm);
         intent.putExtra(ALARM_ID_PARAM, String.valueOf(entity.getId()));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, entity.getNextRequestCode() + 1, intent, 0);
 

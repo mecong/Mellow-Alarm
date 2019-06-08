@@ -1,4 +1,4 @@
-package com.mecong.myalarm.activity;
+package com.mecong.myalarm.alarm;
 
 import android.content.Context;
 import android.database.Cursor;

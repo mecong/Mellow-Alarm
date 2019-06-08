@@ -1,4 +1,4 @@
-package com.mecong.myalarm.activity;
+package com.mecong.myalarm.alarm;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -15,12 +15,13 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.R;
@@ -30,16 +31,24 @@ import com.mecong.myalarm.model.SQLiteDBHelper;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
-import static com.mecong.myalarm.AlarmUtils.TAG;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class AlarmReceiver extends AppCompatActivity implements SensorEventListener {
-    private static final float SHAKE_THRESHOLD = 5f; // m/S**2
+import static com.mecong.myalarm.alarm.AlarmUtils.ALARM_ID_PARAM;
+import static com.mecong.myalarm.alarm.AlarmUtils.TAG;
+
+public class AlarmReceiverActivity extends AppCompatActivity implements SensorEventListener {
+    private static final float SHAKE_THRESHOLD = 7f; // m/S**2
     private static final int MIN_TIME_BETWEEN_SHAKES_MILLISECS = 1000;
+    @BindView(R.id.alarm_info)
+    TextView alarmInfo;
+    @BindView(R.id.alarm_ok)
+    Button closeButton;
     private long mLastShakeTime;
-    private TextView alarmInfo;
     private MediaPlayer alarmMediaPlayer;
     private int shakeCount = 3;
+    private Handler handlerVolume;
+    private Runnable runnableVolume;
 
     public void turnScreenOnThroughKeyguard() {
         userPowerManagerWakeup();
@@ -67,16 +76,19 @@ public class AlarmReceiver extends AppCompatActivity implements SensorEventListe
 
     private void userPowerManagerWakeup() {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, this.getLocalClassName());
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP, this.getLocalClassName());
         wakeLock.acquire(TimeUnit.SECONDS.toMillis(5));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_alarm_receiver);
+
 
         HyperLog.initialize(this);
         HyperLog.setLogLevel(Log.VERBOSE);
+        ButterKnife.bind(this);
 
         String alarmId = getIntent().getStringExtra(ALARM_ID_PARAM);
         HyperLog.i(TAG, "Running alarm with extras: " + getIntent().getExtras());
@@ -96,12 +108,9 @@ public class AlarmReceiver extends AppCompatActivity implements SensorEventListe
 
         turnScreenOnThroughKeyguard();
 
-        setContentView(R.layout.activity_alarm_receiver);
 
-        alarmInfo = findViewById(R.id.alarm_info);
         alarmInfo.setText(entity.getMessage());
 
-        Button closeButton = findViewById(R.id.alarm_ok);
 
         final AudioAttributes audioAttributesAlarm = new AudioAttributes
                 .Builder()
@@ -173,13 +182,13 @@ public class AlarmReceiver extends AppCompatActivity implements SensorEventListe
         };
 
 
-        final Handler handlerVolume = new Handler();
-        Runnable runnableVolume = new Runnable() {
+        handlerVolume = new Handler();
+        runnableVolume = new Runnable() {
             @Override
             public void run() {
                 try {
                     volume[0] += 0.001f;
-                    HyperLog.v(TAG, "New alarm volume: " + volume[0]);
+                    Log.v(TAG, "New alarm volume: " + volume[0]);
                     alarmMediaPlayer.setVolume(volume[0], volume[0]);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -193,6 +202,7 @@ public class AlarmReceiver extends AppCompatActivity implements SensorEventListe
         if (entity.getTicksTime() > 0) {
             handlerTicks.post(runnableCode);
         }
+
         handlerTicks.postDelayed(runnableRealAlarm, entity.getTicksTime() * 60 * 1000);
         handlerVolume.post(runnableVolume);
 
@@ -266,6 +276,11 @@ public class AlarmReceiver extends AppCompatActivity implements SensorEventListe
                     } else {
                         vibrator.vibrate(50);
                     }
+
+                    if (shakeCount < 3) {
+                        handlerVolume.removeCallbacks(runnableVolume);
+                    }
+
                     if (shakeCount <= 0) {
                         turnOffAlarm();
                     }

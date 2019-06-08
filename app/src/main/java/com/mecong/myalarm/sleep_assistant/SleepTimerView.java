@@ -1,4 +1,4 @@
-package com.mecong.myalarm;
+package com.mecong.myalarm.sleep_assistant;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,6 +9,8 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.mecong.myalarm.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ import static java.lang.Math.min;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SleepTimerView extends View {
-    int max, currentValue;
+    long max, currentValue;
     boolean changingMode = false;
     Paint filledPaint = new Paint();
     Paint framedPaint = new Paint();
@@ -60,7 +62,7 @@ public class SleepTimerView extends View {
         listeners.add(listener);
     }
 
-    public int getMax() {
+    public long getMax() {
         return max;
     }
 
@@ -70,15 +72,13 @@ public class SleepTimerView extends View {
         requestLayout();
     }
 
-    public int getCurrentValue() {
+    public long getCurrentValue() {
         return currentValue;
     }
 
-    public void setCurrentValue(int currentValue) {
+    public void setCurrentValue(long currentValue) {
         this.currentValue = currentValue;
-        for (SleepTimerViewValueListener listener : listeners) {
-            listener.onValueChanged(currentValue);
-        }
+
         invalidate();
         requestLayout();
     }
@@ -139,17 +139,22 @@ public class SleepTimerView extends View {
             invalidate();
             result = true;
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            int newValue = (int) ((frame.height() - event.getY()) * maxDivFrameHeight);
+            long newValue = (long) ((frame.height() - event.getY()) * maxDivFrameHeight);
             newValue = min(newValue, max);
             newValue = max(newValue, 5);
 
-            setCurrentValue(newValue);
+            this.currentValue = newValue;
+            for (SleepTimerViewValueListener listener : listeners) {
+                listener.onValueChanged(currentValue);
+            }
+            invalidate();
+            requestLayout();
             result = true;
         }
         return result;
     }
 
     public interface SleepTimerViewValueListener {
-        void onValueChanged(int newValue);
+        void onValueChanged(long newValue);
     }
 }

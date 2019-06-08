@@ -1,4 +1,4 @@
-package com.mecong.myalarm;
+package com.mecong.myalarm.alarm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

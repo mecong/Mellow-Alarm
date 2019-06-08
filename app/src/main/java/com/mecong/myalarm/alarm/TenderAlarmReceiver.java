@@ -1,15 +1,13 @@
-package com.mecong.myalarm;
+package com.mecong.myalarm.alarm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.mecong.myalarm.activity.AlarmReceiver;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
 
-import static com.mecong.myalarm.AlarmUtils.ALARM_ID_PARAM;
-import static com.mecong.myalarm.AlarmUtils.setUpSleepTimeAlarm;
+import static com.mecong.myalarm.alarm.AlarmUtils.ALARM_ID_PARAM;
 
 public class TenderAlarmReceiver extends BroadcastReceiver {
 
@@ -18,6 +16,9 @@ public class TenderAlarmReceiver extends BroadcastReceiver {
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
+
+        SleepTimeAlarmReceiver.cancelNotification(context);
+        UpcomingAlarmNotificationReceiver.cancelNotification(context);
 
         Integer canceledNextAlarms = entity.getCanceledNextAlarms();
         if (canceledNextAlarms == 0) {
@@ -28,11 +29,7 @@ public class TenderAlarmReceiver extends BroadcastReceiver {
                 sqLiteDBHelper.toggleAlarmActive(alarmId, false);
             }
 
-            setUpSleepTimeAlarm(context);
-            SleepTimeAlarmReceiver.cancelNotification(context);
-            UpcomingAlarmNotificationReceiver.cancelNotification(context);
-
-            Intent startAlarmIntent = new Intent(context, AlarmReceiver.class);
+            Intent startAlarmIntent = new Intent(context, AlarmReceiverActivity.class);
             startAlarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startAlarmIntent.putExtra(ALARM_ID_PARAM, String.valueOf(entity.getId()));
             context.startActivity(startAlarmIntent);

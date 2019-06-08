@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.mecong.myalarm.AlarmUtils.TAG;
+import static com.mecong.myalarm.alarm.AlarmUtils.TAG;
 import static java.lang.String.format;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
