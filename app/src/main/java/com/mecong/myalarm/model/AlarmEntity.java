@@ -4,10 +4,13 @@ import android.database.Cursor;
 
 import com.mecong.myalarm.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import lombok.AccessLevel;
@@ -41,15 +44,23 @@ public class AlarmEntity {
     Integer days;
 
     long exactDate;
+    @ToString.Exclude
     String message;
     boolean active;
+    @ToString.Exclude
     boolean beforeAlarmNotification;
+    @ToString.Exclude
     Integer lightTime;
     int ticksTime;
+    @ToString.Exclude
     String melody;
+    @ToString.Exclude
     String vibrationType;
+    @ToString.Exclude
     Integer volume;
+    @ToString.Exclude
     Integer snoozeInterval;
+    @ToString.Exclude
     Integer snoozeTimes;
     Integer canceledNextAlarms;
 
@@ -109,6 +120,12 @@ public class AlarmEntity {
         }
 
         return d;
+    }
+
+    @ToString.Include
+    private String nextTime() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        return format.format(new Date(nextTime));
     }
 
     public void updateNextAlarmDate(boolean manually) {

@@ -14,7 +14,7 @@ public class TenderAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
 
         SleepTimeAlarmReceiver.cancelNotification(context);

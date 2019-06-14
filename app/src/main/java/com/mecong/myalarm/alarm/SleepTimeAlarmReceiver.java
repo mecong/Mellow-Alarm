@@ -40,7 +40,7 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
 
         HyperLog.i(TAG, "Sleep time job started");
 
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
 
         if (nextActiveAlarm == null) return;

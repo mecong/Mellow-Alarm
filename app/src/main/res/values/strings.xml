@@ -65,4 +65,7 @@
     <string name="volume">Volume</string>
     <string name="volume_percent">%d%%</string>
     <string name="next_s_cancel" translatable="false">Next %d cancel</string>
+    <string name="offline">Offline</string>
+    <string name="online">Online</string>
+    <string name="noises">Noises</string>
 </resources>

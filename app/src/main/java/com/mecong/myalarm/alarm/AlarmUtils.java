@@ -30,7 +30,7 @@ public class AlarmUtils {
     static final long DAY = TimeUnit.DAYS.toMillis(1);
 
     static void setUpNextAlarm(String alarmId, Context context, boolean manually) {
-        AlarmEntity entity = new SQLiteDBHelper(context).getAlarmById(alarmId);
+        AlarmEntity entity = SQLiteDBHelper.getInstance(context).getAlarmById(alarmId);
         setUpNextAlarm(entity, context, manually);
     }
 
@@ -42,14 +42,11 @@ public class AlarmUtils {
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context,
                 alarmEntity.getNextRequestCode(), intentToFire, FLAG_UPDATE_CURRENT);
 
-        HyperLog.v(TAG, "Intent: " + intentToFire);
-        HyperLog.v(TAG, "Intent extra: " + intentToFire.getExtras());
-
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         setTheAlarm(alarmEntity, alarmIntent, alarmMgr);
 
-        new SQLiteDBHelper(context).addAOrUpdateAlarm(alarmEntity);
+        SQLiteDBHelper.getInstance(context).addAOrUpdateAlarm(alarmEntity);
         HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
                 + context.getString(R.string.next_alarm_date, alarmEntity.getNextTime()));
 
@@ -83,13 +80,13 @@ public class AlarmUtils {
 
         at = Math.max(0, at);
 
-        HyperLog.i(TAG, "Upcoming alarm notification will start in " + at + " ms");
+        HyperLog.i(TAG, "Upcoming alarm notification will start in " + (at - SystemClock.elapsedRealtime()) + " ms");
 
         alarmMgr.set(AlarmManager.ELAPSED_REALTIME, at, alarmIntent);
     }
 
     static void setUpNextSleepTimeNotification(Context context) {
-        AlarmEntity nextMorningAlarm = new SQLiteDBHelper(context).getNextMorningAlarm();
+        AlarmEntity nextMorningAlarm = SQLiteDBHelper.getInstance(context).getNextMorningAlarm();
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, SleepTimeAlarmReceiver.class);
@@ -104,7 +101,8 @@ public class AlarmUtils {
             triggerAfter = Math.max(0, triggerAfter);
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     INTERVAL_FIFTEEN_MINUTES, operation);
-            HyperLog.i(TAG, "Sleep time will start in " + triggerAfter + " ms");
+            HyperLog.i(TAG, "Sleep time will start in " +
+                    TimeUnit.MILLISECONDS.toMinutes(triggerAfter - SystemClock.elapsedRealtime()) + " min");
         } else {
             alarmMgr.cancel(operation);
             HyperLog.i(TAG, "Sleep time alarm removed");
@@ -119,7 +117,7 @@ public class AlarmUtils {
     }
 
     static void turnOffAlarm(String id, Context context) {
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(id);
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 

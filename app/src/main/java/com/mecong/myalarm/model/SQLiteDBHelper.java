@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.android.exoplayer2.database.DatabaseProvider;
 import com.hypertrack.hyperlog.HyperLog;
 
 import java.util.Calendar;
@@ -15,19 +16,24 @@ import java.util.concurrent.TimeUnit;
 import static com.mecong.myalarm.alarm.AlarmUtils.TAG;
 import static java.lang.String.format;
 
-public class SQLiteDBHelper extends SQLiteOpenHelper {
+public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider {
     private static final int DATABASE_VERSION = 5;
     private static final String TABLE_ALARMS = "alarms";
-
     private static final String SELECT_ALL_ALARMS = "SELECT * FROM " + TABLE_ALARMS;
-
     private static final String SELECT_NEXT_ALARM = format(
             "SELECT * FROM %s WHERE active=1 ORDER BY next_time LIMIT 1", TABLE_ALARMS);
-
     private static final String DATABASE_NAME = "my_alarm_database";
+    private static volatile SQLiteDBHelper sInstance;
 
-    public SQLiteDBHelper(Context context) {
+    private SQLiteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized SQLiteDBHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new SQLiteDBHelper(context.getApplicationContext());
+        }
+        return sInstance;
     }
 
     public Cursor getAllAlarms() {
@@ -35,9 +41,19 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     }
 
     private AlarmEntity getAlarmEntity(String sql) {
-        try (Cursor cursor = this.getReadableDatabase().rawQuery(sql, null)) {
-            return cursor.moveToFirst() ? new AlarmEntity(cursor) : null;
+        Cursor cursor = this.getReadableDatabase().rawQuery(sql, null);
+        AlarmEntity entity = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                entity = new AlarmEntity(cursor);
+            }
+
+            if (!cursor.isClosed()) {
+                cursor.close();
+            }
         }
+
+        return entity;
     }
 
     public AlarmEntity getNextActiveAlarm() {
@@ -73,12 +89,12 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
             values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
 
             if (entity.getId() == 0) {
-                HyperLog.i(TAG, "Alarm added :: " + values.toString());
+                HyperLog.i(TAG, "Alarm added :: " + entity);
                 return database.insert(SQLiteDBHelper.TABLE_ALARMS, null, values);
             } else {
                 database.update(TABLE_ALARMS, values, "_id=?",
                         new String[]{entity.getId() + ""});
-                HyperLog.i(TAG, "Alarm updated :: " + values.toString());
+                HyperLog.i(TAG, "Alarm updated :: " + entity);
                 return entity.getId();
             }
         }

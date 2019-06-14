@@ -1,5 +1,7 @@
 package com.mecong.myalarm;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +34,7 @@ public class LogsActivity extends AppCompatActivity implements MyRecyclerViewAda
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new MyRecyclerViewAdapter(this, HyperLog.getDeviceLogsAsStringList(false));
         adapter.setClickListener(this);
+
         recyclerView.setAdapter(adapter);
 
         Button btnClearLogs = findViewById(R.id.btnClearLogs);
@@ -46,15 +49,18 @@ public class LogsActivity extends AppCompatActivity implements MyRecyclerViewAda
         });
 
         recyclerView.scrollToPosition(recyclerView.getChildCount());
-
     }
 
     @Override
     public void onItemClick(View view, int position) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Log row", adapter.getItem(position));
+        clipboard.setPrimaryClip(clip);
         Toast.makeText(this,
-                "You clicked " + adapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+                "Copied to buffer: " + adapter.getItem(position), Toast.LENGTH_SHORT).show();
     }
 }
+
 
 class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
@@ -119,5 +125,4 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.V
             if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
         }
     }
-
 }

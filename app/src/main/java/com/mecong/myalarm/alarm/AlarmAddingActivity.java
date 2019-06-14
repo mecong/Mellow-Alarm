@@ -121,7 +121,7 @@ public class AlarmAddingActivity extends AppCompatActivity {
                 .nextRequestCode(-1)
                 .build();
 
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(getApplicationContext());
         long id = sqLiteDBHelper.addAOrUpdateAlarm(alarmEntity);
         alarmEntity.setId(id);
 

@@ -76,8 +76,8 @@ public class AlarmReceiverActivity extends AppCompatActivity implements SensorEv
 
     private void userPowerManagerWakeup() {
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP, this.getLocalClassName());
-        wakeLock.acquire(TimeUnit.SECONDS.toMillis(5));
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getLocalClassName());
+        wakeLock.acquire(TimeUnit.SECONDS.toMillis(10));
     }
 
     @Override
@@ -101,16 +101,12 @@ public class AlarmReceiverActivity extends AppCompatActivity implements SensorEv
         }
         initializeShaker();
 
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
-        AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
+        AlarmEntity entity = SQLiteDBHelper.getInstance(context).getAlarmById(alarmId);
         HyperLog.i(TAG, "Running alarm: " + entity);
-
 
         turnScreenOnThroughKeyguard();
 
-
         alarmInfo.setText(entity.getMessage());
-
 
         final AudioAttributes audioAttributesAlarm = new AudioAttributes
                 .Builder()
@@ -181,7 +177,6 @@ public class AlarmReceiverActivity extends AppCompatActivity implements SensorEv
             }
         };
 
-
         handlerVolume = new Handler();
         runnableVolume = new Runnable() {
             @Override
@@ -205,7 +200,6 @@ public class AlarmReceiverActivity extends AppCompatActivity implements SensorEv
 
         handlerTicks.postDelayed(runnableRealAlarm, entity.getTicksTime() * 60 * 1000);
         handlerVolume.post(runnableVolume);
-
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -262,7 +256,6 @@ public class AlarmReceiverActivity extends AppCompatActivity implements SensorEv
                         Math.pow(y, 2) +
                         Math.pow(z, 2)) - SensorManager.GRAVITY_EARTH;
                 Log.d(TAG, "Acceleration is " + acceleration + "m/s^2");
-//                alarmInfo.setText("Acceleration is " + acceleration + "m/s^2");
 
                 if (acceleration > SHAKE_THRESHOLD) {
                     mLastShakeTime = curTime;

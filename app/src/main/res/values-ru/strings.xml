@@ -10,5 +10,8 @@
     <string name="alarm_time">%02d:%02d</string>
     <string name="all_alarms_are_off">Все будильники выключены</string>
     <string name="work_days">Рабочие дни</string>
+    <string name="noises">Шумы</string>
+    <string name="offline">Оффлайн</string>
+    <string name="online">Онлайн</string>
 
 </resources>

@@ -32,7 +32,7 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
 
         if ((actionCancelAlarm).equals(intent.getAction())) {

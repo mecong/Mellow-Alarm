@@ -11,16 +11,16 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
-public class Shoutcast {
+public class Noises {
 
     private String name;
     @SerializedName("stream")
     private String url;
 
-    static List<Shoutcast> retrieveShoutcasts(Context context) {
-        Reader reader = new InputStreamReader(context.getResources().openRawResource(R.raw.shoutcasts));
+    static List<Noises> retrieveNoises(Context context) {
+        Reader reader = new InputStreamReader(context.getResources().openRawResource(R.raw.noises));
 
-        return (new Gson()).fromJson(reader, new TypeToken<List<Shoutcast>>() {
+        return (new Gson()).fromJson(reader, new TypeToken<List<Noises>>() {
         }.getType());
     }
 
@@ -36,7 +36,4 @@ public class Shoutcast {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
 }

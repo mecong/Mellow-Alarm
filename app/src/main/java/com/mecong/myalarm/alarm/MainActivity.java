@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         alarmsAdapter =
                 new AlarmsListCursorAdapter(this, sqLiteDBHelper.getAllAlarms());
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateNextActiveAlarm() {
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(getApplicationContext());
 
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
         Context context = getApplicationContext();
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(getApplicationContext());
 
         // Check which request we're responding to
         if (requestCode == ALARM_ADDING_REQUEST_CODE) {
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void deleteAlarm(String id) {
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(getApplicationContext());
 
         AlarmUtils.turnOffAlarm(id, getApplicationContext());
         sqLiteDBHelper.deleteAlarm(id);
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setActive(String id, boolean active) {
-        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(getApplicationContext());
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(getApplicationContext());
 
         if (active) {
             AlarmUtils.setUpNextAlarm(id, getApplicationContext(), true);
@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
         sqLiteDBHelper.toggleAlarmActive(id, active);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
         updateNextActiveAlarm();
+        sqLiteDBHelper.close();
     }
 
 
