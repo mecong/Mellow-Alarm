@@ -6,13 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaMetadata;
+import android.media.session.MediaController;
+import android.media.session.MediaSession;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -25,71 +25,69 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.metadata.MetadataOutput;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor;
-import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.util.Util;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.R;
-import com.mecong.myalarm.model.SQLiteDBHelper;
+import com.mecong.myalarm.sleep_assistant.media_selection.SleepMediaType;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.File;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
-import static com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection.DEFAULT_MAX_DURATION_FOR_QUALITY_DECREASE_MS;
-import static com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection.DEFAULT_MIN_DURATION_FOR_QUALITY_INCREASE_MS;
-import static com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection.DEFAULT_MIN_DURATION_TO_RETAIN_AFTER_DISCARD_MS;
 import static com.mecong.myalarm.alarm.AlarmUtils.TAG;
 
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RadioService extends Service implements Player.EventListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String ACTION_PLAY = "com.mecong.myalarm.ACTION_PLAY";
     public static final String ACTION_PAUSE = "com.mecong.myalarm.ACTION_PAUSE";
     public static final String ACTION_STOP = "com.mecong.myalarm.ACTION_STOP";
+    public static final String IDLE = "PlaybackStatus_IDLE";
+    public static final String LOADING = "PlaybackStatus_LOADING";
+    public static final String PLAYING = "PlaybackStatus_PLAYING";
+    public static final String PAUSED = "PlaybackStatus_PAUSED";
+    public static final String STOPPED = "PlaybackStatus_STOPPED";
+    public static final String ERROR = "PlaybackStatus_ERROR";
 
-    private final IBinder iBinder = new LocalBinder();
-
-    private SimpleExoPlayer exoPlayer;
-    private MediaSessionCompat mediaSession;
-    private MediaControllerCompat.TransportControls transportControls;
-
-    private boolean onGoingCall = false;
-    private TelephonyManager telephonyManager;
-
-    private WifiManager.WifiLock wifiLock;
-
-    private AudioManager audioManager;
-
-    private String status;
-
-    private String streamUrl;
-    private BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
+    final IBinder iBinder = new LocalBinder();
+    SleepAssistantViewModel.PlayList playList;
+    MediaNotificationManager notificationManager;
+    SimpleExoPlayer exoPlayer;
+    MediaSession mediaSession;
+    MediaController.TransportControls transportControls;
+    boolean onGoingCall = false;
+    TelephonyManager telephonyManager;
+    WifiManager.WifiLock wifiLock;
+    AudioManager audioManager;
+    String status;
+    String streamUrl;
+    BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             pause();
         }
     };
-    private float audioVolume;
-    private DefaultBandwidthMeter bandwidthMeter;
-    private SimpleCache cache;
-    private DataSource.Factory cacheDataSourceFactory;
-    private PhoneStateListener phoneStateListener = new PhoneStateListener() {
+    float audioVolume;
+    DefaultBandwidthMeter bandwidthMeter;
+    DataSource.Factory dataSourceFactory;
+    PhoneStateListener phoneStateListener = new PhoneStateListener() {
 
         @Override
         public void onCallStateChanged(int state, String incomingNumber) {
-
             if (state == TelephonyManager.CALL_STATE_OFFHOOK
                     || state == TelephonyManager.CALL_STATE_RINGING) {
                 if (!isPlaying()) return;
@@ -102,7 +100,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
             }
         }
     };
-    private MediaSessionCompat.Callback mediasSessionCallback = new MediaSessionCompat.Callback() {
+    private MediaSession.Callback mediasSessionCallback = new MediaSession.Callback() {
         @Override
         public void onPause() {
             super.onPause();
@@ -137,6 +135,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
     public void onCreate() {
         super.onCreate();
 
+        notificationManager = new MediaNotificationManager(this);
         onGoingCall = false;
         audioVolume = 0.8f;
 
@@ -145,64 +144,48 @@ public class RadioService extends Service implements Player.EventListener, Audio
         wifiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "mcScPAmpLock");
 
-        mediaSession = new MediaSessionCompat(this, getClass().getSimpleName());
+        mediaSession = new MediaSession(this, getClass().getSimpleName());
 
         transportControls = mediaSession.getController().getTransportControls();
         mediaSession.setActive(true);
-        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS
+                | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
-        mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, "...")
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, getResources().getString(R.string.app_name))
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "On Air")
+        mediaSession.setMetadata(new MediaMetadata.Builder()
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, "...")
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, getResources().getString(R.string.app_name))
+                .putString(MediaMetadata.METADATA_KEY_TITLE, "On Air")
                 .build());
         mediaSession.setCallback(mediasSessionCallback);
 
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-        File cacheFolder = new File(getApplicationContext().getCacheDir(), "tender_media");
-        HyperLog.i(TAG, "cacheFolder -- " + cacheFolder);
-
-        LeastRecentlyUsedCacheEvictor cacheEvictor = new LeastRecentlyUsedCacheEvictor(10 * 1024 * 1024);
-        cache = new SimpleCache(cacheFolder, cacheEvictor, SQLiteDBHelper.getInstance(getApplicationContext()));
-//
-        DefaultDataSourceFactory defaultDataSourceFactory =
-                new DefaultDataSourceFactory(this, getUserAgent(), bandwidthMeter);
-
-        cacheDataSourceFactory = new CacheDataSourceFactory(cache,
-                defaultDataSourceFactory, CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
-
-
-//        bandwidthMeter = new DefaultBandwidthMeter();
-//        AdaptiveTrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
-
         bandwidthMeter = new DefaultBandwidthMeter.Builder(getApplicationContext()).build();
 
-        AdaptiveTrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(
-                DEFAULT_MIN_DURATION_FOR_QUALITY_INCREASE_MS * 20,
-                DEFAULT_MAX_DURATION_FOR_QUALITY_DECREASE_MS * 20,
-                DEFAULT_MIN_DURATION_TO_RETAIN_AFTER_DISCARD_MS * 2,
-                0.5f
-        );
+        dataSourceFactory = new DefaultDataSourceFactory(this, getUserAgent(), bandwidthMeter);
 
 
-        DefaultTrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), trackSelector);
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
         exoPlayer.addListener(this);
-
-        HyperLog.v(TAG, "on create-------: " + exoPlayer);
-
+        exoPlayer.addMetadataOutput(new MetadataOutput() {
+            @Override
+            public void onMetadata(Metadata metadata) {
+                HyperLog.i(TAG, "----metadata---->");
+                for (int i = 0; i < metadata.length(); i++) {
+                    HyperLog.i(TAG, metadata.get(i).toString());
+                    HyperLog.i(TAG, "<----metadata----");
+                }
+            }
+        });
 
         registerReceiver(becomingNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
-        status = PlaybackStatus.IDLE;
+        status = IDLE;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        HyperLog.v(TAG, "!!!!!!!!! onStartCommand !!!!!!!!" + intent);
 
         String action = intent.getAction();
 
@@ -228,22 +211,14 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
     @Override
     public boolean onUnbind(Intent intent) {
-        HyperLog.v(TAG, "on unbind: " + intent);
-        if (status.equals(PlaybackStatus.IDLE))
+        if (status.equals(IDLE))
             stopSelf();
 
         return super.onUnbind(intent);
     }
 
     @Override
-    public void onRebind(final Intent intent) {
-        HyperLog.i(TAG, "Rebind: " + intent);
-    }
-
-    @Override
     public void onDestroy() {
-        HyperLog.v(TAG, "on destroy ");
-
         stop();
         exoPlayer.release();
         exoPlayer.removeListener(this);
@@ -256,7 +231,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
         unregisterReceiver(becomingNoisyReceiver);
 
-        cache.release();
+        notificationManager.cancelNotify();
         super.onDestroy();
     }
 
@@ -287,21 +262,24 @@ public class RadioService extends Service implements Player.EventListener, Audio
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
+        if (!status.equals(IDLE))
+            notificationManager.startNotify(status);
+
         switch (playbackState) {
             case Player.STATE_BUFFERING:
-                status = PlaybackStatus.LOADING;
+                status = LOADING;
                 break;
             case Player.STATE_ENDED:
-                status = PlaybackStatus.STOPPED;
+                status = STOPPED;
                 break;
             case Player.STATE_IDLE:
-                status = PlaybackStatus.IDLE;
+                status = IDLE;
                 break;
             case Player.STATE_READY:
-                status = playWhenReady ? PlaybackStatus.PLAYING : PlaybackStatus.PAUSED;
+                status = playWhenReady ? PLAYING : PAUSED;
                 break;
             default:
-                status = PlaybackStatus.IDLE;
+                status = IDLE;
                 break;
         }
 
@@ -310,7 +288,29 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
-        EventBus.getDefault().post(PlaybackStatus.ERROR);
+        EventBus.getDefault().post(ERROR);
+    }
+
+    public void play() {
+        exoPlayer.setPlayWhenReady(true);
+    }
+
+    public void resume() {
+        if (hasPlayList()) play();
+    }
+
+    public void pause() {
+        exoPlayer.setPlayWhenReady(false);
+        audioManager.abandonAudioFocus(this);
+        notificationManager.cancelNotify();
+        wifiLockRelease();
+    }
+
+    public void stop() {
+        exoPlayer.stop();
+        audioManager.abandonAudioFocus(this);
+        notificationManager.cancelNotify();
+        wifiLockRelease();
     }
 
     public void play(String streamUrl) {
@@ -319,34 +319,35 @@ public class RadioService extends Service implements Player.EventListener, Audio
             wifiLock.acquire();
         }
 
-        MediaSource mediaSource = new ProgressiveMediaSource.Factory(cacheDataSourceFactory)
-                .setContinueLoadingCheckIntervalBytes(1024 * 1024 * 10)
+        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(Uri.parse(streamUrl));
 
-//        ExtractorMediaSource mediaSource = new ExtractorMediaSource.Factory(cacheDataSourceFactory)
-//                .setExtractorsFactory(new DefaultExtractorsFactory())
-//                .createMediaSource(Uri.parse(streamUrl));
-
         exoPlayer.prepare(mediaSource);
+        exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
         exoPlayer.setPlayWhenReady(true);
     }
 
-    public void resume() {
-        if (streamUrl != null) play(streamUrl);
+    public void playMediaList(SleepAssistantViewModel.PlayList playList) {
+        this.playList = playList;
+
+        ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
+        for (String uri : this.playList.getUrls()) {
+            concatenatingMediaSource.addMediaSource(
+                    new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri)));
+        }
+        exoPlayer.prepare(concatenatingMediaSource);
+        if (this.playList.getMediaType() == SleepMediaType.LOCAL) {
+            exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+        } else if (this.playList.getMediaType() == SleepMediaType.ONLINE) {
+            exoPlayer.setRepeatMode(Player.REPEAT_MODE_OFF);
+        } else if (this.playList.getMediaType() == SleepMediaType.NOISE) {
+            exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
+        }
+        exoPlayer.seekTo(playList.getIndex(), 0);
+        exoPlayer.setPlayWhenReady(true);
     }
 
-    public void pause() {
-        exoPlayer.setPlayWhenReady(false);
-        audioManager.abandonAudioFocus(this);
-        wifiLockRelease();
-    }
-
-    public void stop() {
-        exoPlayer.stop();
-        audioManager.abandonAudioFocus(this);
-        wifiLockRelease();
-    }
-
+    @Deprecated
     public void playOrPause(String url) {
 
         if (streamUrl != null && streamUrl.equals(url)) {
@@ -379,7 +380,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
     }
 
     public boolean isPlaying() {
-        return this.status.equals(PlaybackStatus.PLAYING);
+        return this.status.equals(PLAYING);
     }
 
     @Override
@@ -388,8 +389,24 @@ public class RadioService extends Service implements Player.EventListener, Audio
     }
 
     @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray
+            trackSelections) {
+        HyperLog.i(TAG, ">>>>>>onTracksChanged>>>>>>");
+        for (int i = 0; i < trackGroups.length; i++) {
+            for (int j = 0; j < trackGroups.get(i).length; j++) {
 
+                if (trackGroups.get(i).getFormat(j).metadata != null) {
+                    for (int k = 0; k < trackGroups.get(i).getFormat(j).metadata.length(); k++) {
+                        HyperLog.i(TAG, trackGroups.get(i).getFormat(j).metadata.get(k).toString());
+                    }
+                }
+            }
+        }
+
+    }
+
+    public boolean hasPlayList() {
+        return this.playList != null && !this.playList.getUrls().isEmpty();
     }
 
     @Override
@@ -409,7 +426,10 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
     @Override
     public void onPositionDiscontinuity(int reason) {
-
+        HyperLog.i(TAG, "Playing new media > reason: " + reason);
+        if (hasPlayList()) {
+            HyperLog.i(TAG, this.playList.getUrls().get(exoPlayer.getCurrentWindowIndex()));
+        }
     }
 
     @Override

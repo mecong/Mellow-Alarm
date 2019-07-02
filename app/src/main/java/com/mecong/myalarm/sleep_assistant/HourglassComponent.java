@@ -22,7 +22,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SleepTimerView extends View {
+public class HourglassComponent extends View {
     long max, currentValue;
     boolean changingMode = false;
     Paint filledPaint = new Paint();
@@ -32,15 +32,15 @@ public class SleepTimerView extends View {
     Rect frame;
     float frameHeightDivMax, maxDivFrameHeight;
 
-    public SleepTimerView(Context context, AttributeSet attrs) {
+    public HourglassComponent(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-                R.styleable.SleepTimerView, 0, 0);
+                R.styleable.HourglassComponent, 0, 0);
 
         try {
-            max = a.getInteger(R.styleable.SleepTimerView_max, 100);
-            currentValue = a.getInteger(R.styleable.SleepTimerView_currentValue, 30);
+            max = a.getInteger(R.styleable.HourglassComponent_max, 100);
+            currentValue = a.getInteger(R.styleable.HourglassComponent_currentValue, 30);
         } finally {
             a.recycle();
         }
@@ -109,9 +109,8 @@ public class SleepTimerView extends View {
 
         if (changingMode) {
             canvas.drawLine(frame.left, filled, frame.right, filled, changingPaint);
-            canvas.drawCircle(frame.width() * 0.25f, filled, 17, changingPaint);
-            canvas.drawCircle(frame.width() * 0.5f, filled, 17, changingPaint);
-            canvas.drawCircle(frame.width() * 0.75f, filled, 17, changingPaint);
+            canvas.drawCircle(0, filled, 17, changingPaint);
+            canvas.drawCircle(frame.width(), filled, 17, changingPaint);
         }
     }
 

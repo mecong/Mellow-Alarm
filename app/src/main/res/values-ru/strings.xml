@@ -13,5 +13,7 @@
     <string name="noises">Шумы</string>
     <string name="offline">Оффлайн</string>
     <string name="online">Онлайн</string>
-
+    <string name="url_address">URL адрес радиостанции</string>
+    <string name="internet_streams">Интернет потоки</string>
+    <string name="local_media">Локальные медиа</string>
 </resources>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".sleep_assistant.SleepAssistantActivity">
 
-    <com.mecong.myalarm.sleep_assistant.SleepTimerView
+    <com.mecong.myalarm.sleep_assistant.HourglassComponent
         android:id="@+id/slliderSleepTime"
         android:layout_width="0dp"
 
@@ -23,7 +23,7 @@
         app:layout_constraintVertical_bias="0.0"
         app:max="60" />
 
-    <com.mecong.myalarm.sleep_assistant.SleepTimerView
+    <com.mecong.myalarm.sleep_assistant.HourglassComponent
         android:id="@+id/sliderVolume"
         android:layout_width="0dp"
 

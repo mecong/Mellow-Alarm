@@ -68,4 +68,7 @@
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="noises">Noises</string>
+    <string name="url_address">Radio station URL address</string>
+    <string name="local_media">Local media</string>
+    <string name="internet_streams">Internet streams</string>
 </resources>

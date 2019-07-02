@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -14,23 +15,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.mecong.myalarm.R;
 import com.mecong.myalarm.alarm.AlarmUtils;
+import com.mecong.myalarm.sleep_assistant.media_selection.SleepMediaType;
+import com.mecong.myalarm.sleep_assistant.media_selection.SleepNoise;
+import com.mecong.myalarm.sleep_assistant.media_selection.SoundListsPagerAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
-public class SleepAssistantActivity extends AppCompatActivity implements NoisesFragment.OnFragmentInteractionListener {
+
+@FieldDefaults(level = AccessLevel.PUBLIC)
+public class SleepAssistantActivity extends AppCompatActivity {
 
     public static final long STEP_MILLIS = TimeUnit.SECONDS.toMillis(30);
     private static RadioService service;
@@ -47,19 +56,29 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
     @BindView(R.id.tabs)
     TabLayout tabs;
 
+    @BindView(R.id.textViewMinutes)
+    TextView textViewMinutes;
+
+    @BindView(R.id.textViewVolumePercent)
+    TextView textViewVolumePercent;
+
+    @BindView(R.id.slliderSleepTime)
+    HourglassComponent sliderSleepTime;
+
+    @BindView(R.id.sliderVolume)
+    HourglassComponent sliderVolume;
+
+
     int loadingCount = 0;
-    private List<Noises> noises;
-    private long timeMinutes;
-    private long timeMs;
-    private String stream;
-    private float volume;
-    private Handler handler;
-    private Runnable runnable;
-    private float volumeStep;
-    private PowerManager.WakeLock wakeLock;
-    private boolean serviceBound;
-    private SoundListsPagerAdapter soundListsPagerAdapter;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    long timeMinutes;
+    long timeMs;
+    float volume;
+    Handler handler;
+    Runnable runnable;
+    float volumeStep;
+    PowerManager.WakeLock wakeLock;
+    boolean serviceBound;
+    ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
             service = ((RadioService.LocalBinder) binder).getService();
@@ -72,44 +91,54 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
         }
     };
 
+    SleepAssistantViewModel model;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sleep_assistant);
-        ButterKnife.bind(this);
+        model = ViewModelProviders.of(this).get(SleepAssistantViewModel.class);
+        if (model.getPlaylist().getValue() == null) {
+            SleepAssistantViewModel.PlayList defaultPlayList =
+                    new SleepAssistantViewModel.PlayList(SleepNoise.Companion.retrieveNoises().get(0).getUrl(), SleepMediaType.NOISE);
+            model.setPlaylist(defaultPlayList);
+        }
 
-        tabs.setupWithViewPager(viewPager);
-        soundListsPagerAdapter = new SoundListsPagerAdapter(getSupportFragmentManager(), getApplicationContext());
-        viewPager.setAdapter(soundListsPagerAdapter);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        model.getPlaylist().observe(this, new Observer<SleepAssistantViewModel.PlayList>() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                HyperLog.i(AlarmUtils.TAG, "page1");
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-//                HyperLog.i(AlarmUtils.TAG, "page2");
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-//                HyperLog.i(AlarmUtils.TAG, "page3");
+            public void onChanged(SleepAssistantViewModel.PlayList playList) {
+                service.playMediaList(playList);
             }
         });
 
-
-        timeMinutes = 30;
-        timeMs = TimeUnit.MINUTES.toMillis(timeMinutes);
-        volume = 50;
-
+        setContentView(R.layout.activity_sleep_assistant);
+        ButterKnife.bind(this);
         final Context context = getApplicationContext();
 
-        final TextView textViewMinutes = findViewById(R.id.textViewMinutes);
-        final SleepTimerView sliderSleepTime = findViewById(R.id.slliderSleepTime);
-        sliderSleepTime.addListener(new SleepTimerView.SleepTimerViewValueListener() {
+        SoundListsPagerAdapter soundListsPagerAdapter =
+                new SoundListsPagerAdapter(getSupportFragmentManager(), context);
+        viewPager.setAdapter(soundListsPagerAdapter);
+
+        viewPager.setCurrentItem(2);
+        tabs.setupWithViewPager(viewPager);
+
+        timeMinutes = 30;
+
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        float volumeCoefficient = (float) systemVolume / streamMaxVolume;
+
+        if (volumeCoefficient < 0.3f) {
+            volumeCoefficient = 0.3f;
+            audioManager.setStreamVolume(
+                    AudioManager.STREAM_MUSIC, (int) (streamMaxVolume * volumeCoefficient), 0);
+            Toast.makeText(context, "System volume set to 30%", Toast.LENGTH_SHORT).show();
+        }
+        volume = 120 - 100 * volumeCoefficient;
+
+
+        sliderSleepTime.addListener(new HourglassComponent.SleepTimerViewValueListener() {
             @Override
             public void onValueChanged(long newValue) {
                 textViewMinutes.setText(context.getString(R.string.sleep_minutes, newValue));
@@ -119,10 +148,7 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
             }
         });
 
-
-        final TextView textViewVolumePercent = findViewById(R.id.textViewVolumePercent);
-        final SleepTimerView sliderVolume = findViewById(R.id.sliderVolume);
-        sliderVolume.addListener(new SleepTimerView.SleepTimerViewValueListener() {
+        sliderVolume.addListener(new HourglassComponent.SleepTimerViewValueListener() {
             @Override
             public void onValueChanged(long newValue) {
                 textViewVolumePercent.setText(context.getString(R.string.volume_percent, newValue));
@@ -134,19 +160,12 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
 
         sliderSleepTime.setCurrentValue(timeMinutes);
         sliderVolume.setCurrentValue((long) volume);
-        volumeStep = volume * STEP_MILLIS / TimeUnit.MINUTES.toMillis(timeMinutes);
+        timeMs = TimeUnit.MINUTES.toMillis(timeMinutes);
+        volumeStep = volume * STEP_MILLIS / timeMs;
 
         textViewMinutes.setText(context.getString(R.string.sleep_minutes, timeMinutes));
         textViewVolumePercent.setText(context.getString(R.string.volume_percent, (int) volume));
 
-        noises = Noises.retrieveNoises(context);
-        stream = noises.get(3).getUrl();
-
-
-//        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-//        int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, streamMaxVolume, 0);
-//        origStreamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
         handler = new Handler();
 
@@ -155,46 +174,45 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
             public void run() {
                 timeMs -= STEP_MILLIS;
                 if (timeMs <= 0) {
-                    SleepAssistantActivity.this.finish();
-                    System.exit(0);
+                    handler.removeCallbacks(runnable);
+                    releaseWakeLock();
+
+                    if (service.isPlaying()) {
+                        service.stop();
+                    }
+                } else {
+                    timeMinutes = TimeUnit.MILLISECONDS.toMinutes(timeMs);
+                    sliderSleepTime.setCurrentValue(timeMinutes);
+
+                    volume -= volumeStep;
+                    Log.v(AlarmUtils.TAG, "timems=" + timeMs + " volume=" + volume / 100f);
+                    service.setAudioVolume(volume / 100f);
+                    sliderVolume.setCurrentValue((long) volume);
+
+                    textViewMinutes.setText(context.getString(R.string.sleep_minutes, timeMinutes));
+                    textViewVolumePercent.setText(context.getString(R.string.volume_percent, (int) volume));
+
+                    handler.postDelayed(this, STEP_MILLIS);
                 }
-
-                sliderSleepTime.setCurrentValue(TimeUnit.MILLISECONDS.toMinutes(timeMs));
-
-                volume -= volumeStep;
-
-                Log.v(AlarmUtils.TAG, "timems=" + timeMs + " volume=" + volume);
-
-                service.setAudioVolume(volume / 100f);
-                sliderVolume.setCurrentValue((long) volume);
-
-                textViewMinutes.setText(context.getString(R.string.sleep_minutes, TimeUnit.MILLISECONDS.toMinutes(timeMs)));
-                textViewVolumePercent.setText(context.getString(R.string.volume_percent, (int) volume));
-
-                handler.postDelayed(this, STEP_MILLIS);
             }
         };
     }
 
     @OnClick(R.id.play)
-    public void onClicked() {
-        handler.removeCallbacks(runnable);
-        if (isPlaying()) {
-            releaseWakeLock();
+    public void onPlayPauseButtonsClicked() {
+        if (service.isPlaying()) {
+            service.pause();
         } else {
-            handler.postDelayed(runnable, STEP_MILLIS);
-            acquireWakeLock();
+            service.resume();
         }
-
-        service.playOrPause(stream);
     }
 
     private void acquireWakeLock() {
-        if (wakeLock != null && !wakeLock.isHeld()) {
+        if (wakeLock == null || !wakeLock.isHeld()) {
             PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
             wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "MyApp::MyWakelockTag");
-            wakeLock.acquire(timeMs + TimeUnit.MINUTES.toMillis(2));
+                    "TenderAlarm::SleepAssistantWakelockTag");
+            wakeLock.acquire(timeMs);
         }
     }
 
@@ -209,22 +227,30 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
 
         playButton.setEnabled(true);
         switch (status) {
-            case PlaybackStatus.LOADING:
-                // loading
+            case RadioService.LOADING:
                 playButton.setText("Loading");
                 loadingCount++;
                 textViewTime.setText(String.valueOf(loadingCount));
                 playButton.setEnabled(false);
                 break;
-            case PlaybackStatus.ERROR:
-                Toast.makeText(this, "Can not stream", Toast.LENGTH_LONG).show();
+            case RadioService.ERROR:
+                Toast.makeText(this, "Can not stream", Toast.LENGTH_SHORT).show();
                 playButton.setText("Resume");
+                model.playing.setValue(false);
+                releaseWakeLock();
+                handler.removeCallbacks(runnable);
                 break;
-            case PlaybackStatus.PLAYING:
+            case RadioService.PLAYING:
                 playButton.setText("Pause");
+                model.playing.setValue(true);
+                handler.postDelayed(runnable, STEP_MILLIS);
+                acquireWakeLock();
                 break;
             default:
                 playButton.setText("Play");
+                model.playing.setValue(false);
+                releaseWakeLock();
+                handler.removeCallbacks(runnable);
                 break;
         }
 //
@@ -256,16 +282,16 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(runnable);
+        releaseWakeLock();
 
-        if (isPlaying()) {
-            service.playOrPause(stream);
+        if (service.isPlaying()) {
+            service.stop();
         }
 
         if (serviceBound) {
-            unbind();
+            getApplication().unbindService(serviceConnection);
         }
 
-        releaseWakeLock();
         super.onDestroy();
     }
 
@@ -282,18 +308,8 @@ public class SleepAssistantActivity extends AppCompatActivity implements NoisesF
             EventBus.getDefault().post(service.getStatus());
     }
 
-    void unbind() {
-        getApplication().unbindService(serviceConnection);
-    }
-
-    boolean isPlaying() {
-        return service.isPlaying();
-    }
-
-
     @Override
-    public void onFragmentInteraction(String uri) {
-        stream = uri;
-        onClicked();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }
