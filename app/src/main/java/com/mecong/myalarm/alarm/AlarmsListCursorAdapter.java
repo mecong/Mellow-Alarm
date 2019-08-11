@@ -18,10 +18,10 @@ import com.mecong.myalarm.model.AlarmEntity;
 import java.util.Map;
 
 public class AlarmsListCursorAdapter extends CursorAdapter {
-    private MainActivity mainActivity;
+    private MainAlarmFragment mainActivity;
 
-    AlarmsListCursorAdapter(MainActivity mainActivity, Cursor c) {
-        super(mainActivity.getApplicationContext(), c, 0);
+    AlarmsListCursorAdapter(MainAlarmFragment mainActivity, Cursor c) {
+        super(mainActivity.getActivity().getApplicationContext(), c, 0);
         this.mainActivity = mainActivity;
     }
 

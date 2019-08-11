@@ -3,5 +3,6 @@
     <declare-styleable name="HourglassComponent">
         <attr name="currentValue" format="integer" />
         <attr name="max" format="integer" />
+        <attr name="mcolor" format="color" />
     </declare-styleable>
 </resources>

@@ -6,9 +6,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.SystemClock;
-import android.widget.Toast;
 
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.R;
@@ -109,16 +109,13 @@ public class AlarmUtils {
         }
     }
 
-    static void resetupAllAlarms(Context context) {
-        // TODO: implement
-        Toast.makeText(context, "Alarms Was not reset", Toast.LENGTH_LONG).show();
-
-        setUpNextSleepTimeNotification(context);
-    }
-
     static void turnOffAlarm(String id, Context context) {
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(id);
+        turnOffAlarm(entity, context);
+    }
+
+    private static void turnOffAlarm(AlarmEntity entity, Context context) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intentToFire = new Intent(context, AlarmReceiverActivity.class);
@@ -131,9 +128,21 @@ public class AlarmUtils {
                 entity.getNextRequestCode() + 1, intentToFire, FLAG_UPDATE_CURRENT);
         alarmMgr.cancel(alarmIntent);
 
-        HyperLog.i(TAG, "Next alarm with[id=" + id + "] canceled");
+        HyperLog.i(TAG, "Next alarm with[id=" + entity.getId() + "] canceled");
     }
 
+    static void resetupAllAlarms(Context context) {
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
+        try (Cursor allAlarms = sqLiteDBHelper.getAllAlarms()) {
+            while (allAlarms.moveToNext()) {
+                AlarmEntity alarmEntity = new AlarmEntity(allAlarms);
+                turnOffAlarm(alarmEntity, context);
+                setUpNextAlarm(alarmEntity, context, false);
+            }
+        }
+
+        setUpNextSleepTimeNotification(context);
+    }
 
     //TODO: set when there are alarms and turn of if no any
     static void setBootReceiverActive(Context context) {

@@ -3,6 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#121314"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -16,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
+            android:textColor="#E9DEDE"
             android:textSize="15sp" />
 
         <TextView
@@ -23,6 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
+            android:textColor="#E9DEDE"
             android:textSize="15sp" />
 
     </LinearLayout>
@@ -36,7 +39,8 @@
         android:layout_weight="0"
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/next_s_cancel"
-        android:textAlignment="textStart" />
+        android:textAlignment="center"
+        android:textColor="#E9DEDE" />
 
     <Switch
         android:id="@+id/switchToggleAlarm"

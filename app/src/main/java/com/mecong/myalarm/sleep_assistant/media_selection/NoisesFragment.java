@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,6 +27,10 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
     NoisesItemViewAdapter adapter;
     SleepAssistantViewModel model;
 
+    private NoisesFragment(SleepAssistantViewModel model) {
+        this.model = model;
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -35,8 +38,8 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
      * @param selectedPosition - selected item in the list
      * @return A new instance of fragment NoisesFragment.
      */
-    static NoisesFragment newInstance(int selectedPosition) {
-        NoisesFragment fragment = new NoisesFragment();
+    static NoisesFragment newInstance(int selectedPosition, SleepAssistantViewModel model) {
+        NoisesFragment fragment = new NoisesFragment(model);
         Bundle args = new Bundle();
         args.putInt(SELECTED_POSITION, selectedPosition);
         fragment.setArguments(args);
@@ -46,7 +49,6 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = ViewModelProviders.of(getActivity()).get(SleepAssistantViewModel.class);
 
         if (getArguments() != null) {
             selectedPosition = getArguments().getInt(SELECTED_POSITION);
@@ -75,7 +77,7 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
     @Override
     public void onItemClick(View view, int position) {
         SleepAssistantViewModel.PlayList newPlayList = new SleepAssistantViewModel.PlayList(
-                adapter.getItem(position).getUrl(), SleepMediaType.NOISE);
+                adapter.getItem(position).getUrl(), adapter.getItem(position).getName(), SleepMediaType.NOISE);
         model.setPlaylist(newPlayList);
     }
 }

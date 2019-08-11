@@ -71,4 +71,8 @@
     <string name="url_address">Radio station URL address</string>
     <string name="local_media">Local media</string>
     <string name="internet_streams">Internet streams</string>
+    <string name="can_not_stream">ERROR: Can not play media!</string>
+    <string name="image_button" translatable="false">Image button</string>
+    <string name="alarms">Alarms</string>
+    <string name="open_sleep_assistant">Open Sleep Assistant</string>
 </resources>

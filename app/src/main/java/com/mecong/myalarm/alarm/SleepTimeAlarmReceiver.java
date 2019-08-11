@@ -15,7 +15,6 @@ import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.myalarm.R;
 import com.mecong.myalarm.model.AlarmEntity;
 import com.mecong.myalarm.model.SQLiteDBHelper;
-import com.mecong.myalarm.sleep_assistant.SleepAssistantActivity;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -61,14 +60,14 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Calendar calendar, Context context) {
-        Intent intent = new Intent(context, SleepAssistantActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         String message = context.getString(R.string.time_to_sleep_notification_message, calendar);
         NotificationCompat.Builder builder = new NotificationCompat
                 .Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_info_black_24dp)
+                .setSmallIcon(R.drawable.launcher)
                 .setContentTitle(context.getString(R.string.time_to_sleep_notification_title))
                 .setContentText(message)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))

@@ -11,11 +11,12 @@ import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SleepAssistantViewModel extends ViewModel {
@@ -30,18 +31,30 @@ public class SleepAssistantViewModel extends ViewModel {
         this.playlist.setValue(playlist);
     }
 
+    //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]
+
     @Getter
-    @FieldDefaults(level = AccessLevel.PRIVATE)
     @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class PlayList {
-        List<String> urls;
         int index;
+        List<Media> media;
         SleepMediaType mediaType;
 
-        public PlayList(String url, SleepMediaType mediaType) {
-            this.urls = Collections.singletonList(url);
-            index = 0;
+        public PlayList(String url, String name, SleepMediaType mediaType) {
+            this.media = Collections.singletonList(new Media(url, name));
             this.mediaType = mediaType;
+            index = 0;
         }
+    }
+
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Media {
+        String url;
+        String title;
     }
 }

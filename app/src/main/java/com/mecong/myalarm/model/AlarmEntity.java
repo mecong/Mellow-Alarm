@@ -60,7 +60,6 @@ public class AlarmEntity {
     Integer volume;
     @ToString.Exclude
     Integer snoozeInterval;
-    @ToString.Exclude
     Integer snoozeTimes;
     Integer canceledNextAlarms;
 
@@ -77,7 +76,6 @@ public class AlarmEntity {
         this.message = cursor.getString(cursor.getColumnIndex("message"));
         this.active = cursor.getInt(cursor.getColumnIndex("active")) == 1;
         this.beforeAlarmNotification = cursor.getInt(cursor.getColumnIndex("before_alarm_notification")) == 1;
-        this.lightTime = cursor.getInt(cursor.getColumnIndex("light_time"));
         this.ticksTime = cursor.getInt(cursor.getColumnIndex("ticks_time"));
         this.melody = cursor.getString(cursor.getColumnIndex("melody"));
         this.vibrationType = cursor.getString(cursor.getColumnIndex("vibration_type"));

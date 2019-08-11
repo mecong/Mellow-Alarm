@@ -40,7 +40,7 @@ class MediaNotificationManager {
         this.resources = service.getResources();
 
         strAppName = resources.getString(R.string.app_name);
-        strLiveBroadcast = "On air";
+        strLiveBroadcast = "Time to sleep";
 
         notificationManager = NotificationManagerCompat.from(service);
     }

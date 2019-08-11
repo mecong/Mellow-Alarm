@@ -82,131 +82,134 @@ public class AlarmReceiverActivity extends AppCompatActivity implements SensorEv
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_alarm_receiver);
-
-
-        HyperLog.initialize(this);
-        HyperLog.setLogLevel(Log.VERBOSE);
-        ButterKnife.bind(this);
-
-        String alarmId = getIntent().getStringExtra(ALARM_ID_PARAM);
-        HyperLog.i(TAG, "Running alarm with extras: " + getIntent().getExtras());
-        HyperLog.i(TAG, "Running alarm with id: " + alarmId);
-        final Context context = getApplicationContext();
-
-        if (alarmId == null) {
-            HyperLog.e(TAG, "Alarm id is null");
-            System.exit(0);
-        }
-        initializeShaker();
-
-        AlarmEntity entity = SQLiteDBHelper.getInstance(context).getAlarmById(alarmId);
-        HyperLog.i(TAG, "Running alarm: " + entity);
-
-        turnScreenOnThroughKeyguard();
-
-        alarmInfo.setText(entity.getMessage());
-
-        final AudioAttributes audioAttributesAlarm = new AudioAttributes
-                .Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .build();
-
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, streamMaxVolume, 0);
-
-        // Create the Handler object (on the main thread by default)
-        final Handler handlerTicks = new Handler();
-        final float[] volume = {0.4f};
-
-        final MediaPlayer ticksMediaPlayer = new MediaPlayer();
         try {
-            ticksMediaPlayer.setAudioAttributes(audioAttributesAlarm);
-            ticksMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
-                    + context.getPackageName() + "/" + R.raw.metal_knock));
-            ticksMediaPlayer.prepare();
-            ticksMediaPlayer.setVolume(volume[0], volume[0]);
-        } catch (IOException e) {
-            //TODO: make correct reaction
-            e.printStackTrace();
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_alarm_receiver);
+
+            HyperLog.initialize(this);
+            HyperLog.setLogLevel(Log.VERBOSE);
+            ButterKnife.bind(this);
+
+            String alarmId = getIntent().getStringExtra(ALARM_ID_PARAM);
+            HyperLog.i(TAG, "Running alarm with extras: " + getIntent().getExtras());
+            HyperLog.i(TAG, "Running alarm with id: " + alarmId);
+            final Context context = getApplicationContext();
+
+            if (alarmId == null) {
+                HyperLog.e(TAG, "Alarm id is null");
+                System.exit(0);
+            }
+            initializeShaker();
+
+            AlarmEntity entity = SQLiteDBHelper.getInstance(context).getAlarmById(alarmId);
+            HyperLog.i(TAG, "Running alarm: " + entity);
+
+            turnScreenOnThroughKeyguard();
+
+            alarmInfo.setText(entity.getMessage());
+
+            final AudioAttributes audioAttributesAlarm = new AudioAttributes
+                    .Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .build();
+
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, streamMaxVolume, 0);
+
+            // Create the Handler object (on the main thread by default)
+            final Handler handlerTicks = new Handler();
+            final float[] volume = {0.4f};
+
+            final MediaPlayer ticksMediaPlayer = new MediaPlayer();
+            try {
+                ticksMediaPlayer.setAudioAttributes(audioAttributesAlarm);
+                ticksMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
+                        + context.getPackageName() + "/" + R.raw.metal_knock));
+                ticksMediaPlayer.prepare();
+                ticksMediaPlayer.setVolume(volume[0], volume[0]);
+            } catch (IOException e) {
+                //TODO: make correct reaction
+                e.printStackTrace();
+            }
+
+            alarmMediaPlayer = new MediaPlayer();
+
+
+            final Runnable runnableCode = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ticksMediaPlayer.start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    // Repeat this the same runnable code block again another 20 seconds
+                    // 'this' is referencing the Runnable object
+                    handlerTicks.postDelayed(this, 20000);
+                }
+            };
+
+
+            Runnable runnableRealAlarm = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Removes pending code execution
+                        handlerTicks.removeCallbacks(runnableCode);
+                        ticksMediaPlayer.stop();
+                        ticksMediaPlayer.reset();
+                        ticksMediaPlayer.release();
+
+                        volume[0] = 0.01f;
+
+                        alarmMediaPlayer.setAudioAttributes(audioAttributesAlarm);
+                        alarmMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
+                                + context.getPackageName() + "/" + R.raw.long_music));
+                        alarmMediaPlayer.prepare();
+                        alarmMediaPlayer.setLooping(true);
+                        alarmMediaPlayer.setVolume(volume[0], volume[0]);
+                        alarmMediaPlayer.start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            handlerVolume = new Handler();
+            runnableVolume = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        volume[0] += 0.001f;
+                        Log.v(TAG, "New alarm volume: " + volume[0]);
+                        alarmMediaPlayer.setVolume(volume[0], volume[0]);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    if (volume[0] < 1)
+                        handlerVolume.postDelayed(this, 2000);
+                }
+            };
+
+            if (entity.getTicksTime() > 0) {
+                handlerTicks.post(runnableCode);
+            }
+
+            handlerTicks.postDelayed(runnableRealAlarm, entity.getTicksTime() * 60 * 1000);
+            handlerVolume.post(runnableVolume);
+
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    turnOffAlarm();
+                }
+            });
+        } catch (Throwable ex) {
+            HyperLog.e(TAG, "Exception in Alarm receiver: " + ex);
         }
-
-        alarmMediaPlayer = new MediaPlayer();
-
-
-        final Runnable runnableCode = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ticksMediaPlayer.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                // Repeat this the same runnable code block again another 20 seconds
-                // 'this' is referencing the Runnable object
-                handlerTicks.postDelayed(this, 20000);
-            }
-        };
-
-
-        Runnable runnableRealAlarm = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Removes pending code execution
-                    handlerTicks.removeCallbacks(runnableCode);
-                    ticksMediaPlayer.stop();
-                    ticksMediaPlayer.reset();
-                    ticksMediaPlayer.release();
-
-                    volume[0] = 0.01f;
-
-                    alarmMediaPlayer.setAudioAttributes(audioAttributesAlarm);
-                    alarmMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
-                            + context.getPackageName() + "/" + R.raw.long_music));
-                    alarmMediaPlayer.prepare();
-                    alarmMediaPlayer.setLooping(true);
-                    alarmMediaPlayer.setVolume(volume[0], volume[0]);
-                    alarmMediaPlayer.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        handlerVolume = new Handler();
-        runnableVolume = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    volume[0] += 0.001f;
-                    Log.v(TAG, "New alarm volume: " + volume[0]);
-                    alarmMediaPlayer.setVolume(volume[0], volume[0]);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (volume[0] < 1)
-                    handlerVolume.postDelayed(this, 2000);
-            }
-        };
-
-        if (entity.getTicksTime() > 0) {
-            handlerTicks.post(runnableCode);
-        }
-
-        handlerTicks.postDelayed(runnableRealAlarm, entity.getTicksTime() * 60 * 1000);
-        handlerVolume.post(runnableVolume);
-
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                turnOffAlarm();
-            }
-        });
     }
 
     private void turnOffAlarm() {

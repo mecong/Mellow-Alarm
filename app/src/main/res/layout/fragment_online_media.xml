@@ -15,9 +15,9 @@
 
 
         android:layout_marginTop="16dp"
-        android:foregroundTint="#009E1B1B"
         android:text="@string/internet_streams"
         android:textAlignment="viewStart"
+        android:textColor="#E7E8E2"
         android:textStyle="italic"
         app:layout_constraintEnd_toStartOf="@+id/buttonAdd"
         app:layout_constraintHorizontal_bias="0.5"

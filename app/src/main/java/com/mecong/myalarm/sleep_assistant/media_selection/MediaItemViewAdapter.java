@@ -24,11 +24,13 @@ class MediaItemViewAdapter extends CursorRecyclerViewAdapter<MediaItemViewAdapte
 
     int selectedPosition = 0;
     ItemClickListener mClickListener;
+    boolean showUrl;
 
 
-    MediaItemViewAdapter(Context context, Cursor cursor, ItemClickListener clickListener) {
+    MediaItemViewAdapter(Context context, Cursor cursor, ItemClickListener clickListener, boolean showUrl) {
         super(context, cursor);
         this.mClickListener = clickListener;
+        this.showUrl = showUrl;
     }
 
     @NonNull
@@ -43,14 +45,17 @@ class MediaItemViewAdapter extends CursorRecyclerViewAdapter<MediaItemViewAdapte
     public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor, int position) {
         MediaEntity myListItem = MediaEntity.fromCursor(cursor);
         viewHolder.headerText.setTag(myListItem.getUri());
-        if (Strings.isEmptyOrWhitespace(myListItem.getHeader())) {
-            viewHolder.headerText.setText(myListItem.getUri());
-            viewHolder.urlText.setVisibility(View.INVISIBLE);
-        } else {
-            viewHolder.headerText.setText(myListItem.getHeader());
+
+        String header = Strings.isEmptyOrWhitespace(myListItem.getHeader()) ?
+                myListItem.getUri() : myListItem.getHeader();
+        viewHolder.headerText.setText(header);
+        if (showUrl) {
             viewHolder.urlText.setText(myListItem.getUri());
             viewHolder.urlText.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.urlText.setVisibility(View.GONE);
         }
+
 
         viewHolder.itemView.setSelected(selectedPosition == position);
     }

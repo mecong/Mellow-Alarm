@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.metadata.MetadataOutput;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -171,11 +172,22 @@ public class RadioService extends Service implements Player.EventListener, Audio
         exoPlayer.addMetadataOutput(new MetadataOutput() {
             @Override
             public void onMetadata(Metadata metadata) {
+//                ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
                 HyperLog.i(TAG, "----metadata---->");
                 for (int i = 0; i < metadata.length(); i++) {
-                    HyperLog.i(TAG, metadata.get(i).toString());
-                    HyperLog.i(TAG, "<----metadata----");
+                    String message = metadata.get(i).toString();
+                    HyperLog.i(TAG, message);
+                    if (message.startsWith("ICY: ")) {
+                        String titleNotParsed = message.split(",")[0].split("=")[1];
+                        String title = titleNotParsed.replaceAll("\"", " ").trim();
+
+                        if (!title.isEmpty()) {
+                            SleepAssistantViewModel.Media playingMedia = new SleepAssistantViewModel.Media("", title);
+                            EventBus.getDefault().post(playingMedia);
+                        }
+                    }
                 }
+                HyperLog.i(TAG, "<----metadata----");
             }
         });
 
@@ -331,9 +343,9 @@ public class RadioService extends Service implements Player.EventListener, Audio
         this.playList = playList;
 
         ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
-        for (String uri : this.playList.getUrls()) {
+        for (SleepAssistantViewModel.Media media : this.playList.getMedia()) {
             concatenatingMediaSource.addMediaSource(
-                    new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri)));
+                    new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(media.getUrl())));
         }
         exoPlayer.prepare(concatenatingMediaSource);
         if (this.playList.getMediaType() == SleepMediaType.LOCAL) {
@@ -392,13 +404,27 @@ public class RadioService extends Service implements Player.EventListener, Audio
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray
             trackSelections) {
         HyperLog.i(TAG, ">>>>>>onTracksChanged>>>>>>");
-        for (int i = 0; i < trackGroups.length; i++) {
-            for (int j = 0; j < trackGroups.get(i).length; j++) {
+//        for (int i = 0; i < trackGroups.length; i++) {
+//            for (int j = 0; j < trackGroups.get(i).length; j++) {
+//
+//                if (trackGroups.get(i).getFormat(j).metadata != null) {
+//                    for (int k = 0; k < trackGroups.get(i).getFormat(j).metadata.length(); k++) {
+//                        HyperLog.i(TAG, trackGroups.get(i).getFormat(j).metadata.get(k).toString());
+//                    }
+//                }
+//            }
+//        }
 
-                if (trackGroups.get(i).getFormat(j).metadata != null) {
-                    for (int k = 0; k < trackGroups.get(i).getFormat(j).metadata.length(); k++) {
-                        HyperLog.i(TAG, trackGroups.get(i).getFormat(j).metadata.get(k).toString());
+        for (int i = 0; i < trackGroups.length; i++) {
+            TrackGroup trackGroup = trackGroups.get(i);
+            for (int j = 0; j < trackGroup.length; j++) {
+                Metadata trackMetadata = trackGroup.getFormat(j).metadata;
+                if (trackMetadata != null) {
+                    for (int k = 0; k < trackMetadata.length(); k++) {
+                        HyperLog.i(TAG, trackMetadata.get(k).toString());
                     }
+                } else {
+                    HyperLog.i(TAG, "|||Metadata not found|||");
                 }
             }
         }
@@ -406,7 +432,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
     }
 
     public boolean hasPlayList() {
-        return this.playList != null && !this.playList.getUrls().isEmpty();
+        return this.playList != null && !this.playList.getMedia().isEmpty();
     }
 
     @Override
@@ -428,7 +454,9 @@ public class RadioService extends Service implements Player.EventListener, Audio
     public void onPositionDiscontinuity(int reason) {
         HyperLog.i(TAG, "Playing new media > reason: " + reason);
         if (hasPlayList()) {
-            HyperLog.i(TAG, this.playList.getUrls().get(exoPlayer.getCurrentWindowIndex()));
+            HyperLog.i(TAG, this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex()).getTitle());
+            SleepAssistantViewModel.Media playingMedia = this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex());
+            EventBus.getDefault().post(playingMedia);
         }
     }
 

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121314">
+
+    <com.mecong.myalarm.sleep_assistant.HourglassComponent
+        android:id="@+id/slliderSleepTime"
+        android:layout_width="0dp"
+
+        android:layout_height="0dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/tr1_background"
+        app:color="#424040"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/sliderVolume"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:max="60" />
+
+    <com.mecong.myalarm.sleep_assistant.HourglassComponent
+        android:id="@+id/sliderVolume"
+        android:layout_width="0dp"
+
+        android:layout_height="0dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/tr1_background"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintDimensionRatio="0.5625"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/slliderSleepTime"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:max="100" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.32" />
+
+    <TextView
+        android:id="@+id/textViewTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time"
+        android:textColor="#E7E8E2"
+        app:layout_constraintBottom_toTopOf="@+id/slliderSleepTime"
+        app:layout_constraintStart_toStartOf="@+id/slliderSleepTime" />
+
+    <TextView
+        android:id="@+id/textViewMinutes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sleep_minutes"
+        android:textColor="#E7E8E2"
+        app:layout_constraintEnd_toEndOf="@+id/slliderSleepTime"
+        app:layout_constraintStart_toStartOf="@+id/slliderSleepTime"
+        app:layout_constraintTop_toBottomOf="@+id/slliderSleepTime" />
+
+    <TextView
+        android:id="@+id/textViewVolume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:text="@string/volume"
+        android:textColor="#E7E8E2"
+        app:layout_constraintBottom_toTopOf="@+id/sliderVolume"
+        app:layout_constraintStart_toStartOf="@+id/sliderVolume" />
+
+    <TextView
+        android:id="@+id/textViewVolumePercent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/volume_percent"
+        android:textColor="#E7E8E2"
+        app:layout_constraintEnd_toEndOf="@+id/sliderVolume"
+        app:layout_constraintStart_toStartOf="@+id/sliderVolume"
+        app:layout_constraintTop_toBottomOf="@+id/sliderVolume" />
+
+
+    <TextView
+        android:id="@+id/nowPlayingText"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:background="#1A1B1D"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="#E7E8E2"
+        app:layout_constraintEnd_toStartOf="@+id/pp_button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
+
+    <ImageButton
+        android:id="@+id/pp_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:background="#1A1B1D"
+        android:contentDescription="@string/play"
+        android:cropToPadding="true"
+        android:paddingStart="0dp"
+        android:paddingTop="0dp"
+        android:paddingEnd="0dp"
+        android:paddingBottom="0dp"
+        android:scaleType="fitCenter"
+        android:tint="#00AF3B3B"
+        android:tintMode="src_over"
+        app:layout_constraintBottom_toBottomOf="@+id/nowPlayingText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/nowPlayingText"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintVertical_bias="0.491"
+        app:srcCompat="@drawable/play_btn" />
+
+    <com.google.android.material.tabs.TabLayout
+
+        android:id="@+id/tabs"
+
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/viewPager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pp_button"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="#7CE7E8E2"
+        app:tabMode="fixed"
+        app:tabPaddingEnd="4dp"
+        app:tabPaddingStart="4dp"
+        app:tabSelectedTextColor="#EeEeEe"
+        app:tabTextColor="#555353">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/logo_gold_cat"
+            android:icon="@drawable/local_media"
+            android:text="@string/offline" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/online_media"
+            android:text="@string/online" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:icon="@drawable/noises" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="#282828"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabs">
+
+    </androidx.viewpager.widget.ViewPager>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,13 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
 public class HourglassComponent extends View {
+    Color mcolor;
     long max, currentValue;
     boolean changingMode = false;
     Paint filledPaint = new Paint();
@@ -44,11 +49,11 @@ public class HourglassComponent extends View {
         } finally {
             a.recycle();
         }
+        filledPaint.setColor(Color.parseColor("#323030"));
 
-        filledPaint.setColor(Color.LTGRAY);
         framedPaint.setColor(filledPaint.getColor());
         framedPaint.setStyle(Paint.Style.STROKE);
-        framedPaint.setStrokeWidth(3);
+        framedPaint.setStrokeWidth(1);
 
         changingPaint.setColor(Color.GRAY);
         changingPaint.setStrokeWidth(5);
@@ -62,19 +67,6 @@ public class HourglassComponent extends View {
         listeners.add(listener);
     }
 
-    public long getMax() {
-        return max;
-    }
-
-    public void setMax(int max) {
-        this.max = max;
-        invalidate();
-        requestLayout();
-    }
-
-    public long getCurrentValue() {
-        return currentValue;
-    }
 
     public void setCurrentValue(long currentValue) {
         this.currentValue = currentValue;
@@ -104,14 +96,15 @@ public class HourglassComponent extends View {
 
         float filled = frame.height() - frameHeightDivMax * currentValue;
 
-        canvas.drawRect(frame.left, filled, frame.right, frame.bottom, filledPaint);
-        canvas.drawRect(frame, framedPaint);
+//        canvas.drawRoundRect(frame.left, filled, frame.right, frame.bottom,25f,25f, filledPaint);
+        canvas.drawRect(frame.left + 10, filled, frame.right - 10, frame.bottom, filledPaint);
+//        canvas.drawRect(frame, framedPaint);
 
-        if (changingMode) {
-            canvas.drawLine(frame.left, filled, frame.right, filled, changingPaint);
-            canvas.drawCircle(0, filled, 17, changingPaint);
-            canvas.drawCircle(frame.width(), filled, 17, changingPaint);
-        }
+//        if (changingMode) {
+////            canvas.drawLine(frame.left, filled, frame.right, filled, changingPaint);
+////            canvas.drawCircle(0, filled, 5, changingPaint);
+////            canvas.drawCircle(frame.width(), filled, 5, changingPaint);
+//        }
     }
 
     @Override

@@ -13,7 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,20 +34,9 @@ public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapte
     MediaItemViewAdapter adapter;
     SleepAssistantViewModel model;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment NoisesFragment.
-     */
-    static OnlineMediaFragment newInstance() {
-        return new OnlineMediaFragment();
-    }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        model = ViewModelProviders.of(getActivity()).get(SleepAssistantViewModel.class);
+    OnlineMediaFragment(SleepAssistantViewModel model) {
+        this.model = model;
     }
 
     @Override
@@ -73,7 +61,7 @@ public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapte
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         adapter = new MediaItemViewAdapter(view.getContext(),
-                sqLiteDBHelper.getAllOnlineMedia(), this);
+                sqLiteDBHelper.getAllOnlineMedia(), this, true);
 
         recyclerView.setAdapter(adapter);
 
@@ -122,7 +110,7 @@ public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapte
     @Override
     public void onItemClick(String url, int position) {
         SleepAssistantViewModel.PlayList newPlayList =
-                new SleepAssistantViewModel.PlayList(url, SleepMediaType.ONLINE);
+                new SleepAssistantViewModel.PlayList(url, url, SleepMediaType.ONLINE);
         model.setPlaylist(newPlayList);
     }
 

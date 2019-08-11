@@ -58,7 +58,7 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
                 entity.getNextTime() + entity.getTicksTime() * MINUTE);
         NotificationCompat.Builder builder = new NotificationCompat
                 .Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_info_black_24dp)
+                .setSmallIcon(R.drawable.launcher)
                 .setContentTitle(context.getString(R.string.upcoming_alarm_notification_title))
                 .setContentText(message)
                 .setContentIntent(pendingIntent)

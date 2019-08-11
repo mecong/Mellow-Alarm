@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="50dp"
     android:background="@drawable/list_background"
     tools:context=".sleep_assistant.media_selection.NoisesFragment">
 
@@ -12,9 +12,15 @@
         android:id="@+id/headerText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
+        android:ellipsize="end"
+        android:gravity="center|start"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:text="@string/cancel"
+        android:textColor="#E7E8E2"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/urlText"
         app:layout_constraintEnd_toStartOf="@+id/btnDeleteItem"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,11 +29,18 @@
         android:id="@+id/urlText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="viewStart"
+        android:ellipsize="end"
+        android:gravity="center|start"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:text="@string/cancel"
+        android:textColor="#E7E8E2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnDeleteItem"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headerText" />
+        app:layout_constraintTop_toBottomOf="@+id/headerText"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
         android:id="@+id/btnDeleteItem"

@@ -1,6 +1,7 @@
 package com.mecong.myalarm.sleep_assistant.media_selection;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,7 +15,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,21 +39,8 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
     MediaItemViewAdapter adapter;
     SleepAssistantViewModel model;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment NoisesFragment.
-     */
-    static LocalFilesMediaFragment newInstance() {
-        return new LocalFilesMediaFragment();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        model = ViewModelProviders.of(getActivity()).get(SleepAssistantViewModel.class);
-
+    LocalFilesMediaFragment(SleepAssistantViewModel model) {
+        this.model = model;
     }
 
     @Override
@@ -61,13 +48,6 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_local_media, container, false);
-    }
-
-    private void addOnlineMediaRecord(String url, String title) {
-        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getContext());
-        sqLiteDBHelper.addLocalMediaUrl(url, title);
-
-        adapter.changeCursor(sqLiteDBHelper.getAllLocalMedia());
     }
 
     @Override
@@ -79,7 +59,7 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
 
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         adapter = new MediaItemViewAdapter(view.getContext(),
-                sqLiteDBHelper.getAllLocalMedia(), this);
+                sqLiteDBHelper.getAllLocalMedia(), this, false);
 
         recyclerView.setAdapter(adapter);
 
@@ -106,11 +86,29 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
             // Pull that URI using resultData.getData().
             Uri uri;
             if (resultData != null) {
-                uri = resultData.getData();
-                HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString());
-                addOnlineMediaRecord(uri.toString(), dumpFileMetaData(uri));
+                ClipData clipData = resultData.getClipData();
+                if (clipData == null) {
+                    uri = resultData.getData();
+                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString());
+                    addOnlineMediaRecord(uri.toString(), dumpFileMetaData(uri));
+                    getContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                } else {
+                    for (int i = 0; i < clipData.getItemCount(); i++) {
+                        ClipData.Item path = clipData.getItemAt(i);
+                        addOnlineMediaRecord(path.getUri().toString(), dumpFileMetaData(path.getUri()));
+                        getContext().getContentResolver().takePersistableUriPermission(path.getUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        HyperLog.i("Path:", path.toString());
+                    }
+                }
             }
         }
+    }
+
+    private void addOnlineMediaRecord(String url, String title) {
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getContext());
+        sqLiteDBHelper.addLocalMediaUrl(url, title);
+
+        adapter.changeCursor(sqLiteDBHelper.getAllLocalMedia());
     }
 
     private String dumpFileMetaData(Uri uri) {
@@ -170,6 +168,7 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
         // To search for all documents available via installed storage providers,
         // it would be "*/*".
         intent.setType("audio/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
         startActivityForResult(intent, READ_REQUEST_CODE);
     }
@@ -178,16 +177,18 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
     @Override
     public void onItemClick(String url, int position) {
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getContext());
-        List<String> urls;
+        List<SleepAssistantViewModel.Media> media;
         try (Cursor allLocalMedia = sqLiteDBHelper.getAllLocalMedia()) {
-            urls = new ArrayList<>(allLocalMedia.getCount());
+            media = new ArrayList<>(allLocalMedia.getCount());
             while (allLocalMedia.moveToNext()) {
-                urls.add(allLocalMedia.getString(allLocalMedia.getColumnIndex("uri")));
+                String uri = allLocalMedia.getString(allLocalMedia.getColumnIndex("uri"));
+                String title = allLocalMedia.getString(allLocalMedia.getColumnIndex("title"));
+                media.add(new SleepAssistantViewModel.Media(uri, title));
             }
         }
 
         SleepAssistantViewModel.PlayList newPlayList =
-                new SleepAssistantViewModel.PlayList(urls, position, SleepMediaType.LOCAL);
+                new SleepAssistantViewModel.PlayList(position, media, SleepMediaType.LOCAL);
         model.setPlaylist(newPlayList);
     }
 

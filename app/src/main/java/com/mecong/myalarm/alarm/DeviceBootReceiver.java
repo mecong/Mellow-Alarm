@@ -10,7 +10,7 @@ public class DeviceBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(AlarmUtils.TAG, "DeviceBootReceiver");
-        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+        if (Intent.ACTION_BOOT_COMPLETED.equalsIgnoreCase(intent.getAction())) {
             AlarmUtils.resetupAllAlarms(context);
         }
     }

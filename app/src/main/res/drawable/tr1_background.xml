@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/main_rectangle">
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:endColor="#282828"
+                android:startColor="#8F8F8F" />
+            <corners
+                android:topLeftRadius="5dp"
+                android:topRightRadius="5dp" />
+
+            <!--<stroke-->
+            <!--android:width="20dp"-->
+            <!--android:dashWidth="10dp"-->
+            <!--android:dashGap="50dp" />-->
+            <!--<size android:width="1dp" />-->
+        </shape>
+
+    </item>
+    <!--<item android:left="10dp">-->
+    <!--<shape  android:shape="rectangle" >-->
+    <!--<solid android:color="#ffccd2" />-->
+    <!--</shape>-->
+    <!--</item>-->
+    <!--<item>-->
+    <!--<shape android:shape="line">-->
+    <!--&lt;!&ndash;<solid android:color="#161818"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;<solid android:color="#161818" />&ndash;&gt;-->
+    <!--<gradient-->
+    <!--android:angle="270"-->
+    <!--android:endColor="#282828"-->
+    <!--android:startColor="#8F8F8F" />-->
+    <!--&lt;!&ndash;<stroke&ndash;&gt;-->
+    <!--&lt;!&ndash;android:color="#161818"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:dashWidth="10dp"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:dashGap="10dp" />&ndash;&gt;-->
+
+    <!--&lt;!&ndash;<size&ndash;&gt;-->
+
+    <!--&lt;!&ndash;android:height="16dp" />&ndash;&gt;-->
+
+    <!--<stroke-->
+    <!--android:width="20dp"-->
+
+    <!--android:dashWidth="10dp"-->
+    <!--android:dashGap="10dp"/>-->
+    <!--<size android:height="8dp" />-->
+    <!--</shape>-->
+
+
+    <!--</item>-->
+    <!--#161818-->
+</layer-list>
