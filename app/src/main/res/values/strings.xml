@@ -8,52 +8,45 @@
 
     <string name="delete" translatable="false">Delete</string>
     <string name="dismiss" translatable="false">DISMISS</string>
-    <string name="mo" translatable="false">M</string>
-    <string name="tu" translatable="false">T</string>
-    <string name="we">W</string>
-    <string name="th" translatable="false">T</string>
-    <string name="fr" translatable="false">F</string>
-    <string name="sa" translatable="false">S</string>
-    <string name="su" translatable="false">S</string>
-
-    <string-array name="days_array">
-        <item>@string/mo</item>
-        <item>@string/tu</item>
-        <item>@string/we</item>
-        <item>@string/th</item>
-        <item>@string/fr</item>
-        <item>@string/sa</item>
-        <item>@string/su</item>
-    </string-array>
+    <string name="mo" translatable="false">MO</string>
+    <string name="tu" translatable="false">TU</string>
+    <string name="we" translatable="false">WE</string>
+    <string name="th" translatable="false">TH</string>
+    <string name="fr" translatable="false">FR</string>
+    <string name="sa" translatable="false">SA</string>
+    <string name="su" translatable="false">SU</string>
 
     <string name="upcoming_alarm_channel_name" translatable="false">Upcoming alarm</string>
+
     <string name="upcoming_alarm_channel_description" translatable="false">Kindly reminder about upcoming alarm</string>
     <string name="upcoming_alarm_notification_title">☕️ Upcoming alarm</string>
     <string name="upcoming_alarm_notification_message" translatable="false">Cancel upcoming alarm at %1$tH:%1$tM</string>
     <string name="upcoming_alarm_canceled_toast" translatable="false">Upcoming alarm at %1$tH:%1$tM canceled</string>
-
     <string name="time_to_sleep_channel_name" translatable="false">🛏 Time to sleep</string>
+
     <string name="time_to_sleep_channel_description" translatable="false">Kindly reminder about upcoming morning alarm when not much sleep time remain</string>
     <string name="time_to_sleep_notification_title" translatable="false">🛏 Time to sleep</string>
     <string name="time_to_sleep_notification_message" translatable="false">
        😼 There are only %1$tH hours %1$tM minutes until your morning alarm. Tap to open the Sleep Assistant.</string>
+    <string name="alarm_time">%1$02d:%2$02d</string>
 
 
-    <string name="alarm_time">%02d:%02d</string>
     <string name="alarm_date">%D</string>
     <string name="work_days">Work days</string>
     <string name="every_day" translatable="false">Every day</string>
     <string name="never" translatable="false">Never</string>
     <string name="single_day" translatable="false">%1$td.%1$tm.%1$tY</string>
     <string name="logs" translatable="false">Logs</string>
+    <string name="ticks" translatable="false">Ticks %d minute(s) before alarm</string>
+    <string name="snooze" translatable="false">Snooze %d minute(s)</string>
 
-    <string name="ticks" translatable="false">Ticks %d minutes before alarm</string>
     <string name="all_alarms_are_off">All alarms are off</string>
     <string name="next_alarm" translatable="false">Alarm in %d days</string>
     <string name="next_alarm_soon" translatable="false">Alarm will go off soon</string>
     <string name="next_alarm_today" translatable="false">Alarm in %d hours %d minutes</string>
     <string name="next_alarm_within_hour" translatable="false">Alarm in %d minutes</string>
-    <string name="next_alarm_date" translatable="false">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
+    <string name="next_alarm_date_time" translatable="false">%1$tA, %1$tB %1$td %1$tY, %1$tR</string>
+    <string name="next_alarm_date" translatable="false">%1$tA, %1$tB %1$td %1$tY</string>
     <string name="clear_logs" translatable="false">Clear Logs</string>
     <string name="play" translatable="false">Play</string>
     <string name="clear_list" translatable="false">Clear list</string>
@@ -73,6 +66,15 @@
     <string name="internet_streams">Internet streams</string>
     <string name="can_not_stream">ERROR: Can not play media!</string>
     <string name="image_button" translatable="false">Image button</string>
-    <string name="alarms">Alarms</string>
-    <string name="open_sleep_assistant">Open Sleep Assistant</string>
+    <string name="alarms" translatable="false">Alarms</string>
+    <string name="open_sleep_assistant" translatable="false">Open Sleep Assistant</string>
+    <string-array name="days_array">
+        <item>@string/mo</item>
+        <item>@string/tu</item>
+        <item>@string/we</item>
+        <item>@string/th</item>
+        <item>@string/fr</item>
+        <item>@string/sa</item>
+        <item>@string/su</item>
+    </string-array>
 </resources>
