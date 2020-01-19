@@ -17,7 +17,9 @@ import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 import static java.lang.String.format;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider {
-    private static final int DATABASE_VERSION = 8;
+    private static final String TITLE = "title";
+    private static final String URI = "uri";
+    private static final int DATABASE_VERSION = 14;
     private static final String TABLE_ALARMS = "alarms";
     private static final String TABLE_ONLINE_MEDIA = "online_media";
     private static final String TABLE_OFFLINE_MEDIA = "offline_media";
@@ -41,47 +43,38 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     private void setDefaultOnlineMedia(SQLiteDatabase database) {
         ContentValues values = new ContentValues(2);
 
-        values.put("title", "Enigmatic radio");
-        values.put("uri", "http://listen2.myradio24.com:9000/8226");
+        values.put(TITLE, "Enigmatic radio");
+        values.put(URI, "http://listen2.myradio24.com:9000/8226");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
-        values.put("title", "Sleep radio nz");
-        values.put("uri", "http://149.56.234.138:8169/;?1571582580800");
+        values.put(TITLE, "Zen noise");
+        values.put(URI, "http://mynoise1.radioca.st/stream");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
-        values.put("title", "Zen noise");
-        values.put("uri", "http://mynoise1.radioca.st/stream");
+        values.put(TITLE, "Space noise");
+        values.put(URI, "http://mynoise5.radioca.st/stream");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
-        values.put("title", "Space noise");
-        values.put("uri", "http://mynoise5.radioca.st/stream");
+        values.put(TITLE, "magic80");
+        values.put(URI, "http://strm112.1.fm/magic80_mobile_mp3");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
-        values.put("title", "magic80");
-        values.put("uri", "http://strm112.1.fm/magic80_mobile_mp3");
+        values.put(TITLE, "1.FM - Afterbeat Electronica Radio");
+        values.put(URI, "http://strm112.1.fm/electronica_mobile_mp3");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
-        values.put("title", "1.FM - Afterbeat Electronica Radio");
-        values.put("uri", "http://strm112.1.fm/electronica_mobile_mp3");
+        values.put(TITLE, "Graal Radio");
+        values.put(URI, "http://graalradio.com:8123/future");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
-        values.put("title", "Graal Radio");
-        values.put("uri", "http://graalradio.com:8123/future");
-        database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
-
-        values.put("title", "Sleepy");
-        values.put("uri", "http://ample-10.radiojar.com/rrgq7vw4gxquv?rj-ttl=5&rj-token=AAABa1lok77_iuIXolNS9qjWnD31iEM1pwmTre7whSvHzvHEjWy5yg");
-        database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
-
-        values.put("title", "Classical 1");
-        values.put("uri", "http://peridot.streamguys.com:7010/bblive-sgplayer-aac");
-        database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
-
-        values.put("title", "Classical 2");
-        values.put("uri", "http://mediaserv30.live-streams.nl:8088/live");
+        values.put(TITLE, "Sleepy");
+        values.put(URI, "http://ample-10.radiojar.com/rrgq7vw4gxquv?rj-ttl=5&rj-token=AAABa1lok77_iuIXolNS9qjWnD31iEM1pwmTre7whSvHzvHEjWy5yg");
         database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
 
 
+        values.put(TITLE, "Classical");
+        values.put(URI, "http://mediaserv30.live-streams.nl:8088/live");
+        database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
     }
 
     public Cursor getAllAlarms() {
@@ -116,12 +109,12 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
         Calendar now = Calendar.getInstance();
         return getAlarmEntity(format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE active=1 " +
-                        " AND hour>1 AND hour<11 " +
+                        " AND hour>1 AND hour<10 " +
                         " AND (next_time-%d)>%d" +
                         " ORDER BY next_time LIMIT 1", TABLE_ALARMS, now.getTimeInMillis(), TimeUnit.HOURS.toMillis(4)));
     }
 
-    public long addAOrUpdateAlarm(AlarmEntity entity) {
+    public long addOrUpdateAlarm(AlarmEntity entity) {
         try (SQLiteDatabase database = this.getWritableDatabase()) {
             ContentValues values = new ContentValues();
             values.put("hour", entity.getHour());
@@ -132,6 +125,11 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
             values.put("canceled_next_alarms", entity.getCanceledNextAlarms());
             values.put("active", entity.isActive());
             values.put("exact_date", entity.getExactDate());
+            values.put("complexity", entity.getComplexity());
+            values.put("snooze_times", entity.getSnoozeTimes());
+            values.put("snooze_max_times", entity.getSnoozeMaxTimes());
+            values.put("melody_url", entity.getMelodyUrl());
+            values.put("melody_name", entity.getMelodyName());
             values.put("next_time", entity.getNextTime());
             values.put("next_request_code", entity.getNextRequestCode());
             values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
@@ -154,10 +152,9 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
         ContentValues updateValues = new ContentValues(1);
         updateValues.put("active", active ? 1 : 0);
         if (!active) {
+            updateValues.put("canceled_next_alarms", 0);
             updateValues.put("next_time", -1);
             updateValues.put("next_request_code", -1);
-        } else {
-            updateValues.put("canceled_next_alarms", 0);
         }
         writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id});
         HyperLog.i(TAG, "Alarm [id=" + id + "] toggled to: " + active);
@@ -183,18 +180,21 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
                 + "_id INTEGER PRIMARY KEY,"
                 + "hour TINYINT,"
                 + "minute TINYINT,"
+                + "complexity TINYINT,"
                 + "days TINYINT,"
                 + "exact_date LONG,"
                 + "message TEXT,"
                 + "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
                 + "before_alarm_notification BOOLEAN NOT NULL CHECK (before_alarm_notification IN (0,1)) DEFAULT 1,"
                 + "ticks_time TINYINT," // for how long before main alarm to play ticks (null - not play)
-                + "melody TEXT,"
+                + "melody_name TEXT,"
+                + "melody_url TEXT,"
                 + "vibration_type TEXT,"
                 + "volume INTEGER,"
                 + "canceled_next_alarms INTEGER DEFAULT 0,"
                 + "snooze_interval TINYINT DEFAULT 5,"
-                + "snooze_times TINYINT DEFAULT 3,"
+                + "snooze_times TINYINT DEFAULT 0,"
+                + "snooze_max_times TINYINT,"
                 + "next_time INTEGER,"
                 + "next_request_code INTEGER"
                 + ")", TABLE_ALARMS);
@@ -232,7 +232,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     public void addMediaUrl(String url) {
         try (SQLiteDatabase database = this.getWritableDatabase()) {
             ContentValues values = new ContentValues();
-            values.put("uri", url);
+            values.put(URI, url);
             HyperLog.i(TAG, "Add media URL :: " + url);
             database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);
         }
@@ -251,8 +251,8 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     public void addLocalMediaUrl(String url, String title) {
         try (SQLiteDatabase database = this.getWritableDatabase()) {
             ContentValues values = new ContentValues();
-            values.put("uri", url);
-            values.put("title", title);
+            values.put(URI, url);
+            values.put(TITLE, title);
             HyperLog.i(TAG, "Add media URL :: " + url);
             database.insert(SQLiteDBHelper.TABLE_OFFLINE_MEDIA, null, values);
         }

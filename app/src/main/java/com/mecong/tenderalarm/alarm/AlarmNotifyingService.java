@@ -30,19 +30,31 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import timber.log.Timber;
+
+import static androidx.core.app.NotificationCompat.FLAG_NO_CLEAR;
+import static androidx.core.app.NotificationCompat.FLAG_ONGOING_EVENT;
+import static androidx.core.app.NotificationCompat.FLAG_SHOW_LIGHTS;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AlarmNotifyingService extends Service {
     private static final Uri CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/alarms");
-    private MediaPlayer alarmMediaPlayer;
-    private Handler handlerVolume;
-    private Runnable runnableVolume;
+    AlarmEntity entity;
+    MediaPlayer alarmMediaPlayer;
+    Handler handlerVolume;
+    Runnable runnableVolume;
+    Random random = new Random();
+    Handler handlerTicks;
+    Runnable runnableRealAlarm;
+    MediaPlayer ticksMediaPlayer;
 
-    public AlarmNotifyingService() {
-    }
 
     @Override
     public void onCreate() {
@@ -54,11 +66,10 @@ public class AlarmNotifyingService extends Service {
         return null;
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
-        AlarmEntity entity = SQLiteDBHelper.getInstance(getBaseContext()).getAlarmById(alarmId);
+        entity = SQLiteDBHelper.getInstance(getBaseContext()).getAlarmById(alarmId);
         HyperLog.i(TAG, "Running alarm: " + entity);
 
         usePowerManagerWakeup();
@@ -80,8 +91,30 @@ public class AlarmNotifyingService extends Service {
         if (message == AlarmMessage.CANCEL_VOLUME_INCREASE) {
             cancelVolumeIncreasing();
         } else if (message == AlarmMessage.STOP_ALARM) {
-            turnOffAlarm();
+            entity.setSnoozeTimes(0);
+            SQLiteDBHelper.getInstance(getBaseContext()).addOrUpdateAlarm(entity);
+            stopAlarmNotification();
+        } else if (message == AlarmMessage.SNOOZE2M) {
+            snooze(2);
+        } else if (message == AlarmMessage.SNOOZE3M) {
+            snooze(3);
+        } else if (message == AlarmMessage.SNOOZE5M) {
+            snooze(5);
         }
+    }
+
+    private void snooze(int minutes) {
+        HyperLog.d(TAG, "Snooze for " + minutes + " min");
+        handlerTicks.removeCallbacksAndMessages(null);
+        if (ticksMediaPlayer.isPlaying()) {
+            ticksMediaPlayer.pause();
+            ticksMediaPlayer.seekTo(0);
+        }
+        if (alarmMediaPlayer.isPlaying()) {
+            alarmMediaPlayer.pause();
+            alarmMediaPlayer.seekTo(0);
+        }
+        handlerTicks.postDelayed(runnableRealAlarm, minutes * 60 * 1000);
     }
 
     private void cancelVolumeIncreasing() {
@@ -102,14 +135,15 @@ public class AlarmNotifyingService extends Service {
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, streamMaxVolume, 0);
 
         // Create the Handler object (on the main thread by default)
-        final Handler handlerTicks = new Handler();
-        final float[] volume = {0.4f};
+        handlerTicks = new Handler();
+        final float[] volume = {0.1f};
 
-        final MediaPlayer ticksMediaPlayer = new MediaPlayer();
+
         try {
+            ticksMediaPlayer = new MediaPlayer();
             ticksMediaPlayer.setAudioAttributes(audioAttributesAlarm);
             ticksMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
-                    + context.getPackageName() + "/" + R.raw.metal_knock));
+                    + context.getPackageName() + "/" + R.raw.tick));
             ticksMediaPlayer.prepare();
             ticksMediaPlayer.setVolume(volume[0], volume[0]);
         } catch (IOException e) {
@@ -117,44 +151,53 @@ public class AlarmNotifyingService extends Service {
             e.printStackTrace();
         }
 
-        alarmMediaPlayer = new MediaPlayer();
+        try {
+            alarmMediaPlayer = new MediaPlayer();
+            alarmMediaPlayer.setAudioAttributes(audioAttributesAlarm);
+            final Uri melody = getMelody(context, entity);
+            alarmMediaPlayer.setDataSource(context, melody);
+            alarmMediaPlayer.prepare();
+            alarmMediaPlayer.setLooping(true);
+        } catch (Exception ex) {
+            Timber.e(ex);
+        }
 
-
-        final Runnable runnableCode = new Runnable() {
+        final Runnable predAlarm = new Runnable() {
             @Override
             public void run() {
                 try {
-                    ticksMediaPlayer.start();
+                    if (!ticksMediaPlayer.isPlaying()) {
+                        ticksMediaPlayer.start();
+                    }
                     HyperLog.d(TAG, "Tick!");
                 } catch (Exception e) {
                     HyperLog.e(TAG, "Exception: " + e.getMessage(), e);
                 }
                 // Repeat this the same runnable code block again another 20 seconds
                 // 'this' is referencing the Runnable object
-                handlerTicks.postDelayed(this, 20000);
+                handlerTicks.postDelayed(this, random.nextInt(20000));
             }
         };
 
 
-        Runnable runnableRealAlarm = new Runnable() {
+        runnableRealAlarm = new Runnable() {
             @Override
             public void run() {
                 try {
                     // Removes pending code execution
-                    handlerTicks.removeCallbacks(runnableCode);
-                    ticksMediaPlayer.stop();
-                    ticksMediaPlayer.reset();
-                    ticksMediaPlayer.release();
+                    handlerTicks.removeCallbacks(predAlarm);
+                    if (ticksMediaPlayer.isPlaying()) {
+                        ticksMediaPlayer.stop();
+                    }
 
                     volume[0] = 0.01f;
 
-                    alarmMediaPlayer.setAudioAttributes(audioAttributesAlarm);
-                    alarmMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
-                            + context.getPackageName() + "/" + R.raw.long_music));
-                    alarmMediaPlayer.prepare();
-                    alarmMediaPlayer.setLooping(true);
+
                     alarmMediaPlayer.setVolume(volume[0], volume[0]);
                     alarmMediaPlayer.start();
+
+                    handlerVolume.removeCallbacks(runnableVolume);
+                    handlerVolume.post(runnableVolume);
                     HyperLog.d(TAG, "Real alarm started!");
 
                 } catch (Exception e) {
@@ -170,7 +213,9 @@ public class AlarmNotifyingService extends Service {
                 try {
                     volume[0] += 0.001f;
                     Log.v(TAG, "New alarm volume: " + volume[0]);
-                    alarmMediaPlayer.setVolume(volume[0], volume[0]);
+                    if (alarmMediaPlayer.isPlaying()) {
+                        alarmMediaPlayer.setVolume(volume[0], volume[0]);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -181,19 +226,52 @@ public class AlarmNotifyingService extends Service {
         };
 
         if (entity.getTicksTime() > 0) {
-            handlerTicks.post(runnableCode);
+            handlerTicks.post(predAlarm);
         }
 
         handlerTicks.postDelayed(runnableRealAlarm, entity.getTicksTime() * 60 * 1000);
-        handlerVolume.post(runnableVolume);
     }
 
-    private void turnOffAlarm() {
+    private Uri getMelody(Context context, AlarmEntity entity) {
+        HyperLog.i(TAG, "entity.getMelodyUrl()====" + entity.getMelodyUrl());
+        if (entity.getMelodyUrl() != null) {
+            return Uri.parse(entity.getMelodyUrl());
+        } else {
+            return Uri.parse("android.resource://"
+                    + context.getPackageName() + "/" + R.raw.long_music);
+        }
+    }
 
+    private void stopAlarmNotification() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancelAll();
-        Vibrator vibrator = (Vibrator) getApplicationContext()
-                .getSystemService(Context.VIBRATOR_SERVICE);
+        handlerTicks.removeCallbacksAndMessages(null);
+        alarmEndVibration();
+        stopTicksAlarm();
+        stopAlarmMediaPlayer();
+        stopForeground(true);
+        stopSelf();
+        System.exit(0);
+    }
+
+    private void stopTicksAlarm() {
+        if (ticksMediaPlayer.isPlaying()) {
+            ticksMediaPlayer.stop();
+            ticksMediaPlayer.reset();
+            ticksMediaPlayer.release();
+        }
+    }
+
+    private void stopAlarmMediaPlayer() {
+        if (alarmMediaPlayer.isPlaying()) {
+            alarmMediaPlayer.stop();
+            alarmMediaPlayer.reset();
+            alarmMediaPlayer.release();
+        }
+    }
+
+    private void alarmEndVibration() {
+        Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
         if (vibrator != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(1000,
@@ -202,14 +280,6 @@ public class AlarmNotifyingService extends Service {
                 vibrator.vibrate(1000);
             }
         }
-        if (alarmMediaPlayer.isPlaying()) {
-            alarmMediaPlayer.stop();
-            alarmMediaPlayer.reset();
-            alarmMediaPlayer.release();
-        }
-        stopForeground(true);
-        stopSelf();
-        System.exit(0);
     }
 
 
@@ -239,8 +309,8 @@ public class AlarmNotifyingService extends Service {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLocalOnly(false)
-                .setDefaults(NotificationCompat.DEFAULT_LIGHTS)
-                .setPriority(NotificationCompat.PRIORITY_MAX);
+                .setDefaults(FLAG_SHOW_LIGHTS | FLAG_ONGOING_EVENT | FLAG_NO_CLEAR)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancelAll();

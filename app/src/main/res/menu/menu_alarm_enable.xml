@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.mecong.tenderalarm.alarm.MainActivity">
+    <item
+        android:id="@+id/action_turn_off_1_day"
+        android:title="@string/skip_1_day" />
+    <item
+        android:id="@+id/action_turn_off_2_days"
+        android:title="@string/skip_2_day" />
+    <item
+        android:id="@+id/action_turn_off_3_days"
+        android:title="@string/skip_3_day" />
+    <item
+        android:id="@+id/action_turn_off_4_days"
+        android:title="@string/skip_4_day" />
+    <item
+        android:id="@+id/action_turn_off_5_days"
+        android:title="@string/skip_5_day" />
+
+    <item
+        android:id="@+id/turn_off_alarm"
+        android:title="@string/turn_off" />
+</menu>

@@ -16,7 +16,6 @@ import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 public class TenderAlarmReceiver extends BroadcastReceiver {
     //adb shell dumpsys alarm > alarms.dump
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
         HyperLog.initialize(context);
@@ -39,21 +38,15 @@ public class TenderAlarmReceiver extends BroadcastReceiver {
             } else {
                 sqLiteDBHelper.toggleAlarmActive(alarmId, false);
             }
-
-//            startService(context, alarmId);
-
-//            startActivityIntent(context, alarmId);
             startAlarmNotification(context, alarmId);
-//            MyIntentService.startActionFoo(context, alarmId, null);
         } else {
             if (entity.getDays() > 0) {
                 entity.setCanceledNextAlarms(canceledNextAlarms - 1);
-                sqLiteDBHelper.addAOrUpdateAlarm(entity);
+                sqLiteDBHelper.addOrUpdateAlarm(entity);
                 AlarmUtils.setUpNextAlarm(entity, context, false);
             }
         }
     }
-
 
     private void startAlarmNotification(Context context, String alarmId) {
         Intent startAlarmIntent = new Intent(context, AlarmNotifyingService.class);

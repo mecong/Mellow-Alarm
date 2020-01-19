@@ -167,7 +167,8 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
         // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
         // To search for all documents available via installed storage providers,
         // it would be "*/*".
-        intent.setType("audio/mpeg audio/aac audio/wav");
+//        intent.setType("audio/mpeg audio/aac audio/wav");
+        intent.setType("audio/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 
         startActivityForResult(intent, READ_REQUEST_CODE);

@@ -23,11 +23,11 @@ import lombok.experimental.FieldDefaults;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class HourglassComponent extends View {
-    Color mcolor;
+    Color mColor;
     long max, currentValue;
     boolean changingMode = false;
     Paint filledPaint = new Paint();
@@ -58,6 +58,7 @@ public class HourglassComponent extends View {
         changingPaint.setColor(Color.GRAY);
         changingPaint.setStrokeWidth(5);
 
+        //TODO: remove?
         for (SleepTimerViewValueListener listener : listeners) {
             listener.onValueChanged(currentValue);
         }

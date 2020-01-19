@@ -1,10 +1,12 @@
 package com.mecong.tenderalarm.alarm;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -69,7 +70,7 @@ public class MainAlarmFragment extends Fragment {
 
         ListView alarmsList = rootView.findViewById(R.id.alarms_list);
         alarmsList.setAdapter(alarmsAdapter);
-        updateNextActiveAlarm();
+        updateNextActiveAlarm(sqLiteDBHelper);
 
         Button fab = rootView.findViewById(R.id.btnAddAlarm);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -80,13 +81,13 @@ public class MainAlarmFragment extends Fragment {
             }
         });
 
+        sqLiteDBHelper.close();
         return rootView;
     }
 
 
-    private void updateNextActiveAlarm() {
+    private void updateNextActiveAlarm(SQLiteDBHelper sqLiteDBHelper) {
         Context context = this.getContext();
-        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
 
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
         if (nextActiveAlarm != null) {
@@ -131,47 +132,66 @@ public class MainAlarmFragment extends Fragment {
         // Make sure the request was successful
         if (requestCode == ALARM_ADDING_REQUEST_CODE && resultCode == RESULT_OK) {
             alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
-            updateNextActiveAlarm();
+            updateNextActiveAlarm(sqLiteDBHelper);
             Snackbar.make(this.textNextAlarm,
                     "New alarm created", LENGTH_SHORT)
                     .setAction("Action", null).show();
         }
+        sqLiteDBHelper.close();
     }
 
-    void deleteAlarm(final String id) {
+
+    void deleteAlarmWithDialog(final String id) {
         final Context context = this.getActivity();
 
-        new AlertDialog.Builder(context)
+        new AlertDialog.Builder(new ContextThemeWrapper(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK))
                 .setTitle("Delete alarm")
                 .setMessage("Do you really want to delete this alarm?")
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
-
-                        AlarmUtils.turnOffAlarm(id, context);
-                        sqLiteDBHelper.deleteAlarm(id);
-                        alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
-                        updateNextActiveAlarm();
+                        deleteAlarm(id);
                     }
                 })
                 .setNegativeButton(android.R.string.no, null).show();
     }
 
+    void deleteAlarm(String id) {
+        final Context context = this.getActivity();
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
+
+        AlarmUtils.turnOffAlarm(id, context);
+        sqLiteDBHelper.deleteAlarm(id);
+        alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
+        updateNextActiveAlarm(sqLiteDBHelper);
+        sqLiteDBHelper.close();
+    }
+
     void setActive(String id, boolean active) {
         Context context = this.getActivity();
-
-        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
 
         if (active) {
             AlarmUtils.setUpNextAlarm(id, context, true);
         } else {
             AlarmUtils.turnOffAlarm(id, context);
         }
+
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         sqLiteDBHelper.toggleAlarmActive(id, active);
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
-        updateNextActiveAlarm();
+        updateNextActiveAlarm(sqLiteDBHelper);
+        sqLiteDBHelper.close();
+    }
+
+    void cancelNextAlarms(String id, int num) {
+        Context context = this.getActivity();
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
+        final AlarmEntity alarmById = sqLiteDBHelper.getAlarmById(id);
+        alarmById.setCanceledNextAlarms(num);
+        sqLiteDBHelper.addOrUpdateAlarm(alarmById);
+        alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
+        updateNextActiveAlarm(sqLiteDBHelper);
         sqLiteDBHelper.close();
     }
 

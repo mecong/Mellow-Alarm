@@ -18,9 +18,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.NoisesItemClickListener {
     private static final String SELECTED_POSITION = "selectedPosition";
     int selectedPosition;

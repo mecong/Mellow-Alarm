@@ -30,6 +30,9 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancelAll();
+
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity entity = sqLiteDBHelper.getAlarmById(alarmId);
@@ -37,12 +40,14 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
         if ((actionCancelAlarm).equals(intent.getAction())) {
             HyperLog.i(TAG, "Canceling alarm: " + entity);
             entity.setCanceledNextAlarms(1);
-            sqLiteDBHelper.addAOrUpdateAlarm(entity);
+            sqLiteDBHelper.addOrUpdateAlarm(entity);
             Toast.makeText(context, context.getString(R.string.upcoming_alarm_canceled_toast,
                     entity.getRealNextTime()), Toast.LENGTH_LONG).show();
         } else {
-            HyperLog.i(TAG, "Before alarm notification: " + entity);
-            showNotification(entity, context);
+            if (entity.getCanceledNextAlarms() == 0) {
+                HyperLog.i(TAG, "Before alarm notification: " + entity);
+                showNotification(entity, context);
+            }
         }
     }
 

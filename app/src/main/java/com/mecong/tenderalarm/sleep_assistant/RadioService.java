@@ -1,10 +1,8 @@
 package com.mecong.tenderalarm.sleep_assistant;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
@@ -17,14 +15,14 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.MetadataOutput;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
@@ -47,8 +45,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import static com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 import static com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType.ONLINE;
+import static timber.log.Timber.i;
 
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -75,14 +75,8 @@ public class RadioService extends Service implements Player.EventListener, Audio
     WifiManager.WifiLock wifiLock;
     AudioManager audioManager;
     String status;
+    String currentTrackTitle = "Tender Alarm";
     String streamUrl;
-    BroadcastReceiver becomingNoisyReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            pause();
-        }
-    };
     float audioVolume;
     DefaultBandwidthMeter bandwidthMeter;
     DataSource.Factory dataSourceFactory;
@@ -102,6 +96,8 @@ public class RadioService extends Service implements Player.EventListener, Audio
             }
         }
     };
+
+
     private MediaSession.Callback mediasSessionCallback = new MediaSession.Callback() {
         @Override
         public void onPause() {
@@ -124,6 +120,10 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
     public void setAudioVolume(float audioVolume) {
         this.audioVolume = audioVolume;
+        i("current position %d, buffered position %d, dff: %d",
+                exoPlayer.getCurrentPosition(),
+                exoPlayer.getBufferedPosition(),
+                exoPlayer.getBufferedPosition() - exoPlayer.getCurrentPosition());
         exoPlayer.setVolume(audioVolume);
     }
 
@@ -154,43 +154,57 @@ public class RadioService extends Service implements Player.EventListener, Audio
         mediaSession.setMetadata(new MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, "...")
                 .putString(MediaMetadata.METADATA_KEY_ALBUM, getResources().getString(R.string.app_name))
-                .putString(MediaMetadata.METADATA_KEY_TITLE, "On Air")
+                .putString(MediaMetadata.METADATA_KEY_TITLE, getResources().getString(R.string.app_name))
                 .build());
         mediaSession.setCallback(mediasSessionCallback);
 
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        if (telephonyManager != null) {
+            telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }
 
         bandwidthMeter = new DefaultBandwidthMeter.Builder(getApplicationContext()).build();
 
         dataSourceFactory = new DefaultDataSourceFactory(this, getUserAgent(), bandwidthMeter);
 
+        LoadControl loadControl = new CustomLoadControl.Builder()
+                .setBufferDurationsMs(1000 * 30,
+                        1000 * 60 * 5,
+                        1000 * 3,
+                        DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS)
+                .createDefaultLoadControl();
 
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
+
+        exoPlayer = new SimpleExoPlayer.Builder(getApplicationContext())
+                .setLoadControl(loadControl)
+                .build();
+        exoPlayer.setHandleWakeLock(true);
+        exoPlayer.setHandleAudioBecomingNoisy(true);
+
         exoPlayer.addListener(this);
         exoPlayer.addMetadataOutput(new MetadataOutput() {
             @Override
-            public void onMetadata(Metadata metadata) {
+            public void onMetadata(@NonNull Metadata metadata) {
 //                ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
-//                HyperLog.i(TAG, "----metadata---->");
+                HyperLog.i(TAG, "----metadata---->");
                 for (int i = 0; i < metadata.length(); i++) {
                     String message = metadata.get(i).toString();
-//                    HyperLog.i(TAG, message);
+                    HyperLog.i(TAG, message);
                     if (message.startsWith("ICY: ")) {
                         String titleNotParsed = message.split(",")[0].split("=")[1];
-                        String title = titleNotParsed.replaceAll("\"", " ").trim();
+                        currentTrackTitle = titleNotParsed.replaceAll("\"", " ").trim();
 
-                        if (!title.isEmpty()) {
-                            SleepAssistantViewModel.Media playingMedia = new SleepAssistantViewModel.Media("", title);
+                        if (!currentTrackTitle.isEmpty()) {
+                            SleepAssistantViewModel.Media playingMedia = new SleepAssistantViewModel.Media("", currentTrackTitle);
                             EventBus.getDefault().postSticky(playingMedia);
                         }
+
+                        notificationManager.startNotify(status, currentTrackTitle);
                     }
                 }
-//                HyperLog.i(TAG, "<----metadata----");
+                HyperLog.i(TAG, "<----metadata----");
             }
         });
-
-        registerReceiver(becomingNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
         status = IDLE;
     }
@@ -240,8 +254,6 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
         mediaSession.release();
 
-        unregisterReceiver(becomingNoisyReceiver);
-
         notificationManager.cancelNotify();
         super.onDestroy();
     }
@@ -250,31 +262,23 @@ public class RadioService extends Service implements Player.EventListener, Audio
     public void onAudioFocusChange(int focusChange) {
         HyperLog.i(TAG, "Focus changed: " + focusChange);
 
-        switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_GAIN:
-                exoPlayer.setVolume(audioVolume);
-                resume();
-                break;
-
-            case AudioManager.AUDIOFOCUS_LOSS:
-                stop();
-                break;
-
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                if (isPlaying()) pause();
-                break;
-
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                if (isPlaying()) exoPlayer.setVolume(0.1f);
-                break;
+        if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+            resume();
+            exoPlayer.setVolume(audioVolume);
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS && isPlaying()) {
+            stop();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT && isPlaying()) {
+            pause();
+        } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK && isPlaying()) {
+            exoPlayer.setVolume(0.1f);
         }
     }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-        if (!status.equals(IDLE))
-            notificationManager.startNotify(status);
+//        if (!status.equals(IDLE))
+//            notificationManager.startNotify(status);
 
         switch (playbackState) {
             case Player.STATE_BUFFERING:
@@ -284,6 +288,8 @@ public class RadioService extends Service implements Player.EventListener, Audio
                 status = STOPPED;
                 break;
             case Player.STATE_READY:
+                notificationManager.startNotify(status, currentTrackTitle);
+
                 status = playWhenReady ? PLAYING : PAUSED;
                 break;
             case Player.STATE_IDLE:
@@ -325,11 +331,15 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
     private void acquireWifiLock() {
         if (wifiLock == null) {
-            wifiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE))
-                    .createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "mcScPAmpLock");
+            final WifiManager wifiManager =
+                    (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wifiManager != null) {
+                wifiLock = wifiManager.createWifiLock(
+                        WifiManager.WIFI_MODE_FULL_HIGH_PERF, "mcScPAmpLock");
+            }
         }
 
-        if (wifiLock != null && !wifiLock.isHeld() && this.playList.getMediaType() == ONLINE) {
+        if (!wifiLock.isHeld() && this.playList.getMediaType() == ONLINE) {
             wifiLock.acquire();
             HyperLog.i(TAG, "WiFi lock acquired");
         }
@@ -407,11 +417,6 @@ public class RadioService extends Service implements Player.EventListener, Audio
         return this.status.equals(PLAYING);
     }
 
-    @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
-
-    }
-
 
     /*
     2019-08-18 21:18:05.102 I/A.L.A.R.M.A: >>>>>>onTracksChanged>>>>>>
@@ -453,6 +458,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
         HyperLog.i(TAG, ">>>>>>onTracksChanged>>>>>>");
+//        IcyHeaders: name="Enigmatic robot", genre="music", bitrate=256000, metadataInterval=16000
 
         for (int i = 0; i < trackGroups.length; i++) {
             TrackGroup trackGroup = trackGroups.get(i);
@@ -473,20 +479,6 @@ public class RadioService extends Service implements Player.EventListener, Audio
         return this.playList != null && !this.playList.getMedia().isEmpty();
     }
 
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-
-    }
-
-    @Override
-    public void onRepeatModeChanged(int repeatMode) {
-
-    }
-
-    @Override
-    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
-    }
 
     /*
     Reasons for position discontinuities. One of DISCONTINUITY_REASON_PERIOD_TRANSITION,
@@ -500,6 +492,8 @@ public class RadioService extends Service implements Player.EventListener, Audio
             HyperLog.i(TAG, this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex()).getTitle());
             SleepAssistantViewModel.Media playingMedia = this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex());
             EventBus.getDefault().postSticky(playingMedia);
+            currentTrackTitle = playingMedia.getTitle();
+            notificationManager.startNotify(status, currentTrackTitle);
         }
     }
 

@@ -15,7 +15,7 @@
 
 
         android:layout_marginTop="16dp"
-        android:text="@string/local_media"
+        android:text="@string/local_audio"
         android:textAlignment="viewStart"
         android:textColor="#E7E8E2"
         android:textStyle="italic"

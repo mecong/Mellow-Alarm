@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.hypertrack.hyperlog.HyperLog;
+import com.mecong.tenderalarm.BuildConfig;
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment;
 
@@ -23,9 +24,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String TIME_TO_SLEEP_CHANNEL_ID = "TIME_TO_SLEEP";
-    public static final String BEFORE_ALARM_CHANNEL_ID = "BEFORE_ALARM_CHANNEL_ID";
-    public static final String ALARM_CHANNEL_ID = "MECONG_ALARM_CHANNEL_ID";
+    public static final String TIME_TO_SLEEP_CHANNEL_ID = "TA_TIME_TO_SLEEP_CHANNEL";
+    public static final String BEFORE_ALARM_CHANNEL_ID = "TA_BEFORE_ALARM_CHANNEL";
+    public static final String ALARM_CHANNEL_ID = "TA_BUZZER_CHANNEL";
+    public static final String SLEEP_ASSISTANT_MEDIA_CHANNEL_ID = "TA_SLEEP_ASSISTANT_CHANNEL";
+    public static final String FRAGMENT_NAME_PARAM = BuildConfig.APPLICATION_ID + ".fragment_name";
+    public static final String ASSISTANT_FRAGMENT = "assistant_fragment";
+    public static final String SLEEP_FRAGMENT = "SLEEP_FRAGMENT";
+    public static final String ALARM_FRAGMENT = "ALARM_FRAGMENT";
     @BindView(R.id.ibOpenSleepAssistant)
     ImageButton ibOpenSleepAssistant;
     @BindView(R.id.ibOpenAlarm)
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         final MainAlarmFragment mainAlarmFragment = new MainAlarmFragment();
         final SleepAssistantFragment sleepAssistantFragment = new SleepAssistantFragment();
 
-        createNotificationChannel();
+        createNotificationChannels();
 
         final FragmentManager supportFragmentManager = MainActivity.this.getSupportFragmentManager();
 
@@ -58,14 +64,14 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
 
                 fragmentTransaction.hide(mainAlarmFragment);
-                Fragment sleep_fragment = supportFragmentManager.findFragmentByTag("SLEEP_FRAGMENT");
-                if (sleep_fragment == null) {
-                    fragmentTransaction.add(R.id.container, sleepAssistantFragment, "SLEEP_FRAGMENT");
+                Fragment sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT);
+                if (sleepFragment == null) {
+                    fragmentTransaction.add(R.id.container, sleepAssistantFragment, SLEEP_FRAGMENT);
                     fragmentTransaction.show(sleepAssistantFragment);
                     ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active);
                     ibOpenAlarm.setImageResource(R.drawable.alarm_inactive);
                 } else {
-                    if (sleep_fragment.isHidden()) {
+                    if (sleepFragment.isHidden()) {
                         fragmentTransaction.hide(mainAlarmFragment);
                         fragmentTransaction.show(sleepAssistantFragment);
                         ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active);
@@ -83,14 +89,14 @@ public class MainActivity extends AppCompatActivity {
                 FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
 
                 fragmentTransaction.hide(sleepAssistantFragment);
-                Fragment alarm_fragment = supportFragmentManager.findFragmentByTag("ALARM_FRAGMENT");
-                if (alarm_fragment == null) {
-                    fragmentTransaction.add(R.id.container, mainAlarmFragment, "ALARM_FRAGMENT");
+                Fragment alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT);
+                if (alarmFragment == null) {
+                    fragmentTransaction.add(R.id.container, mainAlarmFragment, ALARM_FRAGMENT);
                     fragmentTransaction.show(mainAlarmFragment);
                     ibOpenAlarm.setImageResource(R.drawable.alarm_active);
                     ibOpenSleepAssistant.setImageResource(R.drawable.sleep_inactive);
                 } else {
-                    if (alarm_fragment.isHidden()) {
+                    if (alarmFragment.isHidden()) {
                         fragmentTransaction.hide(sleepAssistantFragment);
                         fragmentTransaction.show(mainAlarmFragment);
                         ibOpenAlarm.setImageResource(R.drawable.alarm_active);
@@ -103,21 +109,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        supportFragmentManager.beginTransaction()
-                .add(R.id.container, mainAlarmFragment, "ALARM_FRAGMENT")
-                .commit();
-        ibOpenAlarm.setImageResource(R.drawable.alarm_active);
-
-//        supportFragmentManager.beginTransaction()
-//                .add(R.id.container, sleepAssistantFragment, "SLEEP_FRAGMENT")
-//                .commit();
-//        ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active);
-
+        final String desiredFragment = getIntent().getStringExtra(FRAGMENT_NAME_PARAM);
+        if (ASSISTANT_FRAGMENT.equals(desiredFragment)) {
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.container, sleepAssistantFragment, SLEEP_FRAGMENT)
+                    .commit();
+            ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active);
+        } else {
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.container, mainAlarmFragment, ALARM_FRAGMENT)
+                    .commit();
+            ibOpenAlarm.setImageResource(R.drawable.alarm_active);
+        }
     }
 
-    private void createNotificationChannel() {
+    private void createNotificationChannels() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Context context = getApplicationContext();
 
@@ -127,29 +137,35 @@ public class MainActivity extends AppCompatActivity {
                     NotificationManager.IMPORTANCE_LOW);
             timeToSleepChannel.setDescription(context.getString(R.string.time_to_sleep_channel_description));
 
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             NotificationChannel beforeAlarmChannel = new NotificationChannel(
                     BEFORE_ALARM_CHANNEL_ID,
-                    context.getString(R.string.time_to_sleep_channel_name),
+                    context.getString(R.string.upcoming_alarm_notification_channel_name),
                     NotificationManager.IMPORTANCE_LOW);
-            timeToSleepChannel.setDescription(context.getString(R.string.time_to_sleep_channel_description));
+            beforeAlarmChannel.setDescription(context.getString(R.string.upcoming_alarm_channel_description));
+
+            NotificationChannel sleepAssistantChannel = new NotificationChannel(
+                    SLEEP_ASSISTANT_MEDIA_CHANNEL_ID,
+                    context.getString(R.string.sleep_assistant_media_channel_name),
+                    NotificationManager.IMPORTANCE_LOW);
+            sleepAssistantChannel.setShowBadge(false);
+            sleepAssistantChannel.setDescription(context.getString(R.string.sleep_assistant_media_channel_description));
 
             NotificationChannel alarmChannel = new NotificationChannel(
                     ALARM_CHANNEL_ID,
-                    context.getString(R.string.add),
+                    context.getString(R.string.buzzer_channel_description),
                     NotificationManager.IMPORTANCE_HIGH);
             alarmChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             alarmChannel.setShowBadge(false);
             alarmChannel.setSound(null, Notification.AUDIO_ATTRIBUTES_DEFAULT);
-
-            timeToSleepChannel.setDescription(context.getString(R.string.alarm_time));
-
+            alarmChannel.setDescription(context.getString(R.string.buzzer_channel_name));
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(timeToSleepChannel);
-            notificationManager.createNotificationChannel(beforeAlarmChannel);
-            notificationManager.createNotificationChannel(alarmChannel);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(timeToSleepChannel);
+                notificationManager.createNotificationChannel(beforeAlarmChannel);
+                notificationManager.createNotificationChannel(alarmChannel);
+                notificationManager.createNotificationChannel(sleepAssistantChannel);
+            }
         }
     }
 }

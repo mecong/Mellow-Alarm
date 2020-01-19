@@ -49,19 +49,25 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
         }
 
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        boolean isScreenOn = pm.isInteractive();
-        HyperLog.v(TAG, "Device is used: " + isScreenOn);
-        if (!isScreenOn) return;
+        boolean isScreenOn = false;
+        if (pm != null) {
+            isScreenOn = pm.isInteractive();
+        }
 
-        Calendar calendar = timeToGoToBed(nextActiveAlarm);
-        if (alarmInTheMorning(nextActiveAlarm) && calendar != null) {
-            showNotification(calendar, context);
+        HyperLog.v(TAG, "Device is used: " + isScreenOn);
+
+        if (isScreenOn) {
+            Calendar timeToBed = timeToGoToBed(nextActiveAlarm);
+            if (alarmInTheMorning(nextActiveAlarm) && timeToBed != null) {
+                showNotification(timeToBed, context);
+            }
         }
     }
 
     private void showNotification(Calendar calendar, Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         String message = context.getString(R.string.time_to_sleep_notification_message, calendar);

@@ -42,11 +42,13 @@
         android:textAlignment="center"
         android:textColor="#E9DEDE" />
 
-    <Switch
-        android:id="@+id/switchToggleAlarm"
+    <ToggleButton
+        android:id="@+id/toggleButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0" />
+        android:layout_weight="0"
+        android:checked="false"
+        android:text="ToggleButton" />
 
     <ImageButton
         android:id="@+id/btnDeleteAlarm"

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="shake_times">
+        <item>6 times</item>
+        <item>7 times</item>
+        <item>8 times</item>
+        <item>9 times</item>
+        <item>10 times</item>
+    </string-array>
+</resources>

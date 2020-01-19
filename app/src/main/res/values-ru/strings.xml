@@ -15,6 +15,6 @@
     <string name="online">Онлайн</string>
     <string name="url_address">URL адрес радиостанции</string>
     <string name="internet_streams">Интернет потоки</string>
-    <string name="local_media">Локальные медиа</string>
+    <string name="local_audio">Локальные медиа</string>
     <string name="can_not_stream">Не могу воспроизвести медиа!</string>
 </resources>

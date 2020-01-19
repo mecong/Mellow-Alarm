@@ -4,13 +4,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
-import android.widget.Switch;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.tenderalarm.R;
@@ -26,58 +28,101 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
 
     AlarmsListCursorAdapter(MainAlarmFragment mainActivity, Cursor c) {
         super(mainActivity.getActivity(), c, 0);
-        HyperLog.i(TAG, "Cursor count: " + c.getCount());
         this.mainActivity = mainActivity;
     }
 
     @Override
     public View newView(final Context context, final Cursor cursor, final ViewGroup parent) {
-        long id = cursor.getLong(cursor.getColumnIndex("_id"));
-
-        View inflate = LayoutInflater.from(context)
+        return LayoutInflater.from(context)
                 .inflate(R.layout.alarm_row_item, parent, false);
-
-        HyperLog.i(TAG, "New view for id: " + id + " view:" + inflate);
-        return inflate;
     }
 
     @Override
     public void bindView(final View view, final Context context, final Cursor cursor) {
-
         final AlarmEntity entity = new AlarmEntity(cursor);
-        final String id = String.valueOf(entity.getId());
+        final String alarmId = String.valueOf(entity.getId());
+
+        final TextView time = view.findViewById(R.id.textRow1);
+        final TextView textRow2 = view.findViewById(R.id.textRow2);
+        final TextView textViewCanceled = view.findViewById(R.id.textViewCanceled);
+        final ToggleButton toggleButton = view.findViewById(R.id.toggleButton);
+        final ImageButton btnDeleteAlarm = view.findViewById(R.id.btnDeleteAlarm);
+
+        HyperLog.i(TAG, "binding view : " + view);
+
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.editAlarm(id);
+                mainActivity.editAlarm(alarmId);
             }
         });
 
-        ImageButton btnDeleteAlarm = view.findViewById(R.id.btnDeleteAlarm);
+
         btnDeleteAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.deleteAlarm(id);
+                PopupMenu menu = new PopupMenu(context, v);
+                menu.getMenuInflater().inflate(R.menu.menu_media_element, menu.getMenu());
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        mainActivity.deleteAlarm(alarmId);
+                        return true;
+                    }
+                });
+
+                menu.show();
             }
         });
 
 
-        HyperLog.i(TAG, this.toString());
-        Switch switchToggleAlarm = view.findViewById(R.id.switchToggleAlarm);
-        switchToggleAlarm.setChecked(entity.isActive());
-        switchToggleAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        final PopupMenu popup = new PopupMenu(context, toggleButton);
+        popup.getMenuInflater().inflate(R.menu.menu_alarm_enable, popup.getMenu());
+
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.action_turn_off_1_day) {
+                    mainActivity.cancelNextAlarms(alarmId, 1);
+                } else if (item.getItemId() == R.id.action_turn_off_2_days) {
+                    mainActivity.cancelNextAlarms(alarmId, 2);
+                } else if (item.getItemId() == R.id.action_turn_off_3_days) {
+                    mainActivity.cancelNextAlarms(alarmId, 3);
+                } else if (item.getItemId() == R.id.action_turn_off_4_days) {
+                    mainActivity.cancelNextAlarms(alarmId, 4);
+                } else if (item.getItemId() == R.id.action_turn_off_5_days) {
+                    mainActivity.cancelNextAlarms(alarmId, 5);
+                } else {
+                    mainActivity.setActive(alarmId, false);
+                }
+
+                return true;
+            }
+        });
+
+        toggleButton.setChecked(entity.isActive());
+
+
+        toggleButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                HyperLog.i(TAG, "this is: " + AlarmsListCursorAdapter.this.toString());
-                mainActivity.setActive(id, isChecked);
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    HyperLog.i(TAG, ">>>>>>>>>onTouch");
+
+                    if (!toggleButton.isChecked()) {
+                        mainActivity.setActive(alarmId, true);
+                        toggleButton.setChecked(true);
+                    } else {
+                        popup.show();//showing popup menu
+                    }
+                }
+                return true;
             }
         });
 
-        TextView time = view.findViewById(R.id.textRow1);
-        time.setText(context.getString(R.string.alarm_time, entity.getHour(), entity.getMinute()));
 
-        TextView textViewCanceled = view.findViewById(R.id.textViewCanceled);
+        time.setText(context.getString(R.string.alarm_time, entity.getHour(), entity.getMinute()));
         textViewCanceled.setText(entity.getCanceledNextAlarms() > 0 ?
                 context.getString(R.string.next_s_cancel, entity.getCanceledNextAlarms())
                 : "");
@@ -99,8 +144,8 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
             }
         }
 
-        TextView textRow2 = view.findViewById(R.id.textRow2);
         textRow2.setText(Html.fromHtml(daysMessage));
+
     }
 
     private String getDaysHtml(AlarmEntity entity, final Context context) {

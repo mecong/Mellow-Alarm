@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="task_level_spinner">
+        <item>complexity level 1</item>
+        <item>complexity level 2</item>
+        <item>complexity level 3</item>
+        <item>complexity level 4</item>
+        <item>complexity level 5</item>
+    </string-array>
+</resources>

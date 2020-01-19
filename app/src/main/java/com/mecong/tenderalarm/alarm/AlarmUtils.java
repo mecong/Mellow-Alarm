@@ -19,10 +19,14 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static com.mecong.tenderalarm.alarm.SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AlarmUtils {
     public static final String TAG = "A.L.A.R.M.A";
     static final String ALARM_ID_PARAM = BuildConfig.APPLICATION_ID + ".alarm_id";
@@ -39,13 +43,11 @@ public class AlarmUtils {
         alarmEntity.updateNextAlarmDate(manually);
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-
         PendingIntent alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context);
 
+        setTheAlarm(alarmEntity.getNextTime(), alarmIntent, alarmMgr);
 
-        setTheAlarm(alarmEntity, alarmIntent, alarmMgr);
-
-        SQLiteDBHelper.getInstance(context).addAOrUpdateAlarm(alarmEntity);
+        SQLiteDBHelper.getInstance(context).addOrUpdateAlarm(alarmEntity);
         HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
                 + context.getString(R.string.next_alarm_date_time, alarmEntity.getRealNextTime()));
 
@@ -64,6 +66,19 @@ public class AlarmUtils {
         }
     }
 
+    static void snoozeAlarm(int minutes, AlarmEntity alarmEntity, Context context) {
+        alarmEntity.setSnoozeTimes(alarmEntity.getSnoozeTimes() + 1);
+        SQLiteDBHelper.getInstance(context).addOrUpdateAlarm(alarmEntity);
+
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        PendingIntent alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context);
+
+        Calendar calendarNow = Calendar.getInstance();
+        calendarNow.add(Calendar.MINUTE, minutes);
+        setTheAlarm(calendarNow.getTimeInMillis(), alarmIntent, alarmMgr);
+    }
+
     private static PendingIntent alarmViaBroadcastReceiver(AlarmEntity alarmEntity, Context context) {
         Intent intentToFire = new Intent(context, TenderAlarmReceiver.class);
         intentToFire.putExtra(ALARM_ID_PARAM, String.valueOf(alarmEntity.getId()));
@@ -72,13 +87,13 @@ public class AlarmUtils {
                 alarmEntity.getNextRequestCode(), intentToFire, FLAG_UPDATE_CURRENT);
     }
 
-    private static void setTheAlarm(AlarmEntity alarmEntity, PendingIntent alarmIntent, AlarmManager alarmMgr) {
+    private static void setTheAlarm(Long time, PendingIntent alarmIntent, AlarmManager alarmMgr) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AlarmManager.AlarmClockInfo alarmClockInfo =
-                    new AlarmManager.AlarmClockInfo(alarmEntity.getNextTime(), alarmIntent);
+                    new AlarmManager.AlarmClockInfo(time, alarmIntent);
             alarmMgr.setAlarmClock(alarmClockInfo, alarmIntent);
         } else {
-            alarmMgr.setExact(AlarmManager.RTC_WAKEUP, alarmEntity.getNextTime(), alarmIntent);
+            alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent);
             HyperLog.i(TAG, "setExact");
         }
     }
@@ -115,6 +130,10 @@ public class AlarmUtils {
         PendingIntent operation = PendingIntent
                 .getBroadcast(context, 22, intent, 0);
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmMgr == null) {
+            return;
+        }
+
         if (nextMorningAlarm != null) {
 
             long triggerAfter = SystemClock.elapsedRealtime()

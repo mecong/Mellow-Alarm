@@ -69,7 +69,7 @@ public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapte
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(getContext());
+                final Dialog dialog = new Dialog(getContext(), R.style.UrlDialogCustom);
                 dialog.setContentView(R.layout.url_input_dialog);
 
                 final EditText textUrl = dialog.findViewById(R.id.textUrl);

@@ -42,7 +42,8 @@ public class AlarmEntity {
     int days = 0;
     @Builder.Default
     long exactDate = 0;
-
+    @Builder.Default
+    int complexity = 1;
     @ToString.Exclude
     String message;
     @Builder.Default
@@ -53,16 +54,20 @@ public class AlarmEntity {
     Integer lightTime;
     int ticksTime;
     @ToString.Exclude
-    String melody;
+    String melodyUrl;
+    @ToString.Exclude
+    String melodyName;
     @ToString.Exclude
     String vibrationType;
     @ToString.Exclude
     Integer volume;
     @ToString.Exclude
     Integer snoozeInterval;
-    Integer snoozeTimes;
+    Integer snoozeMaxTimes = 10;
     @Builder.Default
     Integer canceledNextAlarms = 0;
+    @Builder.Default
+    Integer snoozeTimes = 0;
 
     @Builder.Default
     Long nextTime = -1L;
@@ -75,16 +80,19 @@ public class AlarmEntity {
         this.hour = cursor.getInt(cursor.getColumnIndex("hour"));
         this.minute = cursor.getInt(cursor.getColumnIndex("minute"));
         this.days = cursor.getInt(cursor.getColumnIndex("days"));
+        this.complexity = cursor.getInt(cursor.getColumnIndex("complexity"));
         this.exactDate = cursor.getLong(cursor.getColumnIndex("exact_date"));
         this.message = cursor.getString(cursor.getColumnIndex("message"));
         this.active = cursor.getInt(cursor.getColumnIndex("active")) == 1;
         this.beforeAlarmNotification = cursor.getInt(cursor.getColumnIndex("before_alarm_notification")) == 1;
         this.ticksTime = cursor.getInt(cursor.getColumnIndex("ticks_time"));
-        this.melody = cursor.getString(cursor.getColumnIndex("melody"));
+        this.melodyUrl = cursor.getString(cursor.getColumnIndex("melody_url"));
+        this.melodyName = cursor.getString(cursor.getColumnIndex("melody_name"));
         this.vibrationType = cursor.getString(cursor.getColumnIndex("vibration_type"));
         this.volume = cursor.getInt(cursor.getColumnIndex("volume"));
         this.snoozeInterval = cursor.getInt(cursor.getColumnIndex("snooze_interval"));
         this.snoozeTimes = cursor.getInt(cursor.getColumnIndex("snooze_times"));
+        this.snoozeMaxTimes = cursor.getInt(cursor.getColumnIndex("snooze_max_times"));
         this.canceledNextAlarms = cursor.getInt(cursor.getColumnIndex("canceled_next_alarms"));
         this.nextTime = cursor.getLong(cursor.getColumnIndex("next_time"));
         this.nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code"));

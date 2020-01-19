@@ -1,15 +1,10 @@
 package com.mecong.tenderalarm.sleep_assistant;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -23,15 +18,9 @@ import static com.mecong.tenderalarm.sleep_assistant.RadioService.PAUSED;
 class MediaNotificationManager {
 
     private static final int NOTIFICATION_ID = 555;
-    public final String PRIMARY_CHANNEL = "PRIMARY_CHANNEL_ID";
-    private final String PRIMARY_CHANNEL_NAME = "PRIMARY";
-
     private RadioService service;
-
-    private String strAppName, strLiveBroadcast;
-
+    private String strAppName;
     private Resources resources;
-
     private NotificationManagerCompat notificationManager;
 
     MediaNotificationManager(RadioService service) {
@@ -40,12 +29,15 @@ class MediaNotificationManager {
         this.resources = service.getResources();
 
         strAppName = resources.getString(R.string.app_name);
-        strLiveBroadcast = "Time to sleep";
 
         notificationManager = NotificationManagerCompat.from(service);
     }
 
     void startNotify(String playbackStatus) {
+        startNotify(playbackStatus, "Time to sleep");
+    }
+
+    void startNotify(String playbackStatus, String contentText) {
 
         Bitmap largeIcon = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher);
 
@@ -67,21 +59,15 @@ class MediaNotificationManager {
         Intent intent = new Intent(service, MainActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT);
         PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, 0);
 
         notificationManager.cancel(NOTIFICATION_ID);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager manager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-            NotificationChannel channel = new NotificationChannel(PRIMARY_CHANNEL, PRIMARY_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            manager.createNotificationChannel(channel);
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(service, PRIMARY_CHANNEL)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(service, MainActivity.SLEEP_ASSISTANT_MEDIA_CHANNEL_ID)
                 .setAutoCancel(false)
-                .setContentTitle(strLiveBroadcast)
-                .setContentText(strAppName)
+                .setContentTitle(strAppName)
+                .setContentText(contentText)
                 .setLargeIcon(largeIcon)
                 .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -96,6 +82,7 @@ class MediaNotificationManager {
 //                        .setShowCancelButton(true)
 //                        .setCancelButtonIntent(stopAction));
         service.startForeground(NOTIFICATION_ID, builder.build());
+//notificationManager.notify(NOTIFICATION_ID,builder.build());
     }
 
     void cancelNotify() {

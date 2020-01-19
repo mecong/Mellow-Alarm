@@ -10,35 +10,41 @@
     <string name="dismiss" translatable="false">DISMISS</string>
     <string name="mo" translatable="false">MO</string>
     <string name="tu" translatable="false">TU</string>
-    <string name="we" translatable="false">WE</string>
+    <string name="we">WE</string>
     <string name="th" translatable="false">TH</string>
     <string name="fr" translatable="false">FR</string>
     <string name="sa" translatable="false">SA</string>
     <string name="su" translatable="false">SU</string>
 
-    <string name="upcoming_alarm_channel_name" translatable="false">Upcoming alarm</string>
-
+    <string name="upcoming_alarm_notification_channel_name" translatable="false">☕️ Upcoming alarm</string>
     <string name="upcoming_alarm_channel_description" translatable="false">Kindly reminder about upcoming alarm</string>
     <string name="upcoming_alarm_notification_title">☕️ Upcoming alarm</string>
     <string name="upcoming_alarm_notification_message" translatable="false">Cancel upcoming alarm at %1$tH:%1$tM</string>
     <string name="upcoming_alarm_canceled_toast" translatable="false">Upcoming alarm at %1$tH:%1$tM canceled</string>
-    <string name="time_to_sleep_channel_name" translatable="false">🛏 Time to sleep</string>
 
+    <string name="time_to_sleep_channel_name" translatable="false">🛏 Time to sleep</string>
     <string name="time_to_sleep_channel_description" translatable="false">Kindly reminder about upcoming morning alarm when not much sleep time remain</string>
     <string name="time_to_sleep_notification_title" translatable="false">🛏 Time to sleep</string>
     <string name="time_to_sleep_notification_message" translatable="false">
        😼 There are only %1$tH hours %1$tM minutes until your morning alarm. Tap to open the Sleep Assistant.</string>
+
+    <string name="buzzer_channel_description" translatable="false">Alarm Signal</string>
+    <string name="buzzer_channel_name" translatable="false">Tender Alarm Buzzer</string>
+
+    <string name="sleep_assistant_media_channel_name" translatable="false">Sleep Assistant</string>
+    <string name="sleep_assistant_media_channel_description" translatable="false">Display media information when sleep assistant is active</string>
+
+
     <string name="alarm_time">%1$02d:%2$02d</string>
-
-
     <string name="alarm_date">%D</string>
     <string name="work_days">Work days</string>
     <string name="every_day" translatable="false">Every day</string>
     <string name="never" translatable="false">Never</string>
     <string name="single_day" translatable="false">%1$td.%1$tm.%1$tY</string>
     <string name="logs" translatable="false">Logs</string>
-    <string name="ticks" translatable="false">Ticks %d minute(s) before alarm</string>
+    <string name="ticks" translatable="false">Tender alarm %d minute(s) before</string>
     <string name="snooze" translatable="false">Snooze %d minute(s)</string>
+    <string name="alarm_complexity" translatable="false">Alarm complexity %d</string>
 
     <string name="all_alarms_are_off">All alarms are off</string>
     <string name="next_alarm" translatable="false">Alarm in %d days</string>
@@ -57,17 +63,36 @@
     <string name="sleep_minutes" translatable="false">%d minutes</string>
     <string name="volume">Volume</string>
     <string name="volume_percent">%d%%</string>
-    <string name="next_s_cancel" translatable="false">Next %d cancel</string>
+    <string name="next_s_cancel" translatable="false">Skip next %d</string>
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="noises">Noises</string>
     <string name="url_address">Radio station URL address</string>
-    <string name="local_media">Local media</string>
+    <string name="local_audio">Local audio</string>
     <string name="internet_streams">Internet streams</string>
     <string name="can_not_stream">ERROR: Can not play media!</string>
     <string name="image_button" translatable="false">Image button</string>
     <string name="alarms" translatable="false">Alarms</string>
     <string name="open_sleep_assistant" translatable="false">Open Sleep Assistant</string>
+    <string name="alarm_turn_off_prompt" translatable="false">Drag circles to their places. Or shake phone <big>%d</big> times</string>
+
+
+    <string name="skip_1_day" translatable="false">Turn off for 1 day</string>
+    <string name="skip_2_day" translatable="false">Turn off for 2 day</string>
+    <string name="skip_3_day" translatable="false">Turn off for 3 day</string>
+    <string name="skip_4_day" translatable="false">Turn off for 4 day</string>
+    <string name="skip_5_day" translatable="false">Turn off for 5 day</string>
+    <string name="add_alarm" translatable="false">Add alarm</string>
+    <string name="turn_off" translatable="false">Turn off</string>
+    <string name="snooze_3_min" translatable="false">3 min snooze</string>
+    <string name="snooze_5_min" translatable="false">5 min snooze</string>
+    <string name="snooze_2_min" translatable="false">2 min snooze</string>
+    <string name="date" translatable="false">Date</string>
+    <string name="message" translatable="false">Message</string>
+    <string name="alarm_sound" translatable="false">Alarm sound</string>
+    <string name="default_sound" translatable="false">Default</string>
+
+
     <string-array name="days_array">
         <item>@string/mo</item>
         <item>@string/tu</item>

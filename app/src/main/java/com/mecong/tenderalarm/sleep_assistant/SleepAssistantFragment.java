@@ -44,13 +44,11 @@ import butterknife.OnClick;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import static android.content.Context.POWER_SERVICE;
-
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class SleepAssistantFragment extends Fragment {
 
-    private static final long STEP_MILLIS = TimeUnit.SECONDS.toMillis(30);
-    private static RadioService service;
+    private static final long STEP_MILLIS = TimeUnit.SECONDS.toMillis(10);
+    private RadioService service;
 
     @BindView(R.id.pp_button)
     ImageButton ppButton;
@@ -78,7 +76,6 @@ public class SleepAssistantFragment extends Fragment {
     Handler handler;
     Runnable runnable;
     float volumeStep;
-    PowerManager.WakeLock wakeLock;
     boolean serviceBound;
     SleepAssistantViewModel model;
 
@@ -127,11 +124,11 @@ public class SleepAssistantFragment extends Fragment {
 
         ButterKnife.bind(this, rootView);
 
-        final Context context = this.getContext().getApplicationContext();
+        final Context context = this.getContext();
 
         initializeTabsAndMediaFragments(context, 1);
 
-        timeMinutes = 30;
+        timeMinutes = 39;
 
         AudioManager audioManager = (AudioManager) this.getActivity().getSystemService(Context.AUDIO_SERVICE);
         int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -185,7 +182,7 @@ public class SleepAssistantFragment extends Fragment {
                 timeMs -= STEP_MILLIS;
                 if (timeMs <= 0) {
                     handler.removeCallbacks(runnable);
-                    releaseWakeLock();
+//                    releaseWakeLock();
 
                     if (service.isPlaying()) {
                         service.stop();
@@ -269,30 +266,30 @@ public class SleepAssistantFragment extends Fragment {
             }
         }
     }
-
-    private void acquireWakeLock() {
-        if (wakeLock == null) {
-            PowerManager powerManager = (PowerManager) this.getActivity().getSystemService(POWER_SERVICE);
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                    "TenderAlarm::SleepAssistantWakelockTag");
-        }
-
-        if (wakeLock != null && !wakeLock.isHeld()) {
-            wakeLock.acquire(timeMs);
-        }
-    }
-
-    private void releaseWakeLock() {
-        if (wakeLock != null && wakeLock.isHeld()) {
-            wakeLock.release();
-        }
-    }
+//
+//    private void acquireWakeLock() {
+//        if (wakeLock == null) {
+//            PowerManager powerManager = (PowerManager) this.getActivity().getSystemService(POWER_SERVICE);
+//            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+//                    "TenderAlarm::SleepAssistantWakelockTag");
+//        }
+//
+//        if (wakeLock != null && !wakeLock.isHeld()) {
+//            wakeLock.acquire(timeMs);
+//        }
+//    }
+//
+//    private void releaseWakeLock() {
+//        if (wakeLock != null && wakeLock.isHeld()) {
+//            wakeLock.release();
+//        }
+//    }
 
     @Subscribe(sticky = true)
     public void onPlayFileChanged(SleepAssistantViewModel.Media media) {
         nowPlayingText.setText(media.getTitle());
-
     }
+
 
     @Subscribe(sticky = true)
     public void onEvent(String status) {
@@ -316,7 +313,7 @@ public class SleepAssistantFragment extends Fragment {
                 ppButton.setImageResource(R.drawable.play_btn);
 
                 model.playing.setValue(false);
-                releaseWakeLock();
+//                releaseWakeLock();
                 break;
             case RadioService.PLAYING:
 
@@ -335,13 +332,13 @@ public class SleepAssistantFragment extends Fragment {
 
                 handler.removeCallbacks(runnable);
                 handler.postDelayed(runnable, STEP_MILLIS);
-                acquireWakeLock();
+//                acquireWakeLock();
                 break;
             default:
                 ppButton.setImageResource(R.drawable.play_btn);
 
                 model.playing.setValue(false);
-                releaseWakeLock();
+//                releaseWakeLock();
                 handler.removeCallbacks(runnable);
                 break;
         }
@@ -376,7 +373,7 @@ public class SleepAssistantFragment extends Fragment {
         EventBus.getDefault().unregister(this);
 
         handler.removeCallbacks(runnable);
-        releaseWakeLock();
+//        releaseWakeLock();
 
         if (service.isPlaying()) {
             service.stop();

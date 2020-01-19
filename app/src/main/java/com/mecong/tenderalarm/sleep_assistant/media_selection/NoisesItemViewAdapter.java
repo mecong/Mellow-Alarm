@@ -45,7 +45,6 @@ public class NoisesItemViewAdapter extends RecyclerView.Adapter<NoisesItemViewAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SleepNoise item = mData.get(position);
         holder.headerText.setText(item.getName());
-//        holder.urlText.setText(item.getUrl());
 
         holder.itemView.setSelected(selectedPosition == position);
     }
@@ -77,12 +76,10 @@ public class NoisesItemViewAdapter extends RecyclerView.Adapter<NoisesItemViewAd
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView headerText;
-//        TextView urlText;
 
         ViewHolder(View itemView) {
             super(itemView);
             headerText = itemView.findViewById(R.id.headerText);
-//            urlText = itemView.findViewById(R.id.urlText);
             itemView.setOnClickListener(this);
         }
 

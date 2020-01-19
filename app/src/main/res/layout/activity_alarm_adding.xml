@@ -59,19 +59,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:onClick="timeTextViewClick"
-            android:text="00:00"
             android:textAlignment="center"
             android:textSize="56sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/topButtonsLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/topButtonsLayout"
+            tools:text="00:00" />
 
         <TextView
             android:id="@+id/dateTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:onClick="timeTextViewClick"
-            android:text="Date"
+            android:text="@string/date"
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,6 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -108,7 +109,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:onClick="selectDateClick"
-                android:text="Date"
+                android:text="@string/date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btnWorkDays"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -184,7 +185,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
                 android:text="@string/su"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -223,30 +223,64 @@
         <EditText
             android:id="@+id/txtAlarmMessage"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:ems="10"
-            android:hint="Alarm message"
+            android:hint="@string/message"
+            android:importantForAutofill="no"
             android:inputType="textPersonName"
-            android:maxLength="100"
+            android:maxLength="20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/daysLayout" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/melodyLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtAlarmMessage">
+
+            <TextView
+                android:id="@+id/txtMelodyCaption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/alarm_sound"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txtMelody"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/default_sound"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtMelodyCaption" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/ticksLayout"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtAlarmMessage">
+            app:layout_constraintTop_toBottomOf="@+id/melodyLayout">
 
             <TextView
                 android:id="@+id/txtTicks"
@@ -299,7 +333,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/turnOffLayout"
+            android:id="@+id/complexityLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
@@ -310,41 +344,23 @@
             app:layout_constraintTop_toBottomOf="@+id/snoozeLayout">
 
             <TextView
-                android:id="@+id/editText"
-                android:layout_width="0dp"
+                android:id="@+id/txtComplexity"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:text="Turn off alarm"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/alarm_complexity"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <RadioGroup
+            <SeekBar
+                android:id="@+id/seekBarComplexity"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_width="0dp"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
+                android:max="6"
+                android:progress="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editText">
-
-                <RadioButton
-                    android:id="@+id/radioButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Button" />
-
-                <RadioButton
-                    android:id="@+id/radioButton2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Shake" />
-
-                <RadioButton
-                    android:id="@+id/radioButton3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Task" />
-            </RadioGroup>
+                app:layout_constraintTop_toBottomOf="@+id/txtComplexity" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -355,9 +371,10 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/turnOffLayout">
+            app:layout_constraintTop_toBottomOf="@id/complexityLayout">
 
             <Button
                 android:id="@+id/btnCancel"
@@ -384,14 +401,6 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent" />
         </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="260dp"
-            android:background="#C9A77070"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bottomButtonsLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

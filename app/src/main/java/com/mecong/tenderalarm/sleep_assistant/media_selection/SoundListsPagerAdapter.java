@@ -2,6 +2,7 @@ package com.mecong.tenderalarm.sleep_assistant.media_selection;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -22,6 +23,7 @@ public class SoundListsPagerAdapter extends FragmentPagerAdapter {
         pageTitles[2] = context.getString(R.string.noises).toUpperCase();
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
