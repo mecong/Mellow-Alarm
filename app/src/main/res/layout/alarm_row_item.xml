@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
             android:textColor="#E9DEDE"
-            android:textSize="15sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/textRow2"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="5dp"
             android:textColor="#E9DEDE"
-            android:textSize="15sp" />
+            android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -42,13 +42,22 @@
         android:textAlignment="center"
         android:textColor="#E9DEDE" />
 
-    <ToggleButton
+
+    <ImageButton
         android:id="@+id/toggleButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="0"
-        android:checked="false"
-        android:text="ToggleButton" />
+        android:adjustViewBounds="false"
+        android:background="#00FFFFFF"
+        android:clickable="true"
+        android:contentDescription="@string/switch_alarm_state"
+        android:focusable="true"
+        android:foregroundTintMode="src_in"
+        android:minWidth="40sp"
+        android:scaleType="center"
+        android:src="@drawable/ic_alarm_off"
+        android:tint="#E9DEDE" />
 
     <ImageButton
         android:id="@+id/btnDeleteAlarm"

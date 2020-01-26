@@ -63,6 +63,7 @@ public class AlarmEntity {
     Integer volume;
     @ToString.Exclude
     Integer snoozeInterval;
+    @Builder.Default
     Integer snoozeMaxTimes = 10;
     @Builder.Default
     Integer canceledNextAlarms = 0;
@@ -90,8 +91,6 @@ public class AlarmEntity {
         this.melodyName = cursor.getString(cursor.getColumnIndex("melody_name"));
         this.vibrationType = cursor.getString(cursor.getColumnIndex("vibration_type"));
         this.volume = cursor.getInt(cursor.getColumnIndex("volume"));
-        this.snoozeInterval = cursor.getInt(cursor.getColumnIndex("snooze_interval"));
-        this.snoozeTimes = cursor.getInt(cursor.getColumnIndex("snooze_times"));
         this.snoozeMaxTimes = cursor.getInt(cursor.getColumnIndex("snooze_max_times"));
         this.canceledNextAlarms = cursor.getInt(cursor.getColumnIndex("canceled_next_alarms"));
         this.nextTime = cursor.getLong(cursor.getColumnIndex("next_time"));
@@ -131,7 +130,7 @@ public class AlarmEntity {
         return d;
     }
 
-    public long getRealNextTime() {
+    public long getNextTimeWithTicks() {
         return getNextTime() + MINUTES.toMillis(getTicksTime());
     }
 
@@ -163,16 +162,25 @@ public class AlarmEntity {
                 int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
                 List<Boolean> allDaysAsList = allDaysAsList();
-                for (int i = dayOfWeek - 1; i < 8; i++) {
+                int i = dayOfWeek - 1;
+                int skip = canceledNextAlarms;
+                while (true) {
                     if (i >= allDaysAsList.size()) {
                         i = 0;
                     }
 
                     if (allDaysAsList.get(i)) {
-                        break;
+                        if (skip <= 0) {
+                            break;
+                        } else {
+                            skip--;
+                            calendar.add(Calendar.DAY_OF_YEAR, 1);
+                        }
                     } else {
                         calendar.add(Calendar.DAY_OF_YEAR, 1);
                     }
+
+                    i++;
                 }
             }
         } else {

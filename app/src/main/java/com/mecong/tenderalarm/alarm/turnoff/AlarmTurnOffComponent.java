@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.mecong.tenderalarm.BuildConfig;
 import com.mecong.tenderalarm.alarm.AlarmMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -33,12 +32,10 @@ public class AlarmTurnOffComponent extends View {
     Paint lockingPaint = new Paint();
     DraggableCircle[] figures;
     Integer activeFigure = null;
-    Rect viewPortBounds;
     Rect viewPortBoundsForEvent;
     int prevX, prevY;
     Paint[] draggableCirclePaints;
     Paint[] spiritPaints;
-    MotionEvent lastEvent;
     List<Point> positions;
 
 
@@ -61,7 +58,7 @@ public class AlarmTurnOffComponent extends View {
         if (oldw != 0 || oldh != 0) {
             figures = new DraggableCircle[this.complexity];
 
-            viewPortBounds = new Rect(getPaddingLeft(), getPaddingTop(),
+            Rect viewPortBounds = new Rect(getPaddingLeft(), getPaddingTop(),
                     this.getRight() - getPaddingRight(), this.getHeight() - getPaddingBottom());
 
             viewPortBoundsForEvent = new Rect(getPaddingLeft(), getPaddingTop(),
@@ -219,7 +216,6 @@ public class AlarmTurnOffComponent extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = super.onTouchEvent(event);
-        lastEvent = event;
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
             activeFigure = null;

@@ -19,7 +19,7 @@ import static java.lang.String.format;
 public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider {
     private static final String TITLE = "title";
     private static final String URI = "uri";
-    private static final int DATABASE_VERSION = 14;
+    private static final int DATABASE_VERSION = 15;
     private static final String TABLE_ALARMS = "alarms";
     private static final String TABLE_ONLINE_MEDIA = "online_media";
     private static final String TABLE_OFFLINE_MEDIA = "offline_media";
@@ -126,7 +126,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
             values.put("active", entity.isActive());
             values.put("exact_date", entity.getExactDate());
             values.put("complexity", entity.getComplexity());
-            values.put("snooze_times", entity.getSnoozeTimes());
             values.put("snooze_max_times", entity.getSnoozeMaxTimes());
             values.put("melody_url", entity.getMelodyUrl());
             values.put("melody_name", entity.getMelodyName());
@@ -191,11 +190,9 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
                 + "melody_url TEXT,"
                 + "vibration_type TEXT,"
                 + "volume INTEGER,"
-                + "canceled_next_alarms INTEGER DEFAULT 0,"
-                + "snooze_interval TINYINT DEFAULT 5,"
-                + "snooze_times TINYINT DEFAULT 0,"
+                + "canceled_next_alarms TINYINT DEFAULT 0,"
                 + "snooze_max_times TINYINT,"
-                + "next_time INTEGER,"
+                + "next_time LONG,"
                 + "next_request_code INTEGER"
                 + ")", TABLE_ALARMS);
     }

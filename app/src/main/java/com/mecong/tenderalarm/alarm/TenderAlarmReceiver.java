@@ -31,21 +31,17 @@ public class TenderAlarmReceiver extends BroadcastReceiver {
 
         Integer canceledNextAlarms = entity.getCanceledNextAlarms();
         HyperLog.i(TAG, "TenderAlarmReceiver received alarm: " + entity);
-        if (canceledNextAlarms == 0) {
-
-            if (entity.getDays() > 0) {
-                AlarmUtils.setUpNextAlarm(entity, context, false);
-            } else {
-                sqLiteDBHelper.toggleAlarmActive(alarmId, false);
-            }
-            startAlarmNotification(context, alarmId);
-        } else {
-            if (entity.getDays() > 0) {
-                entity.setCanceledNextAlarms(canceledNextAlarms - 1);
-                sqLiteDBHelper.addOrUpdateAlarm(entity);
-                AlarmUtils.setUpNextAlarm(entity, context, false);
-            }
+        if (canceledNextAlarms != 0) {
+            entity.setCanceledNextAlarms(canceledNextAlarms - 1);
+            sqLiteDBHelper.addOrUpdateAlarm(entity);
         }
+
+        if (entity.getDays() > 0) {
+            AlarmUtils.setUpNextAlarm(entity, context, false);
+        } else {
+            sqLiteDBHelper.toggleAlarmActive(alarmId, false);
+        }
+        startAlarmNotification(context, alarmId);
     }
 
     private void startAlarmNotification(Context context, String alarmId) {

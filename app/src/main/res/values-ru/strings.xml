@@ -3,7 +3,7 @@
     <string name="app_name">Tender Alarm</string>
     <string name="volume">Громкость</string>
     <string name="volume_percent">%d%%</string>
-    <string name="we">C</string>
+    <string name="we">CР</string>
     <string name="upcoming_alarm_notification_title">Будильник</string>
     <string name="add">Добавить</string>
     <string name="alarm_date">%D</string>
@@ -17,4 +17,24 @@
     <string name="internet_streams">Интернет потоки</string>
     <string name="local_audio">Локальные медиа</string>
     <string name="can_not_stream">Не могу воспроизвести медиа!</string>
+    <string name="action_settings" translatable="false">Настройки</string>
+    <string name="add_alarm" translatable="false">Новый будильник</string>
+    <string name="alarm_complexity" translatable="false">Сложность будильника %d</string>
+    <string name="alarm_sound">Мелодия будильника</string>
+    <string name="alarm_turn_off_prompt">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</string>
+    <string name="alarms">Будильники</string>
+    <string name="cancel">Отмена</string>
+    <string name="date">Дата</string>
+    <string name="default_sound">Обычный</string>
+    <string name="delete">Удалить</string>
+    <string name="every_day">Каждый день</string>
+    <string name="fr">ПТ</string>
+    <string name="mo">ПН</string>
+    <string name="never" translatable="false">Никогда</string>
+    <string name="next_alarm">Будильник через %d дней</string>
+    <string name="th" translatable="false">ЧТ</string>
+    <string name="tu" translatable="false">ВТ</string>
+    <string name="su" translatable="false">ВС</string>
+    <string name="sa" translatable="false">СБ</string>
+    <string name="sleep_minutes" translatable="false">%d минут</string>
 </resources>

@@ -82,8 +82,11 @@ public class AlarmNotifyingService extends Service {
         HyperLog.i(TAG, "usePowerManagerWakeup");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getCanonicalName());
-        wakeLock.acquire(TimeUnit.SECONDS.toMillis(10));
+        if (pm != null) {
+            PowerManager.WakeLock wakeLock =
+                    pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.getClass().getCanonicalName());
+            wakeLock.acquire(TimeUnit.SECONDS.toMillis(10));
+        }
     }
 
     @Subscribe
@@ -91,7 +94,7 @@ public class AlarmNotifyingService extends Service {
         if (message == AlarmMessage.CANCEL_VOLUME_INCREASE) {
             cancelVolumeIncreasing();
         } else if (message == AlarmMessage.STOP_ALARM) {
-            entity.setSnoozeTimes(0);
+            entity.setSnoozeMaxTimes(0);
             SQLiteDBHelper.getInstance(getBaseContext()).addOrUpdateAlarm(entity);
             stopAlarmNotification();
         } else if (message == AlarmMessage.SNOOZE2M) {
@@ -317,5 +320,4 @@ public class AlarmNotifyingService extends Service {
 
         startForeground(42, alarmNotification.build());
     }
-
 }

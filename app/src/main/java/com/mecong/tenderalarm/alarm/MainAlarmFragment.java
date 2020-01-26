@@ -1,12 +1,9 @@
 package com.mecong.tenderalarm.alarm;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +85,7 @@ public class MainAlarmFragment extends Fragment {
 
     private void updateNextActiveAlarm(SQLiteDBHelper sqLiteDBHelper) {
         Context context = this.getContext();
+        if (context == null) return;
 
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
         if (nextActiveAlarm != null) {
@@ -141,22 +139,6 @@ public class MainAlarmFragment extends Fragment {
     }
 
 
-    void deleteAlarmWithDialog(final String id) {
-        final Context context = this.getActivity();
-
-        new AlertDialog.Builder(new ContextThemeWrapper(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK))
-                .setTitle("Delete alarm")
-                .setMessage("Do you really want to delete this alarm?")
-                .setIcon(android.R.drawable.ic_dialog_info)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        deleteAlarm(id);
-                    }
-                })
-                .setNegativeButton(android.R.string.no, null).show();
-    }
-
     void deleteAlarm(String id) {
         final Context context = this.getActivity();
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
@@ -190,6 +172,9 @@ public class MainAlarmFragment extends Fragment {
         final AlarmEntity alarmById = sqLiteDBHelper.getAlarmById(id);
         alarmById.setCanceledNextAlarms(num);
         sqLiteDBHelper.addOrUpdateAlarm(alarmById);
+
+        AlarmUtils.setUpNextAlarm(id, context, true);
+
         alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
         updateNextActiveAlarm(sqLiteDBHelper);
         sqLiteDBHelper.close();

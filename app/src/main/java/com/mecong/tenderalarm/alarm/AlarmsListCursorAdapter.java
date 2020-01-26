@@ -5,22 +5,18 @@ import android.database.Cursor;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.model.AlarmEntity;
 
 import java.util.Map;
 
-import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 import static java.lang.Boolean.TRUE;
 
 public class AlarmsListCursorAdapter extends CursorAdapter {
@@ -45,11 +41,8 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
         final TextView time = view.findViewById(R.id.textRow1);
         final TextView textRow2 = view.findViewById(R.id.textRow2);
         final TextView textViewCanceled = view.findViewById(R.id.textViewCanceled);
-        final ToggleButton toggleButton = view.findViewById(R.id.toggleButton);
+        final ImageButton toggleButton = view.findViewById(R.id.toggleButton);
         final ImageButton btnDeleteAlarm = view.findViewById(R.id.btnDeleteAlarm);
-
-        HyperLog.i(TAG, "binding view : " + view);
-
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +50,6 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
                 mainActivity.editAlarm(alarmId);
             }
         });
-
 
         btnDeleteAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,43 +75,70 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.action_turn_off_1_day) {
+                if (item.getItemId() == R.id.action_turn_off_1_day && entity.getCanceledNextAlarms() != 1) {
                     mainActivity.cancelNextAlarms(alarmId, 1);
-                } else if (item.getItemId() == R.id.action_turn_off_2_days) {
+                } else if (item.getItemId() == R.id.action_turn_off_2_days && entity.getCanceledNextAlarms() != 2) {
                     mainActivity.cancelNextAlarms(alarmId, 2);
-                } else if (item.getItemId() == R.id.action_turn_off_3_days) {
+                } else if (item.getItemId() == R.id.action_turn_off_3_days && entity.getCanceledNextAlarms() != 3) {
                     mainActivity.cancelNextAlarms(alarmId, 3);
-                } else if (item.getItemId() == R.id.action_turn_off_4_days) {
+                } else if (item.getItemId() == R.id.action_turn_off_4_days && entity.getCanceledNextAlarms() != 4) {
                     mainActivity.cancelNextAlarms(alarmId, 4);
-                } else if (item.getItemId() == R.id.action_turn_off_5_days) {
+                } else if (item.getItemId() == R.id.action_turn_off_5_days && entity.getCanceledNextAlarms() != 5) {
                     mainActivity.cancelNextAlarms(alarmId, 5);
-                } else {
+                } else if (item.getItemId() == R.id.turn_off_alarm) {
                     mainActivity.setActive(alarmId, false);
+                    toggleButton.setImageResource(R.drawable.ic_alarm_off);
+                    toggleButton.setTag(false);
                 }
 
                 return true;
             }
         });
 
-        toggleButton.setChecked(entity.isActive());
 
+        if (entity.isActive()) {
+            toggleButton.setImageResource(R.drawable.ic_alarm_on);
+            toggleButton.setTag(true);
+        } else {
+            toggleButton.setImageResource(R.drawable.ic_alarm_off);
+            toggleButton.setTag(false);
+        }
 
-        toggleButton.setOnTouchListener(new View.OnTouchListener() {
+        final View.OnClickListener recurrentAlarmSwitch = new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    HyperLog.i(TAG, ">>>>>>>>>onTouch");
+            public void onClick(View v) {
+                boolean checked = (boolean) toggleButton.getTag();
 
-                    if (!toggleButton.isChecked()) {
-                        mainActivity.setActive(alarmId, true);
-                        toggleButton.setChecked(true);
-                    } else {
-                        popup.show();//showing popup menu
-                    }
+                if (checked) {
+                    popup.show();
+                } else {
+                    mainActivity.setActive(alarmId, true);
+                    toggleButton.setImageResource(R.drawable.ic_alarm_on);
+                    toggleButton.setTag(true);
                 }
-                return true;
             }
-        });
+        };
+
+
+        final View.OnClickListener oneTimeAlarmSwitch = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean checked = (boolean) toggleButton.getTag();
+
+                if (checked) {
+                    mainActivity.setActive(alarmId, false);
+                    toggleButton.setImageResource(R.drawable.ic_alarm_off);
+                    toggleButton.setTag(false);
+                } else {
+                    mainActivity.setActive(alarmId, true);
+                    toggleButton.setImageResource(R.drawable.ic_alarm_on);
+                    toggleButton.setTag(true);
+                }
+            }
+        };
+
+        toggleButton.setOnClickListener(
+                entity.getDays() > 0 ? recurrentAlarmSwitch : oneTimeAlarmSwitch);
 
 
         time.setText(context.getString(R.string.alarm_time, entity.getHour(), entity.getMinute()));
@@ -145,7 +164,6 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
         }
 
         textRow2.setText(Html.fromHtml(daysMessage));
-
     }
 
     private String getDaysHtml(AlarmEntity entity, final Context context) {
@@ -156,7 +174,7 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
                         .append(context.getString(day.getKey()).toUpperCase())
                         .append("</font>");
             } else {
-                builder.append("<font color='#222222'>")
+                builder.append("<font color='#555555'>")
                         .append(context.getString(day.getKey()).toUpperCase())
                         .append("</font>");
             }
@@ -164,6 +182,5 @@ public class AlarmsListCursorAdapter extends CursorAdapter {
         }
 
         return builder.toString();
-
     }
 }

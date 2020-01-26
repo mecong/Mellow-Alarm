@@ -41,8 +41,9 @@ public class UpcomingAlarmNotificationReceiver extends BroadcastReceiver {
             HyperLog.i(TAG, "Canceling alarm: " + entity);
             entity.setCanceledNextAlarms(1);
             sqLiteDBHelper.addOrUpdateAlarm(entity);
+            AlarmUtils.setUpNextAlarm(entity, context, false);
             Toast.makeText(context, context.getString(R.string.upcoming_alarm_canceled_toast,
-                    entity.getRealNextTime()), Toast.LENGTH_LONG).show();
+                    entity.getNextTimeWithTicks()), Toast.LENGTH_LONG).show();
         } else {
             if (entity.getCanceledNextAlarms() == 0) {
                 HyperLog.i(TAG, "Before alarm notification: " + entity);

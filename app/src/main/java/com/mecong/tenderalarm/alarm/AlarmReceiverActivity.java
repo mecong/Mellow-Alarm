@@ -234,6 +234,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
 
                     if (snoozedMinutes < entity.getSnoozeMaxTimes()) {
                         final Handler handler = new Handler();
+                        final int snoozeButtonsDelay = time * 60000;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -241,7 +242,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
                                 btnSnooze3m.setVisibility(View.VISIBLE);
                                 btnSnooze5m.setVisibility(View.VISIBLE);
                             }
-                        }, time * 60000);
+                        }, snoozeButtonsDelay);
                     }
                 }
             };

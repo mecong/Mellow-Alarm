@@ -49,13 +49,13 @@ public class AlarmUtils {
 
         SQLiteDBHelper.getInstance(context).addOrUpdateAlarm(alarmEntity);
         HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.getId() + "] set to: "
-                + context.getString(R.string.next_alarm_date_time, alarmEntity.getRealNextTime()));
+                + context.getString(R.string.next_alarm_date_time, alarmEntity.getNextTimeWithTicks()));
 
         AlarmManager.AlarmClockInfo nextAlarmClock = alarmMgr.getNextAlarmClock();
 
         if (nextAlarmClock != null) {
             HyperLog.i(TAG, "Next alarm MgrTime: " + nextAlarmClock.getTriggerTime() + " (" +
-                    context.getString(R.string.next_alarm_date_time, alarmEntity.getRealNextTime()) + ") intent: "
+                    context.getString(R.string.next_alarm_date_time, alarmEntity.getNextTimeWithTicks()) + ") intent: "
                     + nextAlarmClock.getShowIntent());
         }
 
@@ -67,7 +67,7 @@ public class AlarmUtils {
     }
 
     static void snoozeAlarm(int minutes, AlarmEntity alarmEntity, Context context) {
-        alarmEntity.setSnoozeTimes(alarmEntity.getSnoozeTimes() + 1);
+//        alarmEntity.setSnoozeTimes(alarmEntity.getSnoozeTimes() + 1);
         SQLiteDBHelper.getInstance(context).addOrUpdateAlarm(alarmEntity);
 
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -159,6 +159,7 @@ public class AlarmUtils {
 
     private static void turnOffAlarm(AlarmEntity entity, Context context) {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmMgr == null) return;
 
         Intent intentToFire = new Intent(context, AlarmReceiverActivity.class);
         PendingIntent alarmIntent = PendingIntent.getActivity(context,
