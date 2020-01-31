@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +47,6 @@ import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AlarmNotifyingService extends Service {
     private static final Uri CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/alarms");
-    AlarmEntity entity;
     MediaPlayer alarmMediaPlayer;
     Handler handlerVolume;
     Runnable runnableVolume;
@@ -54,7 +54,6 @@ public class AlarmNotifyingService extends Service {
     Handler handlerTicks;
     Runnable runnableRealAlarm;
     MediaPlayer ticksMediaPlayer;
-
 
     @Override
     public void onCreate() {
@@ -69,13 +68,20 @@ public class AlarmNotifyingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
-        entity = SQLiteDBHelper.getInstance(getBaseContext()).getAlarmById(alarmId);
+        AlarmEntity entity = SQLiteDBHelper.getInstance(this).getAlarmById(alarmId);
         HyperLog.i(TAG, "Running alarm: " + entity);
 
         usePowerManagerWakeup();
-        startAlarmNotification(getBaseContext(), entity);
+        startAlarmNotification(this, entity);
         startSound(entity);
+
         return START_NOT_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // stopAlarmNotification();
     }
 
     private void usePowerManagerWakeup() {
@@ -90,12 +96,10 @@ public class AlarmNotifyingService extends Service {
     }
 
     @Subscribe
-    public void onPlayFileChanged(AlarmMessage message) {
+    public void messageReceived(AlarmMessage message) {
         if (message == AlarmMessage.CANCEL_VOLUME_INCREASE) {
             cancelVolumeIncreasing();
         } else if (message == AlarmMessage.STOP_ALARM) {
-            entity.setSnoozeMaxTimes(0);
-            SQLiteDBHelper.getInstance(getBaseContext()).addOrUpdateAlarm(entity);
             stopAlarmNotification();
         } else if (message == AlarmMessage.SNOOZE2M) {
             snooze(2);
@@ -125,7 +129,6 @@ public class AlarmNotifyingService extends Service {
     }
 
     private void startSound(AlarmEntity entity) {
-        final Context context = getBaseContext();
 
         final AudioAttributes audioAttributesAlarm = new AudioAttributes
                 .Builder()
@@ -145,8 +148,8 @@ public class AlarmNotifyingService extends Service {
         try {
             ticksMediaPlayer = new MediaPlayer();
             ticksMediaPlayer.setAudioAttributes(audioAttributesAlarm);
-            ticksMediaPlayer.setDataSource(context, Uri.parse("android.resource://"
-                    + context.getPackageName() + "/" + R.raw.tick));
+            ticksMediaPlayer.setDataSource(this, Uri.parse("android.resource://"
+                    + getPackageName() + "/" + R.raw.tick));
             ticksMediaPlayer.prepare();
             ticksMediaPlayer.setVolume(volume[0], volume[0]);
         } catch (IOException e) {
@@ -157,8 +160,8 @@ public class AlarmNotifyingService extends Service {
         try {
             alarmMediaPlayer = new MediaPlayer();
             alarmMediaPlayer.setAudioAttributes(audioAttributesAlarm);
-            final Uri melody = getMelody(context, entity);
-            alarmMediaPlayer.setDataSource(context, melody);
+            final Uri melody = getMelody(this, entity);
+            alarmMediaPlayer.setDataSource(this, melody);
             alarmMediaPlayer.prepare();
             alarmMediaPlayer.setLooping(true);
         } catch (Exception ex) {
@@ -240,21 +243,22 @@ public class AlarmNotifyingService extends Service {
         if (entity.getMelodyUrl() != null) {
             return Uri.parse(entity.getMelodyUrl());
         } else {
-            return Uri.parse("android.resource://"
-                    + context.getPackageName() + "/" + R.raw.long_music);
+            return Uri.parse(String.format(Locale.ENGLISH, "android.resource://%s/%d",
+                    context.getPackageName(), R.raw.long_music));
         }
     }
 
     private void stopAlarmNotification() {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancelAll();
+        HyperLog.i(TAG, "Stop Alarm notification");
+//        EventBus.getDefault().unregister(this);
         handlerTicks.removeCallbacksAndMessages(null);
-        alarmEndVibration();
         stopTicksAlarm();
         stopAlarmMediaPlayer();
+        alarmEndVibration();
         stopForeground(true);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
         stopSelf();
-        System.exit(0);
     }
 
     private void stopTicksAlarm() {

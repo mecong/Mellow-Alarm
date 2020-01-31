@@ -165,7 +165,6 @@ public class AlarmTurnOffComponent extends View {
             draggableCirclePaints[i].setColor(Color.rgb(49, 99, 0));
             draggableCirclePaints[i].setStyle(Paint.Style.FILL);
         }
-
     }
 
 
@@ -209,7 +208,11 @@ public class AlarmTurnOffComponent extends View {
         }
 
         if (amountOfFixed >= figures.length) {
-            EventBus.getDefault().post(AlarmMessage.STOP_ALARM);
+            EventBus.getDefault().postSticky(AlarmMessage.STOP_ALARM);
+
+
+//            getContext().stopService(new Intent(getContext(), AlarmNotifyingService.class));
+
         }
     }
 
@@ -223,7 +226,7 @@ public class AlarmTurnOffComponent extends View {
             result = true;
         } else {
             final int x = (int) event.getX();
-            final int y = (int) (event.getY());
+            final int y = (int) event.getY();
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 activeFigure = findFigure(event);
                 if (activeFigure != null) {

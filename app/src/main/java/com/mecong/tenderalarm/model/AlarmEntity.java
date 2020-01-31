@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-import static java.lang.Math.max;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Data
@@ -50,8 +49,6 @@ public class AlarmEntity {
     boolean active = true;
     @ToString.Exclude
     boolean beforeAlarmNotification;
-    @ToString.Exclude
-    Integer lightTime;
     int ticksTime;
     @ToString.Exclude
     String melodyUrl;
@@ -61,17 +58,14 @@ public class AlarmEntity {
     String vibrationType;
     @ToString.Exclude
     Integer volume;
-    @ToString.Exclude
-    Integer snoozeInterval;
     @Builder.Default
     Integer snoozeMaxTimes = 10;
     @Builder.Default
     Integer canceledNextAlarms = 0;
     @Builder.Default
-    Integer snoozeTimes = 0;
-
-    @Builder.Default
     Long nextTime = -1L;
+    @Builder.Default
+    Long nextNotCanceledTime = -1L;
     @Builder.Default
     Integer nextRequestCode = -1;
 
@@ -94,6 +88,7 @@ public class AlarmEntity {
         this.snoozeMaxTimes = cursor.getInt(cursor.getColumnIndex("snooze_max_times"));
         this.canceledNextAlarms = cursor.getInt(cursor.getColumnIndex("canceled_next_alarms"));
         this.nextTime = cursor.getLong(cursor.getColumnIndex("next_time"));
+        this.nextNotCanceledTime = cursor.getLong(cursor.getColumnIndex("next_not_canceled_time"));
         this.nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code"));
     }
 
@@ -155,31 +150,31 @@ public class AlarmEntity {
             }
 
             if (calendar.before(calendarNow)) {
-                calendar.add(Calendar.DAY_OF_YEAR, max(canceledNextAlarms, 1));
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
             }
 
             if (days > 0) {
-                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
                 List<Boolean> allDaysAsList = allDaysAsList();
-                int i = dayOfWeek - 1;
+                int i = calendar.get(Calendar.DAY_OF_WEEK) - 1;
                 int skip = canceledNextAlarms;
                 while (true) {
                     if (i >= allDaysAsList.size()) {
                         i = 0;
                     }
 
-                    if (allDaysAsList.get(i)) {
+                    final boolean fireAtThisDayOfWeek = allDaysAsList.get(i);
+                    if (fireAtThisDayOfWeek) {
                         if (skip <= 0) {
                             break;
                         } else {
                             skip--;
-                            calendar.add(Calendar.DAY_OF_YEAR, 1);
+                            if (nextTime == -1) {
+                                nextTime = calendar.getTimeInMillis();
+                            }
                         }
-                    } else {
-                        calendar.add(Calendar.DAY_OF_YEAR, 1);
                     }
 
+                    calendar.add(Calendar.DAY_OF_YEAR, 1);
                     i++;
                 }
             }
@@ -191,11 +186,14 @@ public class AlarmEntity {
             }
         }
 
-        if (ticksTime > 0) {
-            calendar.add(Calendar.MINUTE, -ticksTime);
+        nextNotCanceledTime = calendar.getTimeInMillis();
+        if (nextTime == -1) {
+            if (ticksTime > 0) {
+                calendar.add(Calendar.MINUTE, -ticksTime);
+            }
+            nextTime = calendar.getTimeInMillis();
         }
 
-        this.nextTime = calendar.getTimeInMillis();
         this.nextRequestCode = getRequestCode();
     }
 
@@ -217,13 +215,13 @@ public class AlarmEntity {
 
     public Map<Integer, Boolean> getDaysAsMap() {
         Map<Integer, Boolean> daysMap = new LinkedHashMap<>();
+        daysMap.put(R.string.su, (days & SU_BINARY) == SU_BINARY);
         daysMap.put(R.string.mo, (days & MO_BINARY) == MO_BINARY);
         daysMap.put(R.string.tu, (days & TU_BINARY) == TU_BINARY);
         daysMap.put(R.string.we, (days & WE_BINARY) == WE_BINARY);
         daysMap.put(R.string.th, (days & TH_BINARY) == TH_BINARY);
         daysMap.put(R.string.fr, (days & FR_BINARY) == FR_BINARY);
         daysMap.put(R.string.sa, (days & SA_BINARY) == SA_BINARY);
-        daysMap.put(R.string.su, (days & SU_BINARY) == SU_BINARY);
         return daysMap;
     }
 }

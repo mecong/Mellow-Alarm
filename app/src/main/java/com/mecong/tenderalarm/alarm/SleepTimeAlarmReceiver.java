@@ -44,7 +44,7 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
 
         if (nextActiveAlarm == null) return;
 
-        if (nextActiveAlarm.getNextTime() - Calendar.getInstance().getTimeInMillis() < 4 * HOUR) {
+        if (nextActiveAlarm.getNextNotCanceledTime() - Calendar.getInstance().getTimeInMillis() < 4 * HOUR) {
             AlarmUtils.setUpNextSleepTimeNotification(context);
         }
 

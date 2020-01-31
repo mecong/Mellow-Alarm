@@ -44,7 +44,6 @@ import static com.mecong.tenderalarm.model.AlarmEntity.daysMarshaling;
 public class AlarmAddingActivity extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
 
-
     @BindView(R.id.timeTextView)
     TextView timeTextView;
     @BindView(R.id.dateTextView)
@@ -83,7 +82,6 @@ public class AlarmAddingActivity extends AppCompatActivity {
     @BindView(R.id.txtMelodyCaption)
     TextView txtMelodyCaption;
 
-
     int selectedMinute;
     int selectedHour;
     int selectedYear;
@@ -92,7 +90,6 @@ public class AlarmAddingActivity extends AppCompatActivity {
     long exactDate = 0;
     String alarmId = "0";
     String melodyUrl;
-
 
     public void timeTextViewClick(View v) {
 
@@ -358,7 +355,7 @@ public class AlarmAddingActivity extends AppCompatActivity {
 
         seekBarSnooze.setProgress(entity.getSnoozeMaxTimes());
 
-        if (!entity.getMelodyName().isEmpty()) {
+        if (!Strings.isEmptyOrWhitespace(entity.getMelodyName())) {
             txtMelody.setText(entity.getMelodyName());
             melodyUrl = entity.getMelodyUrl();
         }
@@ -418,6 +415,4 @@ public class AlarmAddingActivity extends AppCompatActivity {
         String defaultMessage = "Ooops... alarma";
         return Strings.isEmptyOrWhitespace(message) ? defaultMessage : message;
     }
-
-
 }

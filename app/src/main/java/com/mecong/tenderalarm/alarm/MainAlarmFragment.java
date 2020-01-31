@@ -24,7 +24,6 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import static android.app.Activity.RESULT_OK;
 import static com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT;
@@ -92,8 +91,7 @@ public class MainAlarmFragment extends Fragment {
             AlarmUtils.setBootReceiverActive(context);
 
             Calendar calendar = Calendar.getInstance();
-            long nextAlarmTime = nextActiveAlarm.getNextTime()
-                    + TimeUnit.MINUTES.toMillis(nextActiveAlarm.getTicksTime());
+            long nextAlarmTime = nextActiveAlarm.getNextNotCanceledTime();
             long difference = nextAlarmTime - calendar.getTimeInMillis();
             calendar.setTime(new Date(difference));
             calendar.setTimeZone(TimeZone.getTimeZone("UTC"));

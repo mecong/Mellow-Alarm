@@ -19,13 +19,13 @@ import static java.lang.String.format;
 public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider {
     private static final String TITLE = "title";
     private static final String URI = "uri";
-    private static final int DATABASE_VERSION = 15;
+    private static final int DATABASE_VERSION = 16;
     private static final String TABLE_ALARMS = "alarms";
     private static final String TABLE_ONLINE_MEDIA = "online_media";
     private static final String TABLE_OFFLINE_MEDIA = "offline_media";
     private static final String SELECT_ALL_ALARMS = "SELECT * FROM " + TABLE_ALARMS;
     private static final String SELECT_NEXT_ALARM = format(
-            "SELECT * FROM %s WHERE active=1 ORDER BY next_time LIMIT 1", TABLE_ALARMS);
+            "SELECT * FROM %s WHERE active=1 ORDER BY next_not_canceled_time LIMIT 1", TABLE_ALARMS);
     private static final String DATABASE_NAME = "my_alarm_database";
     private static SQLiteDBHelper sInstance;
 
@@ -130,6 +130,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
             values.put("melody_url", entity.getMelodyUrl());
             values.put("melody_name", entity.getMelodyName());
             values.put("next_time", entity.getNextTime());
+            values.put("next_not_canceled_time", entity.getNextNotCanceledTime());
             values.put("next_request_code", entity.getNextRequestCode());
             values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
 
@@ -193,6 +194,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
                 + "canceled_next_alarms TINYINT DEFAULT 0,"
                 + "snooze_max_times TINYINT,"
                 + "next_time LONG,"
+                + "next_not_canceled_time LONG,"
                 + "next_request_code INTEGER"
                 + ")", TABLE_ALARMS);
     }

@@ -47,9 +47,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (savedInstanceState != null) {
-            return;
-        }
 
         final MainAlarmFragment mainAlarmFragment = new MainAlarmFragment();
         final SleepAssistantFragment sleepAssistantFragment = new SleepAssistantFragment();
@@ -121,6 +118,22 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
             ibOpenAlarm.setImageResource(R.drawable.alarm_active);
         }
+
+//        Calendar calendar = Calendar.getInstance();
+//        final SQLiteDBHelper instance = SQLiteDBHelper.getInstance(this);
+//        AlarmEntity alarmEntity = AlarmEntity.builder()
+//                .hour(calendar.get(Calendar.HOUR_OF_DAY))
+//                .minute(calendar.get(Calendar.MINUTE) + 2)
+//                .complexity(1)
+//                .snoozeMaxTimes(10)
+//                .ticksTime(10)
+//                .beforeAlarmNotification(true)
+//                .build();
+//
+//        long id= instance.addOrUpdateAlarm(alarmEntity);
+//
+//        alarmEntity.setId(id);
+//        AlarmUtils.setUpNextAlarm(alarmEntity,this, true);
     }
 
     private void createNotificationChannels() {

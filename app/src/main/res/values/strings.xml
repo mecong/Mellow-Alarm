@@ -34,7 +34,8 @@
     <string name="sleep_assistant_media_channel_description" translatable="false">Display media information when sleep assistant is active</string>
 
 
-    <string name="alarm_time">%1$02d:%2$02d</string>
+    <string name="alarm_time" translatable="false">%1$02d:%2$02d</string>
+    <string name="sleep_timer" translatable="false">Snooze %1$tM:%1$tS</string>
     <string name="alarm_date">%D</string>
     <string name="work_days">Work days</string>
     <string name="every_day">Every day</string>
@@ -76,11 +77,11 @@
     <string name="alarm_turn_off_prompt">Drag circles to their places. Or shake phone <big>%d</big> times</string>
 
 
-    <string name="skip_1_day" translatable="false">Turn off for 1 day</string>
-    <string name="skip_2_day" translatable="false">Turn off for 2 days</string>
-    <string name="skip_3_day" translatable="false">Turn off for 3 days</string>
-    <string name="skip_4_day" translatable="false">Turn off for 4 days</string>
-    <string name="skip_5_day" translatable="false">Turn off for 5 days</string>
+    <string name="skip_1_day" translatable="false">Skip next 1</string>
+    <string name="skip_2_day" translatable="false">Skip next 2</string>
+    <string name="skip_3_day" translatable="false">Skip next 3</string>
+    <string name="skip_4_day" translatable="false">Skip next 4</string>
+    <string name="skip_5_day" translatable="false">Skip next 5</string>
     <string name="add_alarm">Add alarm</string>
     <string name="turn_off" translatable="false">Turn off</string>
     <string name="snooze_3_min" translatable="false">3 min snooze</string>

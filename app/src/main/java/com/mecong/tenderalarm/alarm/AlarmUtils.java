@@ -67,12 +67,10 @@ public class AlarmUtils {
     }
 
     static void snoozeAlarm(int minutes, AlarmEntity alarmEntity, Context context) {
-//        alarmEntity.setSnoozeTimes(alarmEntity.getSnoozeTimes() + 1);
-        SQLiteDBHelper.getInstance(context).addOrUpdateAlarm(alarmEntity);
-
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         PendingIntent alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context);
+
 
         Calendar calendarNow = Calendar.getInstance();
         calendarNow.add(Calendar.MINUTE, minutes);

@@ -24,17 +24,10 @@ class MediaNotificationManager {
     private NotificationManagerCompat notificationManager;
 
     MediaNotificationManager(RadioService service) {
-
         this.service = service;
         this.resources = service.getResources();
-
         strAppName = resources.getString(R.string.app_name);
-
         notificationManager = NotificationManagerCompat.from(service);
-    }
-
-    void startNotify(String playbackStatus) {
-        startNotify(playbackStatus, "Time to sleep");
     }
 
     void startNotify(String playbackStatus, String contentText) {

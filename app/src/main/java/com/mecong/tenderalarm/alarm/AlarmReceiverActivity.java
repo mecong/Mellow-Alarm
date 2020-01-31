@@ -31,7 +31,9 @@ import com.mecong.tenderalarm.model.AlarmEntity;
 import com.mecong.tenderalarm.model.SQLiteDBHelper;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -58,37 +60,12 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
     @BindView(R.id.btnSnooze5m)
     Button btnSnooze5m;
 
+    @BindView(R.id.sleepTimer)
+    TextView sleepTimer;
+
     long mLastShakeTime;
     int shakeCount;
-    int snoozedMinutes = 0;
-
-    private void turnScreenOnThroughKeyguard() {
-        usePowerManagerWakeup();
-        useWindowFlags();
-        useActivityScreenMethods();
-    }
-
-    private void useWindowFlags() {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
-    }
-
-    private void useActivityScreenMethods() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            try {
-                HyperLog.i(TAG, "useActivityScreenMethods");
-
-                this.setTurnScreenOn(true);
-                this.setShowWhenLocked(true);
-            } catch (NoSuchMethodError e) {
-                HyperLog.e(TAG, "Enable setTurnScreenOn and setShowWhenLocked is not present on device!", e);
-            }
-        }
-    }
+    long snoozedMinutes = 0;
 
     public static void unlockScreen(AlarmReceiverActivity activity) {
 
@@ -133,6 +110,34 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
 
     }
 
+    private void turnScreenOnThroughKeyguard() {
+        usePowerManagerWakeup();
+        useWindowFlags();
+        useActivityScreenMethods();
+    }
+
+    private void useWindowFlags() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+    }
+
+    private void useActivityScreenMethods() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            try {
+                HyperLog.i(TAG, "useActivityScreenMethods");
+
+                this.setTurnScreenOn(true);
+                this.setShowWhenLocked(true);
+            } catch (NoSuchMethodError e) {
+                HyperLog.e(TAG, "Enable setTurnScreenOn and setShowWhenLocked is not present on device!", e);
+            }
+        }
+    }
+
     private void usePowerManagerWakeup() {
         HyperLog.i(TAG, "usePowerManagerWakeup");
 
@@ -171,12 +176,22 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
         getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
 
+    @Subscribe
+    public void messageReceived(AlarmMessage message) {
+        HyperLog.i(TAG, "Stop Activity");
+        if (message == AlarmMessage.STOP_ALARM) {
+            this.finish();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             HyperLog.initialize(this);
             HyperLog.setLogLevel(Log.VERBOSE);
+
+            EventBus.getDefault().register(this);
 
             turnScreenOnThroughKeyguard();
 
@@ -202,6 +217,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
 //                alarmId = "1";
             }
             initializeShaker();
+            sleepTimer.setVisibility(View.GONE);
 
             final AlarmEntity entity = SQLiteDBHelper.getInstance(context).getAlarmById(alarmId);
             HyperLog.i(TAG, "Running alarm: " + entity);
@@ -226,24 +242,56 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
                     } else {
                         EventBus.getDefault().post(AlarmMessage.SNOOZE5M);
                     }
-                    btnSnooze2m.setVisibility(View.INVISIBLE);
-                    btnSnooze3m.setVisibility(View.INVISIBLE);
-                    btnSnooze5m.setVisibility(View.INVISIBLE);
+                    btnSnooze2m.setVisibility(View.GONE);
+                    btnSnooze3m.setVisibility(View.GONE);
+                    btnSnooze5m.setVisibility(View.GONE);
+                    sleepTimer.setVisibility(View.VISIBLE);
+
+                    final Date sleepText = new Date(time * 60000);
+                    final Handler handlerSleepTime = new Handler();
+
+                    sleepTimer.setText(context.getString(R.string.sleep_timer, sleepText));
+
+                    final Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            final long newTime = sleepText.getTime() - 1000;
+                            sleepText.setTime(newTime);
+                            sleepTimer.setText(context.getString(R.string.sleep_timer, sleepText));
+
+                            if (newTime >= 0) {
+                                handlerSleepTime.postDelayed(this, 1000);
+                            } else {
+                                sleepTimer.setVisibility(View.GONE);
+                                if (snoozedMinutes < entity.getSnoozeMaxTimes()) {
+                                    btnSnooze2m.setVisibility(View.VISIBLE);
+                                    btnSnooze3m.setVisibility(View.VISIBLE);
+                                    btnSnooze5m.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }
+                    };
+                    handlerSleepTime.post(runnable);
 
                     HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.getSnoozeMaxTimes());
 
-                    if (snoozedMinutes < entity.getSnoozeMaxTimes()) {
-                        final Handler handler = new Handler();
-                        final int snoozeButtonsDelay = time * 60000;
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                btnSnooze2m.setVisibility(View.VISIBLE);
-                                btnSnooze3m.setVisibility(View.VISIBLE);
-                                btnSnooze5m.setVisibility(View.VISIBLE);
-                            }
-                        }, snoozeButtonsDelay);
-                    }
+
+//                    AlarmUtils.snoozeAlarm(1, entity, context);
+
+//                    if (snoozedMinutes < entity.getSnoozeMaxTimes()) {
+//                        final Handler handler = new Handler();
+//                        final int snoozeButtonsDelay = time * 60000;
+//                        handler.postDelayed(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                btnSnooze2m.setVisibility(View.VISIBLE);
+//                                btnSnooze3m.setVisibility(View.VISIBLE);
+//                                btnSnooze5m.setVisibility(View.VISIBLE);
+//                                sleepTimer.setVisibility(View.GONE);
+//                                handlerSleepTime.removeCallbacks(runnable);
+//                            }
+//                        }, snoozeButtonsDelay);
+//                    }
                 }
             };
             btnSnooze2m.setOnClickListener(snoozeOnClickListener);
