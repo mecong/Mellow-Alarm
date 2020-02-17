@@ -35,7 +35,7 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         HyperLog.initialize(context);
-        HyperLog.setLogLevel(Log.VERBOSE);
+        HyperLog.setLogLevel(Log.INFO);
 
         HyperLog.i(TAG, "Sleep time job started");
 

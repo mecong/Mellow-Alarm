@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hypertrack.hyperlog.HyperLog;
+import com.mecong.tenderalarm.AdditionalActivity;
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.logs.LogsActivity;
 import com.mecong.tenderalarm.model.AlarmEntity;
@@ -46,7 +47,7 @@ public class MainAlarmFragment extends Fragment {
 
         final Context context = this.getActivity();
         HyperLog.initialize(context);
-        HyperLog.setLogLevel(Log.VERBOSE);
+        HyperLog.setLogLevel(Log.INFO);
 
         textNextAlarm = rootView.findViewById(R.id.textNextAlarm);
         textNextAlarmDate = rootView.findViewById(R.id.textNextAlarmDate);
@@ -60,6 +61,16 @@ public class MainAlarmFragment extends Fragment {
         });
 
 
+        ImageButton ibtnInfo = rootView.findViewById(R.id.ibtnInfo);
+        ibtnInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent additionalIntent = new Intent(context, AdditionalActivity.class);
+                MainAlarmFragment.this.startActivity(additionalIntent);
+
+            }
+        });
+
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         alarmsAdapter =
                 new AlarmsListCursorAdapter(this, sqLiteDBHelper.getAllAlarms());
@@ -68,8 +79,8 @@ public class MainAlarmFragment extends Fragment {
         alarmsList.setAdapter(alarmsAdapter);
         updateNextActiveAlarm(sqLiteDBHelper);
 
-        Button fab = rootView.findViewById(R.id.btnAddAlarm);
-        fab.setOnClickListener(new View.OnClickListener() {
+        ImageButton ibtnAddAlarm = rootView.findViewById(R.id.ibtnAddAlarm);
+        ibtnAddAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent addAlarmIntent = new Intent(context, AlarmAddingActivity.class);
@@ -96,7 +107,9 @@ public class MainAlarmFragment extends Fragment {
             calendar.setTime(new Date(difference));
             calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-            if (difference < MINUTE) {
+            if (difference < 0) {
+                textNextAlarm.setText(R.string.all_alarms_are_off);
+            } else if (difference < MINUTE) {
                 textNextAlarm.setText(context.getString(R.string.next_alarm_soon));
             } else if (difference < AlarmUtils.HOUR) {
                 textNextAlarm.setText(context.getString(R.string.next_alarm_within_hour,

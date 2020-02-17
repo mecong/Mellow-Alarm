@@ -65,7 +65,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
     public static final String ERROR = "PlaybackStatus_ERROR";
 
     final IBinder iBinder = new LocalBinder();
-    SleepAssistantViewModel.PlayList playList;
+    SleepAssistantPlayListModel.PlayList playList;
     MediaNotificationManager notificationManager;
     SimpleExoPlayer exoPlayer;
     MediaSession mediaSession;
@@ -186,23 +186,23 @@ public class RadioService extends Service implements Player.EventListener, Audio
             @Override
             public void onMetadata(@NonNull Metadata metadata) {
 //                ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
-                HyperLog.i(TAG, "----metadata---->");
+                HyperLog.v(TAG, "----metadata---->");
                 for (int i = 0; i < metadata.length(); i++) {
                     String message = metadata.get(i).toString();
-                    HyperLog.i(TAG, message);
+                    HyperLog.v(TAG, message);
                     if (message.startsWith("ICY: ")) {
                         String titleNotParsed = message.split(",")[0].split("=")[1];
                         currentTrackTitle = titleNotParsed.replaceAll("\"", " ").trim();
 
                         if (!currentTrackTitle.isEmpty()) {
-                            SleepAssistantViewModel.Media playingMedia = new SleepAssistantViewModel.Media("", currentTrackTitle);
+                            SleepAssistantPlayListModel.Media playingMedia = new SleepAssistantPlayListModel.Media("", currentTrackTitle);
                             EventBus.getDefault().postSticky(playingMedia);
                         }
 
                         notificationManager.startNotify(status, currentTrackTitle);
                     }
                 }
-                HyperLog.i(TAG, "<----metadata----");
+                HyperLog.v(TAG, "<----metadata----");
             }
         });
 
@@ -260,7 +260,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        HyperLog.i(TAG, "Focus changed: " + focusChange);
+        HyperLog.v(TAG, "Focus changed: " + focusChange);
 
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
             resume();
@@ -341,14 +341,14 @@ public class RadioService extends Service implements Player.EventListener, Audio
 
         if (!wifiLock.isHeld() && this.playList.getMediaType() == ONLINE) {
             wifiLock.acquire();
-            HyperLog.i(TAG, "WiFi lock acquired");
+            HyperLog.v(TAG, "WiFi lock acquired");
         }
     }
 
     private void wifiLockRelease() {
         if (wifiLock != null && wifiLock.isHeld()) {
             wifiLock.release();
-            HyperLog.i(TAG, "WiFi lock released");
+            HyperLog.v(TAG, "WiFi lock released");
         }
     }
 
@@ -364,11 +364,11 @@ public class RadioService extends Service implements Player.EventListener, Audio
         exoPlayer.setPlayWhenReady(true);
     }
 
-    public void playMediaList(SleepAssistantViewModel.PlayList playList) {
+    public void playMediaList(SleepAssistantPlayListModel.PlayList playList) {
         this.playList = playList;
 
         ConcatenatingMediaSource concatenatingMediaSource = new ConcatenatingMediaSource();
-        for (SleepAssistantViewModel.Media media : this.playList.getMedia()) {
+        for (SleepAssistantPlayListModel.Media media : this.playList.getMedia()) {
             concatenatingMediaSource.addMediaSource(
                     new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(media.getUrl())));
         }
@@ -386,6 +386,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
         exoPlayer.seekTo(playList.getIndex(), 0);
         exoPlayer.setPlayWhenReady(true);
     }
+
 
     @Deprecated
     public void playOrPause(String url) {
@@ -457,7 +458,7 @@ public class RadioService extends Service implements Player.EventListener, Audio
      */
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-        HyperLog.i(TAG, ">>>>>>onTracksChanged>>>>>>");
+        HyperLog.v(TAG, ">>>>>>onTracksChanged>>>>>>");
 //        IcyHeaders: name="Enigmatic robot", genre="music", bitrate=256000, metadataInterval=16000
 
         for (int i = 0; i < trackGroups.length; i++) {
@@ -466,10 +467,10 @@ public class RadioService extends Service implements Player.EventListener, Audio
                 Metadata trackMetadata = trackGroup.getFormat(j).metadata;
                 if (trackMetadata != null) {
                     for (int k = 0; k < trackMetadata.length(); k++) {
-                        HyperLog.i(TAG, trackMetadata.get(k).toString());
+                        HyperLog.v(TAG, trackMetadata.get(k).toString());
                     }
                 } else {
-                    HyperLog.i(TAG, "|||Metadata not found|||");
+                    HyperLog.v(TAG, "|||Metadata not found|||");
                 }
             }
         }
@@ -487,10 +488,10 @@ public class RadioService extends Service implements Player.EventListener, Audio
      */
     @Override
     public void onPositionDiscontinuity(int reason) {
-        HyperLog.i(TAG, "Playing new media > reason: " + reason);
+        HyperLog.v(TAG, "Playing new media > reason: " + reason);
         if (hasPlayList()) {
-            HyperLog.i(TAG, this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex()).getTitle());
-            SleepAssistantViewModel.Media playingMedia = this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex());
+            HyperLog.v(TAG, this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex()).getTitle());
+            SleepAssistantPlayListModel.Media playingMedia = this.playList.getMedia().get(exoPlayer.getCurrentWindowIndex());
             EventBus.getDefault().postSticky(playingMedia);
             currentTrackTitle = playingMedia.getTitle();
             notificationManager.startNotify(status, currentTrackTitle);

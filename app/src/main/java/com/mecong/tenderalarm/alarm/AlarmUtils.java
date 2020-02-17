@@ -54,7 +54,7 @@ public class AlarmUtils {
         AlarmManager.AlarmClockInfo nextAlarmClock = alarmMgr.getNextAlarmClock();
 
         if (nextAlarmClock != null) {
-            HyperLog.i(TAG, "Next alarm MgrTime: " + nextAlarmClock.getTriggerTime() + " (" +
+            HyperLog.d(TAG, "Next alarm MgrTime: " + nextAlarmClock.getTriggerTime() + " (" +
                     context.getString(R.string.next_alarm_date_time, alarmEntity.getNextTimeWithTicks()) + ") intent: "
                     + nextAlarmClock.getShowIntent());
         }
@@ -70,7 +70,6 @@ public class AlarmUtils {
         AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         PendingIntent alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context);
-
 
         Calendar calendarNow = Calendar.getInstance();
         calendarNow.add(Calendar.MINUTE, minutes);
@@ -92,7 +91,7 @@ public class AlarmUtils {
             alarmMgr.setAlarmClock(alarmClockInfo, alarmIntent);
         } else {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent);
-            HyperLog.i(TAG, "setExact");
+            HyperLog.v(TAG, "set Exact alarm:" + time);
         }
     }
 
@@ -141,11 +140,11 @@ public class AlarmUtils {
             triggerAfter = Math.max(0, triggerAfter);
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     INTERVAL_FIFTEEN_MINUTES, operation);
-            HyperLog.i(TAG, "Sleep time will start in " +
+            HyperLog.d(TAG, "Sleep time will start in " +
                     TimeUnit.MILLISECONDS.toMinutes(triggerAfter - SystemClock.elapsedRealtime()) + " min");
         } else {
             alarmMgr.cancel(operation);
-            HyperLog.i(TAG, "Sleep time alarm removed");
+            HyperLog.d(TAG, "Sleep time alarm removed");
         }
     }
 

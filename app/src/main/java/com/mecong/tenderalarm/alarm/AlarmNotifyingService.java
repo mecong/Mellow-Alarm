@@ -72,6 +72,7 @@ public class AlarmNotifyingService extends Service {
         HyperLog.i(TAG, "Running alarm: " + entity);
 
         usePowerManagerWakeup();
+        stopForeground(true);
         startAlarmNotification(this, entity);
         startSound(entity);
 
@@ -85,7 +86,7 @@ public class AlarmNotifyingService extends Service {
     }
 
     private void usePowerManagerWakeup() {
-        HyperLog.i(TAG, "usePowerManagerWakeup");
+        HyperLog.v(TAG, "Alarm Notifying service usePowerManagerWakeup");
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if (pm != null) {
@@ -113,6 +114,7 @@ public class AlarmNotifyingService extends Service {
     private void snooze(int minutes) {
         HyperLog.d(TAG, "Snooze for " + minutes + " min");
         handlerTicks.removeCallbacksAndMessages(null);
+        cancelVolumeIncreasing();
         if (ticksMediaPlayer.isPlaying()) {
             ticksMediaPlayer.pause();
             ticksMediaPlayer.seekTo(0);
@@ -121,7 +123,8 @@ public class AlarmNotifyingService extends Service {
             alarmMediaPlayer.pause();
             alarmMediaPlayer.seekTo(0);
         }
-        handlerTicks.postDelayed(runnableRealAlarm, minutes * 60 * 1000);
+//        handlerTicks.postDelayed(runnableRealAlarm, minutes * 60 * 1000);
+//        handlerVolume.postDelayed(runnableVolume, minutes * 60 * 1000);
     }
 
     private void cancelVolumeIncreasing() {
@@ -142,7 +145,7 @@ public class AlarmNotifyingService extends Service {
 
         // Create the Handler object (on the main thread by default)
         handlerTicks = new Handler();
-        final float[] volume = {0.1f};
+        final float[] volume = {0.001f};
 
 
         try {
@@ -175,7 +178,7 @@ public class AlarmNotifyingService extends Service {
                     if (!ticksMediaPlayer.isPlaying()) {
                         ticksMediaPlayer.start();
                     }
-                    HyperLog.d(TAG, "Tick!");
+                    HyperLog.v(TAG, "Tick!");
                 } catch (Exception e) {
                     HyperLog.e(TAG, "Exception: " + e.getMessage(), e);
                 }
@@ -204,7 +207,7 @@ public class AlarmNotifyingService extends Service {
 
                     handlerVolume.removeCallbacks(runnableVolume);
                     handlerVolume.post(runnableVolume);
-                    HyperLog.d(TAG, "Real alarm started!");
+                    HyperLog.i(TAG, "Real alarm started!");
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -239,7 +242,6 @@ public class AlarmNotifyingService extends Service {
     }
 
     private Uri getMelody(Context context, AlarmEntity entity) {
-        HyperLog.i(TAG, "entity.getMelodyUrl()====" + entity.getMelodyUrl());
         if (entity.getMelodyUrl() != null) {
             return Uri.parse(entity.getMelodyUrl());
         } else {
@@ -250,11 +252,11 @@ public class AlarmNotifyingService extends Service {
 
     private void stopAlarmNotification() {
         HyperLog.i(TAG, "Stop Alarm notification");
-//        EventBus.getDefault().unregister(this);
         handlerTicks.removeCallbacksAndMessages(null);
         stopTicksAlarm();
         stopAlarmMediaPlayer();
         alarmEndVibration();
+        cancelVolumeIncreasing();
         stopForeground(true);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancelAll();

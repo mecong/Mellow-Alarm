@@ -373,7 +373,7 @@ public class AlarmAddingActivity extends AppCompatActivity {
 
     private void initLogsAndControls() {
         HyperLog.initialize(this);
-        HyperLog.setLogLevel(Log.VERBOSE);
+        HyperLog.setLogLevel(Log.INFO);
         HyperLog.i(AlarmUtils.TAG, "Start AlarmAddingActivity");
 
         setContentView(R.layout.activity_alarm_adding);

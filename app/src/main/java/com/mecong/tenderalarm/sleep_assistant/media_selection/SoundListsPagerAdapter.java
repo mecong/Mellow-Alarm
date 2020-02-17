@@ -8,14 +8,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.mecong.tenderalarm.R;
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantViewModel;
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 
 public class SoundListsPagerAdapter extends FragmentPagerAdapter {
 
     private String[] pageTitles = new String[3];
-    private SleepAssistantViewModel model;
+    private SleepAssistantPlayListModel model;
 
-    public SoundListsPagerAdapter(FragmentManager fm, Context context, SleepAssistantViewModel model) {
+    public SoundListsPagerAdapter(FragmentManager fm, Context context, SleepAssistantPlayListModel model) {
         super(fm);
         this.model = model;
         pageTitles[0] = context.getString(R.string.offline).toUpperCase();

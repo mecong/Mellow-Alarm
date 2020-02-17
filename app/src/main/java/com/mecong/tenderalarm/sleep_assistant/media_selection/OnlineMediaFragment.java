@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.model.SQLiteDBHelper;
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantViewModel;
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,10 +32,10 @@ import lombok.experimental.FieldDefaults;
 public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapter.ItemClickListener {
 
     MediaItemViewAdapter adapter;
-    SleepAssistantViewModel model;
+    SleepAssistantPlayListModel model;
 
 
-    OnlineMediaFragment(SleepAssistantViewModel model) {
+    OnlineMediaFragment(SleepAssistantPlayListModel model) {
         this.model = model;
     }
 
@@ -109,8 +109,8 @@ public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapte
 
     @Override
     public void onItemClick(String url, int position) {
-        SleepAssistantViewModel.PlayList newPlayList =
-                new SleepAssistantViewModel.PlayList(url, url, SleepMediaType.ONLINE);
+        SleepAssistantPlayListModel.PlayList newPlayList =
+                new SleepAssistantPlayListModel.PlayList(url, url, SleepMediaType.ONLINE);
         model.setPlaylist(newPlayList);
     }
 

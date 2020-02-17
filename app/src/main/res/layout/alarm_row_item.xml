@@ -54,10 +54,10 @@
         android:contentDescription="@string/switch_alarm_state"
         android:focusable="true"
         android:foregroundTintMode="src_in"
+        android:src="@drawable/ic_alarm_off"
         android:minWidth="40sp"
         android:scaleType="center"
-        android:src="@drawable/ic_alarm_off"
-        android:tint="#E9DEDE" />
+        android:tint="#999B9B" />
 
     <ImageButton
         android:id="@+id/btnDeleteAlarm"

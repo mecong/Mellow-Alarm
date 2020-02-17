@@ -22,7 +22,7 @@ import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.alarm.AlarmUtils;
 import com.mecong.tenderalarm.model.SQLiteDBHelper;
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantViewModel;
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,9 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
 
     private static final int READ_REQUEST_CODE = 42;
     MediaItemViewAdapter adapter;
-    SleepAssistantViewModel model;
+    SleepAssistantPlayListModel model;
 
-    LocalFilesMediaFragment(SleepAssistantViewModel model) {
+    LocalFilesMediaFragment(SleepAssistantPlayListModel model) {
         this.model = model;
     }
 
@@ -90,12 +90,12 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
                 if (clipData == null) {
                     uri = resultData.getData();
                     HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString());
-                    addOnlineMediaRecord(uri.toString(), dumpFileMetaData(uri));
+                    addLocalFileMediaRecord(uri.toString(), dumpFileMetaData(uri));
                     getContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } else {
                     for (int i = 0; i < clipData.getItemCount(); i++) {
                         ClipData.Item path = clipData.getItemAt(i);
-                        addOnlineMediaRecord(path.getUri().toString(), dumpFileMetaData(path.getUri()));
+                        addLocalFileMediaRecord(path.getUri().toString(), dumpFileMetaData(path.getUri()));
                         getContext().getContentResolver().takePersistableUriPermission(path.getUri(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         HyperLog.i("Path:", path.toString());
                     }
@@ -104,7 +104,7 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
         }
     }
 
-    private void addOnlineMediaRecord(String url, String title) {
+    private void addLocalFileMediaRecord(String url, String title) {
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getContext());
         sqLiteDBHelper.addLocalMediaUrl(url, title);
 
@@ -178,18 +178,18 @@ public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAd
     @Override
     public void onItemClick(String url, int position) {
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getContext());
-        List<SleepAssistantViewModel.Media> media;
+        List<SleepAssistantPlayListModel.Media> media;
         try (Cursor allLocalMedia = sqLiteDBHelper.getAllLocalMedia()) {
             media = new ArrayList<>(allLocalMedia.getCount());
             while (allLocalMedia.moveToNext()) {
                 String uri = allLocalMedia.getString(allLocalMedia.getColumnIndex("uri"));
                 String title = allLocalMedia.getString(allLocalMedia.getColumnIndex("title"));
-                media.add(new SleepAssistantViewModel.Media(uri, title));
+                media.add(new SleepAssistantPlayListModel.Media(uri, title));
             }
         }
 
-        SleepAssistantViewModel.PlayList newPlayList =
-                new SleepAssistantViewModel.PlayList(position, media, SleepMediaType.LOCAL);
+        SleepAssistantPlayListModel.PlayList newPlayList =
+                new SleepAssistantPlayListModel.PlayList(position, media, SleepMediaType.LOCAL);
         model.setPlaylist(newPlayList);
     }
 

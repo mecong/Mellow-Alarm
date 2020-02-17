@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mecong.tenderalarm.R;
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantViewModel;
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,9 +24,9 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
     private static final String SELECTED_POSITION = "selectedPosition";
     int selectedPosition;
     NoisesItemViewAdapter adapter;
-    SleepAssistantViewModel model;
+    SleepAssistantPlayListModel model;
 
-    private NoisesFragment(SleepAssistantViewModel model) {
+    private NoisesFragment(SleepAssistantPlayListModel model) {
         this.model = model;
     }
 
@@ -37,7 +37,7 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
      * @param selectedPosition - selected item in the list
      * @return A new instance of fragment NoisesFragment.
      */
-    static NoisesFragment newInstance(int selectedPosition, SleepAssistantViewModel model) {
+    static NoisesFragment newInstance(int selectedPosition, SleepAssistantPlayListModel model) {
         NoisesFragment fragment = new NoisesFragment(model);
         Bundle args = new Bundle();
         args.putInt(SELECTED_POSITION, selectedPosition);
@@ -75,7 +75,7 @@ public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.No
 
     @Override
     public void onItemClick(View view, int position) {
-        SleepAssistantViewModel.PlayList newPlayList = new SleepAssistantViewModel.PlayList(
+        SleepAssistantPlayListModel.PlayList newPlayList = new SleepAssistantPlayListModel.PlayList(
                 adapter.getItem(position).getUrl(), adapter.getItem(position).getName(), SleepMediaType.NOISE);
         model.setPlaylist(newPlayList);
     }

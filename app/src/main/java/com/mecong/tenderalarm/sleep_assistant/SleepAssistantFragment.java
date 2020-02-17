@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.Fade;
@@ -28,7 +27,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.tenderalarm.R;
+import com.mecong.tenderalarm.model.PropertyName;
+import com.mecong.tenderalarm.model.SQLiteDBHelper;
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType;
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise;
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SoundListsPagerAdapter;
@@ -44,12 +46,12 @@ import butterknife.OnClick;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
+
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class SleepAssistantFragment extends Fragment {
 
     private static final long STEP_MILLIS = TimeUnit.SECONDS.toMillis(10);
-    private RadioService service;
-
     @BindView(R.id.pp_button)
     ImageButton ppButton;
     @BindView(R.id.textViewTime)
@@ -68,8 +70,6 @@ public class SleepAssistantFragment extends Fragment {
     HourglassComponent sliderSleepTime;
     @BindView(R.id.sliderVolume)
     HourglassComponent sliderVolume;
-
-    int loadingCount = 0;
     long timeMinutes;
     long timeMs;
     float volume;
@@ -77,8 +77,8 @@ public class SleepAssistantFragment extends Fragment {
     Runnable runnable;
     float volumeStep;
     boolean serviceBound;
-    SleepAssistantViewModel model;
-
+    SleepAssistantPlayListModel playListModel;
+    private RadioService service;
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder binder) {
@@ -100,33 +100,38 @@ public class SleepAssistantFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
                 R.layout.content_sleep_assistant, container, false);
 
-        if (savedInstanceState != null)
+        ButterKnife.bind(this, rootView);
+
+        HyperLog.i(TAG, "Sleep assistant fragment create view");
+
+        if (savedInstanceState != null) {
             return rootView;
-
-
-        model = (new ViewModelProvider(this)).get(SleepAssistantViewModel.class);
-
-        if (model.getPlaylist().getValue() == null) {
-            SleepAssistantViewModel.PlayList defaultPlayList =
-                    new SleepAssistantViewModel.PlayList(SleepNoise.Companion.retrieveNoises().get(0).getUrl(),
-                            SleepNoise.Companion.retrieveNoises().get(0).getName(), SleepMediaType.NOISE);
-            model.setPlaylist(defaultPlayList);
         }
 
-        model.getPlaylist().observe(this, new Observer<SleepAssistantViewModel.PlayList>() {
+
+        playListModel = (new ViewModelProvider(this)).get(SleepAssistantPlayListModel.class);
+
+        if (playListModel.getPlaylist().getValue() == null) {
+            SleepAssistantPlayListModel.PlayList defaultPlayList =
+                    new SleepAssistantPlayListModel.PlayList(SleepNoise.Companion.retrieveNoises().get(0).getUrl(),
+                            SleepNoise.Companion.retrieveNoises().get(0).getName(), SleepMediaType.NOISE);
+            playListModel.setPlaylist(defaultPlayList);
+        }
+
+        playListModel.getPlaylist().observe(getViewLifecycleOwner(), new Observer<SleepAssistantPlayListModel.PlayList>() {
             @Override
-            public void onChanged(SleepAssistantViewModel.PlayList playList) {
+            public void onChanged(SleepAssistantPlayListModel.PlayList playList) {
                 if (service != null)
                     service.playMediaList(playList);
             }
         });
 
 
-        ButterKnife.bind(this, rootView);
-
         final Context context = this.getContext();
 
-        initializeTabsAndMediaFragments(context, 1);
+        final SQLiteDBHelper instance = SQLiteDBHelper.getInstance(getContext());
+        final Integer activeTab = instance.getPropertyInt(PropertyName.ACTIVE_TAB);
+        initializeTabsAndMediaFragments(context, activeTab);
 
         timeMinutes = 39;
 
@@ -182,11 +187,9 @@ public class SleepAssistantFragment extends Fragment {
                 timeMs -= STEP_MILLIS;
                 if (timeMs <= 0) {
                     handler.removeCallbacks(runnable);
-//                    releaseWakeLock();
 
                     if (service.isPlaying()) {
                         service.stop();
-//                        System.exit(0);
                         timeMinutes = 30;
                         sliderSleepTime.setCurrentValue(timeMinutes);
                         textViewMinutes.setText(context.getString(R.string.sleep_minutes, timeMinutes));
@@ -201,7 +204,6 @@ public class SleepAssistantFragment extends Fragment {
                     sliderSleepTime.setCurrentValue(timeMinutes);
                     textViewMinutes.setText(context.getString(R.string.sleep_minutes, timeMinutes));
 
-//                    Log.v(AlarmUtils.TAG, "timems=" + timeMs + " volume=" + volume / 100f);
                     volume -= volumeStep;
                     service.setAudioVolume(volume / 100f);
                     sliderVolume.setCurrentValue((long) volume);
@@ -217,17 +219,21 @@ public class SleepAssistantFragment extends Fragment {
 
     private void initializeTabsAndMediaFragments(Context context, int activeTab) {
         SoundListsPagerAdapter soundListsPagerAdapter =
-                new SoundListsPagerAdapter(this.getActivity().getSupportFragmentManager(), context, model);
+                new SoundListsPagerAdapter(this.getActivity().getSupportFragmentManager(), context, playListModel);
         viewPager.setAdapter(soundListsPagerAdapter);
 
         tabs.setupWithViewPager(viewPager);
 
         tabs.setSelectedTabIndicator(null);
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            final SQLiteDBHelper instance = SQLiteDBHelper.getInstance(getContext());
+
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.getCustomView().findViewById(R.id.view).setVisibility(View.INVISIBLE);
                 tab.getCustomView().setBackground(getResources().getDrawable(R.drawable.tr2_background));
+
+                instance.setPropertyString(PropertyName.ACTIVE_TAB, String.valueOf(tab.getPosition()));
             }
 
             @Override
@@ -238,7 +244,7 @@ public class SleepAssistantFragment extends Fragment {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                // No-op
+                onTabSelected(tab);
             }
         });
 
@@ -262,7 +268,7 @@ public class SleepAssistantFragment extends Fragment {
             if (service.hasPlayList()) {
                 service.resume();
             } else {
-                service.playMediaList(model.getPlaylist().getValue());
+                service.playMediaList(playListModel.getPlaylist().getValue());
             }
         }
     }
@@ -286,7 +292,7 @@ public class SleepAssistantFragment extends Fragment {
 //    }
 
     @Subscribe(sticky = true)
-    public void onPlayFileChanged(SleepAssistantViewModel.Media media) {
+    public void onPlayFileChanged(SleepAssistantPlayListModel.Media media) {
         nowPlayingText.setText(media.getTitle());
     }
 
@@ -297,11 +303,7 @@ public class SleepAssistantFragment extends Fragment {
         ppButton.setEnabled(true);
         switch (status) {
             case RadioService.LOADING:
-//                playButton.setText("Loading");
                 ppButton.setImageResource(R.drawable.pause_btn);
-                loadingCount++;
-                textViewTime.setText(String.valueOf(loadingCount));
-//                ppButton.setEnabled(false);
                 ppButton.setColorFilter(0);
 
                 handler.removeCallbacks(runnable);
@@ -309,11 +311,9 @@ public class SleepAssistantFragment extends Fragment {
             case RadioService.ERROR:
                 nowPlayingText.setText(getString(R.string.can_not_stream));
                 Toast.makeText(this.getContext(), getString(R.string.can_not_stream), Toast.LENGTH_SHORT).show();
-//                playButton.setText("Resume");
                 ppButton.setImageResource(R.drawable.play_btn);
 
-                model.playing.setValue(false);
-//                releaseWakeLock();
+                playListModel.playing.setValue(false);
                 break;
             case RadioService.PLAYING:
 
@@ -328,17 +328,15 @@ public class SleepAssistantFragment extends Fragment {
                 ppButton.setImageTintMode(PorterDuff.Mode.ADD);
 
 
-                model.playing.setValue(true);
+                playListModel.playing.setValue(true);
 
                 handler.removeCallbacks(runnable);
                 handler.postDelayed(runnable, STEP_MILLIS);
-//                acquireWakeLock();
                 break;
             default:
                 ppButton.setImageResource(R.drawable.play_btn);
 
-                model.playing.setValue(false);
-//                releaseWakeLock();
+                playListModel.playing.setValue(false);
                 handler.removeCallbacks(runnable);
                 break;
         }
@@ -352,7 +350,8 @@ public class SleepAssistantFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        bind();
+        HyperLog.i(TAG, "SA OnStart");
+        bindRadioService();
 
         EventBus.getDefault().register(this);
     }
@@ -360,12 +359,16 @@ public class SleepAssistantFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        HyperLog.i(TAG, "SA onStop");
+
         EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        HyperLog.i(TAG, "SA onPause");
+
     }
 
     @Override
@@ -373,7 +376,6 @@ public class SleepAssistantFragment extends Fragment {
         EventBus.getDefault().unregister(this);
 
         handler.removeCallbacks(runnable);
-//        releaseWakeLock();
 
         if (service.isPlaying()) {
             service.stop();
@@ -389,9 +391,10 @@ public class SleepAssistantFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        HyperLog.i(TAG, "SA onResume");
     }
 
-    private void bind() {
+    private void bindRadioService() {
         Intent intent = new Intent(this.getContext().getApplicationContext(), RadioService.class);
         this.getActivity().getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 

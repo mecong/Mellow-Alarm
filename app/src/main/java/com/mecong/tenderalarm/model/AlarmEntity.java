@@ -138,6 +138,7 @@ public class AlarmEntity {
     public void updateNextAlarmDate(boolean manually) {
         Calendar calendar = Calendar.getInstance();
         Calendar calendarNow = Calendar.getInstance();
+        nextTime = -1L;
 
         if (exactDate == 0) {
             calendar.set(Calendar.HOUR_OF_DAY, hour);

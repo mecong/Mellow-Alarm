@@ -139,7 +139,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
     }
 
     private void usePowerManagerWakeup() {
-        HyperLog.i(TAG, "usePowerManagerWakeup");
+        HyperLog.i(TAG, "alarm receiver PowerManagerWakeup");
 
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         if (pm != null) {
@@ -178,7 +178,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
 
     @Subscribe
     public void messageReceived(AlarmMessage message) {
-        HyperLog.i(TAG, "Stop Activity");
+        HyperLog.i(TAG, "Stop Activity with message: " + message);
         if (message == AlarmMessage.STOP_ALARM) {
             this.finish();
         }
@@ -189,7 +189,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
         try {
             super.onCreate(savedInstanceState);
             HyperLog.initialize(this);
-            HyperLog.setLogLevel(Log.VERBOSE);
+            HyperLog.setLogLevel(Log.INFO);
 
             EventBus.getDefault().register(this);
 
@@ -233,7 +233,8 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
             final OnClickListener snoozeOnClickListener = new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int time = Integer.parseInt(v.getTag().toString());
+                    int time = Integer.parseInt(v.getTag().toString());
+
                     snoozedMinutes += time;
                     if (time == 2) {
                         EventBus.getDefault().post(AlarmMessage.SNOOZE2M);
@@ -247,7 +248,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
                     btnSnooze5m.setVisibility(View.GONE);
                     sleepTimer.setVisibility(View.VISIBLE);
 
-                    final Date sleepText = new Date(time * 60000);
+                    final Date sleepText = new Date(time * 60000L);
                     final Handler handlerSleepTime = new Handler();
 
                     sleepTimer.setText(context.getString(R.string.sleep_timer, sleepText));
@@ -275,23 +276,7 @@ public class AlarmReceiverActivity extends FragmentActivity implements SensorEve
 
                     HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.getSnoozeMaxTimes());
 
-
-//                    AlarmUtils.snoozeAlarm(1, entity, context);
-
-//                    if (snoozedMinutes < entity.getSnoozeMaxTimes()) {
-//                        final Handler handler = new Handler();
-//                        final int snoozeButtonsDelay = time * 60000;
-//                        handler.postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                btnSnooze2m.setVisibility(View.VISIBLE);
-//                                btnSnooze3m.setVisibility(View.VISIBLE);
-//                                btnSnooze5m.setVisibility(View.VISIBLE);
-//                                sleepTimer.setVisibility(View.GONE);
-//                                handlerSleepTime.removeCallbacks(runnable);
-//                            }
-//                        }, snoozeButtonsDelay);
-//                    }
+                    AlarmUtils.snoozeAlarm(time, entity, context);
                 }
             };
             btnSnooze2m.setOnClickListener(snoozeOnClickListener);

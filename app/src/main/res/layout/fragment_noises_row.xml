@@ -5,6 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="50dp"
+    android:background="@drawable/list_background"
     tools:context=".sleep_assistant.media_selection.NoisesFragment">
 
     <TextView

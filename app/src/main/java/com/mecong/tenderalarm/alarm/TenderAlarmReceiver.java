@@ -19,7 +19,7 @@ public class TenderAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         HyperLog.initialize(context);
-        HyperLog.setLogLevel(Log.VERBOSE);
+        HyperLog.setLogLevel(Log.INFO);
         String alarmId = intent.getStringExtra(ALARM_ID_PARAM);
 
 
