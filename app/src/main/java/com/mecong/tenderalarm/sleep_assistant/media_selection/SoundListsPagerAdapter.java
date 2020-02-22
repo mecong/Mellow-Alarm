@@ -16,7 +16,7 @@ public class SoundListsPagerAdapter extends FragmentPagerAdapter {
     private SleepAssistantPlayListModel model;
 
     public SoundListsPagerAdapter(FragmentManager fm, Context context, SleepAssistantPlayListModel model) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.model = model;
         pageTitles[0] = context.getString(R.string.offline).toUpperCase();
         pageTitles[1] = context.getString(R.string.online).toUpperCase();

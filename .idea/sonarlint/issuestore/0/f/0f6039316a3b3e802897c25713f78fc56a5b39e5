@@ -1,0 +1,12 @@
+
+fsquid:S1192"ODefine a constant instead of duplicating this literal "SELECT * FROM " 3 times.(ıÒ¼‚
+^squid:S1192"FDefine a constant instead of duplicating this literal "_id=?" 5 times.(Ğùƒ›
+osquid:S1192Å"RDefine a constant instead of duplicating this literal "CREATE TABLE %s (" 4 times.(ˆ™Şõüÿÿÿÿ
+gsquid:S1192ª"JDefine a constant instead of duplicating this literal "] deleted" 3 times.(Åê¼¯ùÿÿÿÿ
+qsquid:S1192Æ"YDefine a constant instead of duplicating this literal "_id INTEGER PRIMARY KEY," 4 times.(ì‡ãÃ
+isquid:CommentedOutCodeLine4"<This block of commented-out lines of code should be removed.(¥ã­á8Ëùé†.
+nsquid:CommentedOutCodeLine8"<This block of commented-out lines of code should be removed.(¡‚€Õıÿÿÿÿ8Ëùé†.
+nsquid:CommentedOutCodeLine<"<This block of commented-out lines of code should be removed.(õéÄ¾øÿÿÿÿ8Ëùé†.
+isquid:CommentedOutCodeLine@"<This block of commented-out lines of code should be removed.(İŞÁÕ8Ëùé†.
+hsquid:CommentedOutCodeLineD"<This block of commented-out lines of code should be removed.(Ä¿À8Ëùé†.
+isquid:CommentedOutCodeLineH"<This block of commented-out lines of code should be removed.(—Õ¡¦8Ëùé†.

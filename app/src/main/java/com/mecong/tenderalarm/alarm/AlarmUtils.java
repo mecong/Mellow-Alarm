@@ -60,10 +60,7 @@ public class AlarmUtils {
         }
 
         setUpNextSleepTimeNotification(context);
-
-        if (alarmEntity.isBeforeAlarmNotification() && alarmEntity.getCanceledNextAlarms() == 0) {
-            setupUpcomingAlarmNotification(context, alarmEntity);
-        }
+        setupUpcomingAlarmNotification(context, alarmEntity);
     }
 
     static void snoozeAlarm(int minutes, AlarmEntity alarmEntity, Context context) {
@@ -96,7 +93,7 @@ public class AlarmUtils {
     }
 
     private static void setupUpcomingAlarmNotification(Context context, AlarmEntity alarmEntity) {
-        if (alarmEntity.getNextTime() - System.currentTimeMillis() < TimeUnit.MINUTES.toMillis(50)) {
+        if (alarmIsTooSoon(alarmEntity) || !alarmEntity.isHeadsUp() || alarmEntity.getCanceledNextAlarms() != 0) {
             return;
         }
 
@@ -118,6 +115,10 @@ public class AlarmUtils {
         if (alarmMgr != null) {
             alarmMgr.set(AlarmManager.ELAPSED_REALTIME, at, alarmIntent);
         }
+    }
+
+    private static boolean alarmIsTooSoon(AlarmEntity alarmEntity) {
+        return alarmEntity.getNextTime() - System.currentTimeMillis() < TimeUnit.MINUTES.toMillis(50);
     }
 
     static void setUpNextSleepTimeNotification(Context context) {

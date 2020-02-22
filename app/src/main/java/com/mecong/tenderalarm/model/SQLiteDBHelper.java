@@ -19,14 +19,14 @@ import static java.lang.String.format;
 public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider {
     private static final String TITLE = "title";
     private static final String URI = "uri";
-    private static final int DATABASE_VERSION = 23;
+    private static final int DATABASE_VERSION = 25;
     private static final String TABLE_ALARMS = "alarms";
     private static final String TABLE_ONLINE_MEDIA = "online_media";
     private static final String TABLE_OFFLINE_MEDIA = "offline_media";
     private static final String TABLE_PROPERTIES = "properties";
     private static final String SELECT_ALL_ALARMS = "SELECT * FROM " + TABLE_ALARMS;
     private static final String SELECT_NEXT_ALARM = format(
-            "SELECT * FROM %s WHERE active=1 ORDER BY next_not_canceled_time LIMIT 1", TABLE_ALARMS);
+            "SELECT * FROM %s WHERE active=1 and canceled_next_alarms=0 ORDER BY next_not_canceled_time LIMIT 1", TABLE_ALARMS);
     private static final String DATABASE_NAME = "my_alarm_database";
     private static final String DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS ";
     private static SQLiteDBHelper sInstance;
@@ -111,6 +111,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
         Calendar now = Calendar.getInstance();
         return getAlarmEntity(format(Locale.getDefault(),
                 "SELECT * FROM %s WHERE active=1 " +
+                        " AND tts_notification=1" +
                         " AND hour>1 AND hour<10 " +
                         " AND (next_time-%d)>%d" +
                         " ORDER BY next_time LIMIT 1", TABLE_ALARMS, now.getTimeInMillis(), TimeUnit.HOURS.toMillis(4)));
@@ -134,7 +135,8 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
             values.put("next_time", entity.getNextTime());
             values.put("next_not_canceled_time", entity.getNextNotCanceledTime());
             values.put("next_request_code", entity.getNextRequestCode());
-            values.put("before_alarm_notification", entity.isBeforeAlarmNotification() ? 1 : 0);
+            values.put("tts_notification", entity.isTimeToSleepNotification());
+            values.put("heads_up", entity.isHeadsUp());
 
             if (entity.getId() == 0) {
                 HyperLog.d(TAG, "Alarm added :: " + entity);
@@ -149,22 +151,25 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     }
 
     public void toggleAlarmActive(String id, boolean active) {
-        SQLiteDatabase writableDatabase = this.getWritableDatabase();
+        try (SQLiteDatabase writableDatabase = this.getWritableDatabase()) {
 
-        ContentValues updateValues = new ContentValues(1);
-        updateValues.put("active", active ? 1 : 0);
-        if (!active) {
-            updateValues.put("canceled_next_alarms", 0);
-            updateValues.put("next_time", -1);
-            updateValues.put("next_request_code", -1);
+            ContentValues updateValues = new ContentValues(1);
+            updateValues.put("active", active ? 1 : 0);
+            if (!active) {
+                updateValues.put("canceled_next_alarms", 0);
+                updateValues.put("next_time", -1);
+                updateValues.put("next_request_code", -1);
+            }
+            writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id});
+            HyperLog.v(TAG, "Alarm [id=" + id + "] toggled to: " + active);
         }
-        writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", new String[]{id});
-        HyperLog.v(TAG, "Alarm [id=" + id + "] toggled to: " + active);
     }
 
     public void deleteAlarm(String id) {
-        this.getWritableDatabase().delete(TABLE_ALARMS, "_id=?", new String[]{id});
-        HyperLog.v(TAG, "Alarm [id=" + id + "] deleted");
+        try (SQLiteDatabase writableDatabase = this.getWritableDatabase()) {
+            writableDatabase.delete(TABLE_ALARMS, "_id=?", new String[]{id});
+            HyperLog.v(TAG, "Alarm [id=" + id + "] deleted");
+        }
     }
 
     @Override
@@ -199,7 +204,8 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
                 + "exact_date LONG,"
                 + "message TEXT,"
                 + "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
-                + "before_alarm_notification BOOLEAN NOT NULL CHECK (before_alarm_notification IN (0,1)) DEFAULT 1,"
+                + "heads_up BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
+                + "tts_notification BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
                 + "ticks_time TINYINT," // for how long before main alarm to play ticks (null - not play)
                 + "melody_name TEXT,"
                 + "melody_url TEXT,"
@@ -283,7 +289,9 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     }
 
     public void setPropertyString(PropertyName property, String propertyValue) {
-        setPropertyString(property, propertyValue, getWritableDatabase());
+        try (SQLiteDatabase writableDatabase = this.getWritableDatabase()) {
+            setPropertyString(property, propertyValue, writableDatabase);
+        }
     }
 
     public Cursor getAllOnlineMedia() {
@@ -301,8 +309,10 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     }
 
     public void deleteOnlineMedia(String id) {
-        this.getWritableDatabase().delete(TABLE_ONLINE_MEDIA, "_id=?", new String[]{id});
-        HyperLog.v(TAG, "Online Media [id=" + id + "] deleted");
+        try (SQLiteDatabase writableDatabase = this.getWritableDatabase()) {
+            writableDatabase.delete(TABLE_ONLINE_MEDIA, "_id=?", new String[]{id});
+            HyperLog.v(TAG, "Online Media [id=" + id + "] deleted");
+        }
     }
 
     public Cursor getAllLocalMedia() {
@@ -321,7 +331,9 @@ public class SQLiteDBHelper extends SQLiteOpenHelper implements DatabaseProvider
     }
 
     public void deleteLocalMedia(String id) {
-        this.getWritableDatabase().delete(TABLE_OFFLINE_MEDIA, "_id=?", new String[]{id});
-        HyperLog.v(TAG, "Online Media [id=" + id + "] deleted");
+        try (SQLiteDatabase writableDatabase = this.getWritableDatabase()) {
+            writableDatabase.delete(TABLE_OFFLINE_MEDIA, "_id=?", new String[]{id});
+            HyperLog.v(TAG, "Online Media [id=" + id + "] deleted");
+        }
     }
 }

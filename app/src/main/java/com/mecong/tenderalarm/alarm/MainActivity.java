@@ -4,11 +4,13 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String ASSISTANT_FRAGMENT = "assistant_fragment";
     public static final String SLEEP_FRAGMENT = "SLEEP_FRAGMENT";
     public static final String ALARM_FRAGMENT = "ALARM_FRAGMENT";
+
     @BindView(R.id.ibOpenSleepAssistant)
     ImageButton ibOpenSleepAssistant;
     @BindView(R.id.ibOpenAlarm)
@@ -105,25 +108,32 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 HyperLog.i(AlarmUtils.TAG, "Open Sleep Assistant button clicked");
                 FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+                final Fragment sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT);
+                final Fragment alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT);
+//                fragmentTransaction.addToBackStack("Back to Alarms");
+                fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
 
-                Fragment sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT);
-                Fragment alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT);
 
                 HyperLog.i(AlarmUtils.TAG, "Found sleep fragment: " + sleepFragment);
                 HyperLog.i(AlarmUtils.TAG, "Found alarm fragment: " + alarmFragment);
-                if (sleepFragment == null) {
-                    fragmentTransaction.add(R.id.container, new SleepAssistantFragment(), SLEEP_FRAGMENT);
-                    sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT);
-                }
 
-                if (alarmFragment != null) {
-                    fragmentTransaction.hide(alarmFragment);
-                    HyperLog.i(AlarmUtils.TAG, "alarmFragment hide " + sleepFragment);
-                }
+                fragmentTransaction.hide(alarmFragment);
+                HyperLog.i(AlarmUtils.TAG, "alarmFragment hide " + sleepFragment);
 
-                if (sleepFragment != null) {
-                    fragmentTransaction.show(sleepFragment);
-                    HyperLog.i(AlarmUtils.TAG, "sleepFragment show " + sleepFragment);
+                fragmentTransaction.show(sleepFragment);
+                HyperLog.i(AlarmUtils.TAG, "sleepFragment show " + sleepFragment);
+
+                AudioManager audioManager = (AudioManager) MainActivity.this.getSystemService(Context.AUDIO_SERVICE);
+                int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                int systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+                float volumeCoefficient = (float) systemVolume / streamMaxVolume;
+
+                if (volumeCoefficient < 0.3f || volumeCoefficient > 0.4f) {
+                    volumeCoefficient = 0.35f;
+                    audioManager.setStreamVolume(
+                            AudioManager.STREAM_MUSIC, (int) (streamMaxVolume * volumeCoefficient), 0);
+                    Toast.makeText(MainActivity.this, "System volume set to 30%", Toast.LENGTH_SHORT).show();
                 }
 
                 ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active);
@@ -137,47 +147,54 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 HyperLog.i(AlarmUtils.TAG, "Open Alarm button clicked");
                 FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
-
-                Fragment sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT);
-                Fragment alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT);
+                final Fragment sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT);
+                final Fragment alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT);
+//                fragmentTransaction.addToBackStack("Back to Sleep assistant");
+                fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
 
 
                 HyperLog.i(AlarmUtils.TAG, "Found sleep fragment: " + sleepFragment);
                 HyperLog.i(AlarmUtils.TAG, "Found alarm fragment: " + alarmFragment);
-                if (alarmFragment == null) {
-                    fragmentTransaction.add(R.id.container, new MainAlarmFragment(), ALARM_FRAGMENT);
-                    alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT);
-                }
 
-                if (sleepFragment != null) {
-                    fragmentTransaction.hide(sleepFragment);
-                    HyperLog.i(AlarmUtils.TAG, "sleepFragment hide " + sleepFragment);
-                }
+                fragmentTransaction.hide(sleepFragment);
+                HyperLog.i(AlarmUtils.TAG, "sleepFragment hide " + sleepFragment);
+                fragmentTransaction.show(alarmFragment);
+                HyperLog.i(AlarmUtils.TAG, "alarmFragment show " + sleepFragment);
 
-                if (alarmFragment != null) {
-                    fragmentTransaction.show(alarmFragment);
-                    HyperLog.i(AlarmUtils.TAG, "alarmFragment show " + sleepFragment);
-                }
                 ibOpenAlarm.setImageResource(R.drawable.alarm_active);
                 ibOpenSleepAssistant.setImageResource(R.drawable.sleep_inactive);
                 fragmentTransaction.commit();
             }
         });
 
+        FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+//        fragmentTransaction.addToBackStack("Init");
+
+        final Fragment sleepFragment = new SleepAssistantFragment();
+        final Fragment alarmFragment = new MainAlarmFragment();
+
+        fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT);
+        fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT);
+
 
         final String desiredFragment = getIntent().getStringExtra(FRAGMENT_NAME_PARAM);
         if (ASSISTANT_FRAGMENT.equals(desiredFragment)) {
-            supportFragmentManager.beginTransaction()
-                    .add(R.id.container, new SleepAssistantFragment(), SLEEP_FRAGMENT)
-                    .commit();
+            fragmentTransaction.hide(alarmFragment);
+            HyperLog.i(AlarmUtils.TAG, "alarmFragment hide " + sleepFragment);
+            fragmentTransaction.show(sleepFragment);
+            HyperLog.i(AlarmUtils.TAG, "sleepFragment show " + sleepFragment);
+
             ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active);
         } else {
-            supportFragmentManager.beginTransaction()
-                    .add(R.id.container, new MainAlarmFragment(), ALARM_FRAGMENT)
-                    .commit();
+            fragmentTransaction.hide(sleepFragment);
+            HyperLog.i(AlarmUtils.TAG, "sleepFragment hide " + sleepFragment);
+            fragmentTransaction.show(alarmFragment);
+            HyperLog.i(AlarmUtils.TAG, "alarmFragment show " + sleepFragment);
+
             ibOpenAlarm.setImageResource(R.drawable.alarm_active);
         }
 
+        fragmentTransaction.commit();
 
 //        createDebugAlarm();
     }
@@ -191,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 .complexity(1)
                 .snoozeMaxTimes(10)
                 .ticksTime(1)
-                .beforeAlarmNotification(true)
+                .headsUp(true)
                 .build();
 
         long id = instance.addOrUpdateAlarm(alarmEntity);

@@ -16,7 +16,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     CursorRecyclerViewAdapter(Context context, Cursor cursor) {
         mCursor = cursor;
-        mDataValid = cursor != null;
+        mDataValid = cursor != null && !cursor.isClosed();
         mRowIdColumn = mDataValid ? mCursor.getColumnIndex("_id") : -1;
         mDataSetObserver = new NotifyingDataSetObserver();
         if (mCursor != null) {
@@ -26,7 +26,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        if (mDataValid && mCursor != null) {
+        if (mDataValid && !mCursor.isClosed()) {
             return mCursor.getCount();
         }
         return 0;
@@ -34,7 +34,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     @Override
     public long getItemId(int position) {
-        if (mDataValid && mCursor != null && mCursor.moveToPosition(position)) {
+        if (mDataValid && !mCursor.isClosed() && mCursor.moveToPosition(position)) {
             return mCursor.getLong(mRowIdColumn);
         }
         return 0;

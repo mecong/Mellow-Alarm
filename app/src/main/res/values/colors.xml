@@ -6,7 +6,8 @@
     <!--    <color name="colorAccent">#121314</color>-->
     <color name="colorAccent">#AA9999</color>
 
-    <color name="windowBackground">#121314</color>
+    <!--    <color name="windowBackground">#121314</color>-->
+    <color name="windowBackground">#17191A</color>
     <color name="background2">#1C1C1E</color>
     <color name="textColor">#E7E8E2</color>
     <color name="textColor2">#696767</color>

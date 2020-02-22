@@ -103,10 +103,10 @@ public class SleepAssistantFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         HyperLog.i(TAG, "Sleep assistant fragment create view");
-
-        if (savedInstanceState != null) {
-            return rootView;
-        }
+//
+//        if (savedInstanceState != null) {
+//            return rootView;
+//        }
 
 
         playListModel = (new ViewModelProvider(this)).get(SleepAssistantPlayListModel.class);
@@ -141,12 +141,6 @@ public class SleepAssistantFragment extends Fragment {
 
         float volumeCoefficient = (float) systemVolume / streamMaxVolume;
 
-        if (volumeCoefficient < 0.3f) {
-            volumeCoefficient = 0.3f;
-            audioManager.setStreamVolume(
-                    AudioManager.STREAM_MUSIC, (int) (streamMaxVolume * volumeCoefficient), 0);
-            Toast.makeText(context, "System volume set to 30%", Toast.LENGTH_SHORT).show();
-        }
         volume = 105 - 100 * volumeCoefficient;
 
 
@@ -272,24 +266,7 @@ public class SleepAssistantFragment extends Fragment {
             }
         }
     }
-//
-//    private void acquireWakeLock() {
-//        if (wakeLock == null) {
-//            PowerManager powerManager = (PowerManager) this.getActivity().getSystemService(POWER_SERVICE);
-//            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-//                    "TenderAlarm::SleepAssistantWakelockTag");
-//        }
-//
-//        if (wakeLock != null && !wakeLock.isHeld()) {
-//            wakeLock.acquire(timeMs);
-//        }
-//    }
-//
-//    private void releaseWakeLock() {
-//        if (wakeLock != null && wakeLock.isHeld()) {
-//            wakeLock.release();
-//        }
-//    }
+
 
     @Subscribe(sticky = true)
     public void onPlayFileChanged(SleepAssistantPlayListModel.Media media) {
@@ -392,10 +369,18 @@ public class SleepAssistantFragment extends Fragment {
     public void onResume() {
         super.onResume();
         HyperLog.i(TAG, "SA onResume");
+
+        AudioManager audioManager = (AudioManager) this.getActivity().getSystemService(Context.AUDIO_SERVICE);
+        int streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+        float volumeCoefficient = (float) systemVolume / streamMaxVolume;
+
+        volume = 105 - 100 * volumeCoefficient;
     }
 
     private void bindRadioService() {
-        Intent intent = new Intent(this.getContext().getApplicationContext(), RadioService.class);
+        Intent intent = new Intent(this.getContext(), RadioService.class);
         this.getActivity().getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
         if (service != null)

@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.hypertrack.hyperlog.HyperLog;
 import com.mecong.tenderalarm.AdditionalActivity;
 import com.mecong.tenderalarm.R;
@@ -27,17 +26,13 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static android.app.Activity.RESULT_OK;
-import static com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.MINUTE;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification;
 
 public class MainAlarmFragment extends Fragment {
-
-
     private static final int ALARM_ADDING_REQUEST_CODE = 42;
     private AlarmsListCursorAdapter alarmsAdapter;
     private TextView textNextAlarm, textNextAlarmDate;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +41,7 @@ public class MainAlarmFragment extends Fragment {
                 R.layout.content_main, container, false);
 
         final Context context = this.getActivity();
+        if (context == null) return null;
         HyperLog.initialize(context);
         HyperLog.setLogLevel(Log.INFO);
 
@@ -60,14 +56,12 @@ public class MainAlarmFragment extends Fragment {
             }
         });
 
-
-        ImageButton ibtnInfo = rootView.findViewById(R.id.ibtnInfo);
-        ibtnInfo.setOnClickListener(new View.OnClickListener() {
+        ImageButton iBtnInfo = rootView.findViewById(R.id.ibtnInfo);
+        iBtnInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent additionalIntent = new Intent(context, AdditionalActivity.class);
                 MainAlarmFragment.this.startActivity(additionalIntent);
-
             }
         });
 
@@ -79,8 +73,8 @@ public class MainAlarmFragment extends Fragment {
         alarmsList.setAdapter(alarmsAdapter);
         updateNextActiveAlarm(sqLiteDBHelper);
 
-        ImageButton ibtnAddAlarm = rootView.findViewById(R.id.ibtnAddAlarm);
-        ibtnAddAlarm.setOnClickListener(new View.OnClickListener() {
+        ImageButton iBtnAddAlarm = rootView.findViewById(R.id.ibtnAddAlarm);
+        iBtnAddAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent addAlarmIntent = new Intent(context, AlarmAddingActivity.class);
@@ -142,13 +136,20 @@ public class MainAlarmFragment extends Fragment {
         if (requestCode == ALARM_ADDING_REQUEST_CODE && resultCode == RESULT_OK) {
             alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
             updateNextActiveAlarm(sqLiteDBHelper);
-            Snackbar.make(this.textNextAlarm,
-                    "New alarm created", LENGTH_SHORT)
-                    .setAction("Action", null).show();
+//            Snackbar.make(this.textNextAlarm,
+//                    "New alarm created", LENGTH_SHORT)
+//                    .setAction("Action", null).show();
         }
         sqLiteDBHelper.close();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getActivity());
+        alarmsAdapter.changeCursor(sqLiteDBHelper.getAllAlarms());
+        updateNextActiveAlarm(sqLiteDBHelper);
+    }
 
     void deleteAlarm(String id) {
         final Context context = this.getActivity();

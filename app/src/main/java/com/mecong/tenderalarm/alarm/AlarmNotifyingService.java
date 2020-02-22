@@ -145,7 +145,7 @@ public class AlarmNotifyingService extends Service {
 
         // Create the Handler object (on the main thread by default)
         handlerTicks = new Handler();
-        final float[] volume = {0.001f};
+        final float[] volume = {0.01f};
 
 
         try {

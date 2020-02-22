@@ -42,26 +42,27 @@ public class SleepTimeAlarmReceiver extends BroadcastReceiver {
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(context);
         AlarmEntity nextActiveAlarm = sqLiteDBHelper.getNextActiveAlarm();
 
-        if (nextActiveAlarm == null) return;
+        if (noNextActiveAlarms(nextActiveAlarm)) return;
 
         if (nextActiveAlarm.getNextNotCanceledTime() - Calendar.getInstance().getTimeInMillis() < 4 * HOUR) {
             AlarmUtils.setUpNextSleepTimeNotification(context);
         }
 
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        boolean isScreenOn = false;
         if (pm != null) {
-            isScreenOn = pm.isInteractive();
-        }
-
-        HyperLog.v(TAG, "Device is used: " + isScreenOn);
-
-        if (isScreenOn) {
-            Calendar timeToBed = timeToGoToBed(nextActiveAlarm);
-            if (alarmInTheMorning(nextActiveAlarm) && timeToBed != null) {
-                showNotification(timeToBed, context);
+            boolean isScreenOn = pm.isInteractive();
+            HyperLog.v(TAG, "Device is used: " + isScreenOn);
+            if (isScreenOn) {
+                Calendar timeToBed = timeToGoToBed(nextActiveAlarm);
+                if (alarmInTheMorning(nextActiveAlarm) && timeToBed != null) {
+                    showNotification(timeToBed, context);
+                }
             }
         }
+    }
+
+    private boolean noNextActiveAlarms(AlarmEntity nextActiveAlarm) {
+        return nextActiveAlarm == null;
     }
 
     private void showNotification(Calendar calendar, Context context) {

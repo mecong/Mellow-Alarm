@@ -56,14 +56,15 @@ public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapte
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final RecyclerView recyclerView = view.findViewById(R.id.mediaListView);
+        final RecyclerView mediaListView = view.findViewById(R.id.mediaListView);
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this.getContext());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mediaListView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
         adapter = new MediaItemViewAdapter(view.getContext(),
                 sqLiteDBHelper.getAllOnlineMedia(), this, true);
 
-        recyclerView.setAdapter(adapter);
+        mediaListView.setAdapter(adapter);
 
         final Button buttonAdd = view.findViewById(R.id.buttonAdd);
         buttonAdd.setOnClickListener(new View.OnClickListener() {

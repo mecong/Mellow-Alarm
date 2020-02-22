@@ -1,0 +1,5 @@
+
+csquid:CommentedOutCodeLineÙ"<This block of commented-out lines of code should be removed.(Ï±Œï
+vsquid:S3776¾"RRefactor this method to reduce its Cognitive Complexity from 20 to the 15 allowed.(¡Ž¯âþÿÿÿÿ8¸ïþ¨þ-
+ squid:S1186ç"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÐŠß±8¸ïþ¨þ-
+isquid:CommentedOutCodeLineÈ"<This block of commented-out lines of code should be removed.(Ä«¶8¸ïþ¨þ-

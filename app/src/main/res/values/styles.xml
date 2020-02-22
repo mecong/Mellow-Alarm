@@ -7,9 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/ivory</item>
 
-        <item name="android:textColor">@color/textColor</item>
-        <item name="android:editTextColor">@color/textColor</item>
-        <item name="android:amPmTextColor">@color/textColor</item>
+        <item name="android:textColor">@color/textColor2</item>
+        <item name="android:editTextColor">@color/textColor2</item>
+        <item name="android:amPmTextColor">@color/textColor2</item>
 
         <item name="android:checkboxStyle">@style/MyCheckBoxStyle</item>
         <item name="android:seekBarStyle">@style/SeekBar</item>
@@ -48,19 +48,19 @@
     </style>
 
     <style name="MyEditText" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textColor">@color/textColor2</item>
         <item name="android:textColorHint">@color/green</item>
-        <item name="buttonTint">@color/textColor</item>
+        <item name="buttonTint">@color/textColor2</item>
     </style>
 
     <style name="MyCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="android:textColor">@color/textColor</item>
-        <item name="buttonTint">@color/textColor</item>
+        <item name="android:textColor">@color/textColor2</item>
+        <item name="buttonTint">@color/textColor2</item>
     </style>
 
     <style name="MyRadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
-        <item name="android:textColor">@color/textColor</item>
-        <item name="buttonTint">@color/textColor</item>
+        <item name="android:textColor">@color/textColor2</item>
+        <item name="buttonTint">@color/textColor2</item>
     </style>
 
     <style name="SeekBar" parent="Widget.AppCompat.SeekBar">

@@ -1,0 +1,6 @@
+
+™squid:S1186ö"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(õ€í
+Vsquid:MissingDeprecatedCheckˆ"(Add the missing @deprecated Javadoc tag.(î»§ùÿÿÿÿ
+squid:S1186û"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(÷õÜ‚ûÿÿÿÿ
+Rsquid:S1133ˆ"5Do not forget to remove this deprecated code someday.(î»§ùÿÿÿÿ
+hsquid:CommentedOutCodeLine˜"<This block of commented-out lines of code should be removed.(·Å»»ûÿÿÿÿ

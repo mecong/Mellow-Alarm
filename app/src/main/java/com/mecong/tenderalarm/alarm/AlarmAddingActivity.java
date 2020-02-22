@@ -82,6 +82,11 @@ public class AlarmAddingActivity extends AppCompatActivity {
     @BindView(R.id.txtMelodyCaption)
     TextView txtMelodyCaption;
 
+    @BindView(R.id.chbHeadsUp)
+    CheckBox chbHeadsUp;
+    @BindView(R.id.chbTimeToSleepNotification)
+    CheckBox chbTimeToSleepNotification;
+
     int selectedMinute;
     int selectedHour;
     int selectedYear;
@@ -359,6 +364,9 @@ public class AlarmAddingActivity extends AppCompatActivity {
             txtMelody.setText(entity.getMelodyName());
             melodyUrl = entity.getMelodyUrl();
         }
+
+        chbHeadsUp.setChecked(entity.isHeadsUp());
+        chbTimeToSleepNotification.setChecked(entity.isTimeToSleepNotification());
     }
 
     private void initFormForNewAlarm() {
@@ -369,6 +377,8 @@ public class AlarmAddingActivity extends AppCompatActivity {
         selectedMonth = c.get(Calendar.MONTH);
         getSelectedDayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         seekBarComplexity.setProgress(1);
+        chbHeadsUp.setChecked(true);
+        chbTimeToSleepNotification.setChecked(true);
     }
 
     private void initLogsAndControls() {
@@ -398,7 +408,8 @@ public class AlarmAddingActivity extends AppCompatActivity {
                 .melodyUrl(melodyUrl)
                 .snoozeMaxTimes(seekBarSnooze.getProgress())
                 .ticksTime(seekBarTicks.getProgress())
-                .beforeAlarmNotification(true)
+                .headsUp(chbHeadsUp.isChecked())
+                .timeToSleepNotification(chbTimeToSleepNotification.isChecked())
                 .build();
 
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this);

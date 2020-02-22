@@ -47,8 +47,6 @@ public class AlarmEntity {
     String message;
     @Builder.Default
     boolean active = true;
-    @ToString.Exclude
-    boolean beforeAlarmNotification;
     int ticksTime;
     @ToString.Exclude
     String melodyUrl;
@@ -68,6 +66,8 @@ public class AlarmEntity {
     Long nextNotCanceledTime = -1L;
     @Builder.Default
     Integer nextRequestCode = -1;
+    boolean timeToSleepNotification;
+    boolean headsUp;
 
     public AlarmEntity(Cursor cursor) {
 
@@ -79,7 +79,6 @@ public class AlarmEntity {
         this.exactDate = cursor.getLong(cursor.getColumnIndex("exact_date"));
         this.message = cursor.getString(cursor.getColumnIndex("message"));
         this.active = cursor.getInt(cursor.getColumnIndex("active")) == 1;
-        this.beforeAlarmNotification = cursor.getInt(cursor.getColumnIndex("before_alarm_notification")) == 1;
         this.ticksTime = cursor.getInt(cursor.getColumnIndex("ticks_time"));
         this.melodyUrl = cursor.getString(cursor.getColumnIndex("melody_url"));
         this.melodyName = cursor.getString(cursor.getColumnIndex("melody_name"));
@@ -90,6 +89,9 @@ public class AlarmEntity {
         this.nextTime = cursor.getLong(cursor.getColumnIndex("next_time"));
         this.nextNotCanceledTime = cursor.getLong(cursor.getColumnIndex("next_not_canceled_time"));
         this.nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code"));
+
+        this.headsUp = cursor.getInt(cursor.getColumnIndex("heads_up")) == 1;
+        this.timeToSleepNotification = cursor.getInt(cursor.getColumnIndex("tts_notification")) == 1;
     }
 
     public static int daysMarshaling(boolean mo, boolean tu, boolean we, boolean th, boolean fr, boolean sa, boolean su) {

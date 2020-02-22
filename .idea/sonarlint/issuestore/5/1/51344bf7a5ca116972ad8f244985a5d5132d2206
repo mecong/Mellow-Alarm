@@ -1,0 +1,20 @@
+
+isquid:S1192”"LDefine a constant instead of duplicating this literal "maxBufferMs" 3 times.(–’Ã’ûÿÿÿÿ
+nsquid:S1192¯"QDefine a constant instead of duplicating this literal "minBufferVideoMs" 3 times.(°ºä•ıÿÿÿÿ
+nsquid:S1192­"QDefine a constant instead of duplicating this literal "minBufferAudioMs" 3 times.(¸–öÿÿÿÿÿ
+isquid:S1192"LDefine a constant instead of duplicating this literal "minBufferMs" 3 times.(ò­ŸÔøÿÿÿÿ
+ysquid:S1192"aDefine a constant instead of duplicating this literal "bufferForPlaybackAfterRebufferMs" 5 times.(ÓÊçö
+lsquid:S1192‹"TDefine a constant instead of duplicating this literal "bufferForPlaybackMs" 5 times.(¼Ş÷á
+Zsquid:S00107"BConstructor has 10 parameters, which is greater than 7 authorized.(Âæd
+tsquid:S1450ï"WRemove the "hasVideo" field and declare it as a local variable in the relevant methods.(è²¹ùüÿÿÿÿ
+bsquid:CallToDeprecatedMethodô"9Remove this use of "CustomLoadControl"; it is deprecated.(õÑÎ½
+Msquid:S1133ù"5Do not forget to remove this deprecated code someday.(Æ´ÈÉ
+Rsquid:S1133‰"5Do not forget to remove this deprecated code someday.(ÃÓÎşùÿÿÿÿ
+msquid:HiddenFieldCheck"ERename "targetBufferSize" which hides the field declared at line 237.(¬¢²ÿøÿÿÿÿ
+Qsquid:S1068ã"4Remove this unused "minBufferAudioUs" private field.(üŸıÍüÿÿÿÿ
+Lsquid:S1068ä"4Remove this unused "minBufferVideoUs" private field.(ñªãØ
+Lsquid:S1068å"/Remove this unused "maxBufferUs" private field.(½ê¡«ûÿÿÿÿ
+Lsquid:S1068î"/Remove this unused "isBuffering" private field.(ğşüÿÿÿÿ
+hsquid:CommentedOutCodeLineõ"<This block of commented-out lines of code should be removed.(ıï†Èúÿÿÿÿ
+csquid:CommentedOutCodeLineû"<This block of commented-out lines of code should be removed.(À‘êÜ
+bsquid:CommentedOutCodeLine„"<This block of commented-out lines of code should be removed.(ÆÙÙ:
