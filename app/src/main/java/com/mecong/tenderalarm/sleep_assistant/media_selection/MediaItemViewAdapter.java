@@ -18,16 +18,13 @@ import com.google.android.gms.common.util.Strings;
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.model.MediaEntity;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MediaItemViewAdapter extends CursorRecyclerViewAdapter<MediaItemViewAdapter.MediaItemViewHolder> {
 
-    int selectedPosition = 0;
-    ItemClickListener mClickListener;
-    boolean showUrl;
-    Context context;
+    private int selectedPosition = 0;
+    private ItemClickListener mClickListener;
+    private boolean showUrl;
+    private Context context;
 
 
     MediaItemViewAdapter(Context context, Cursor cursor, ItemClickListener clickListener, boolean showUrl) {

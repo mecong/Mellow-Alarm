@@ -13,22 +13,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.FieldDefaults;
-
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-@Data
-@Builder
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class AlarmEntity {
     static final int
             MO_BINARY = 0b10000000, TU_BINARY = 0b01000000, WE_BINARY = 0b00100000,
@@ -37,37 +24,200 @@ public class AlarmEntity {
     long id;
     int hour;
     int minute;
-    @Builder.Default
+
     int days = 0;
-    @Builder.Default
+
     long exactDate = 0;
-    @Builder.Default
+
     int complexity = 1;
-    @ToString.Exclude
+
     String message;
-    @Builder.Default
+
     boolean active = true;
     int ticksTime;
-    @ToString.Exclude
+
     String melodyUrl;
-    @ToString.Exclude
+
     String melodyName;
-    @ToString.Exclude
+
     String vibrationType;
-    @ToString.Exclude
+
     Integer volume;
-    @Builder.Default
+
     Integer snoozeMaxTimes = 10;
-    @Builder.Default
+
     Integer canceledNextAlarms = 0;
-    @Builder.Default
+
     Long nextTime = -1L;
-    @Builder.Default
+
     Long nextNotCanceledTime = -1L;
-    @Builder.Default
+
     Integer nextRequestCode = -1;
     boolean timeToSleepNotification;
     boolean headsUp;
+
+    public AlarmEntity() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public int getHour() {
+        return hour;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
+    }
+
+    public int getDays() {
+        return days;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
+    public long getExactDate() {
+        return exactDate;
+    }
+
+    public void setExactDate(long exactDate) {
+        this.exactDate = exactDate;
+    }
+
+    public int getComplexity() {
+        return complexity;
+    }
+
+    public void setComplexity(int complexity) {
+        this.complexity = complexity;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public int getTicksTime() {
+        return ticksTime;
+    }
+
+    public void setTicksTime(int ticksTime) {
+        this.ticksTime = ticksTime;
+    }
+
+    public String getMelodyUrl() {
+        return melodyUrl;
+    }
+
+    public void setMelodyUrl(String melodyUrl) {
+        this.melodyUrl = melodyUrl;
+    }
+
+    public String getMelodyName() {
+        return melodyName;
+    }
+
+    public void setMelodyName(String melodyName) {
+        this.melodyName = melodyName;
+    }
+
+    public String getVibrationType() {
+        return vibrationType;
+    }
+
+    public void setVibrationType(String vibrationType) {
+        this.vibrationType = vibrationType;
+    }
+
+    public Integer getVolume() {
+        return volume;
+    }
+
+    public void setVolume(Integer volume) {
+        this.volume = volume;
+    }
+
+    public Integer getSnoozeMaxTimes() {
+        return snoozeMaxTimes;
+    }
+
+    public void setSnoozeMaxTimes(Integer snoozeMaxTimes) {
+        this.snoozeMaxTimes = snoozeMaxTimes;
+    }
+
+    public Integer getCanceledNextAlarms() {
+        return canceledNextAlarms;
+    }
+
+    public void setCanceledNextAlarms(Integer canceledNextAlarms) {
+        this.canceledNextAlarms = canceledNextAlarms;
+    }
+
+    public Long getNextNotCanceledTime() {
+        return nextNotCanceledTime;
+    }
+
+    public void setNextNotCanceledTime(Long nextNotCanceledTime) {
+        this.nextNotCanceledTime = nextNotCanceledTime;
+    }
+
+    public Integer getNextRequestCode() {
+        return nextRequestCode;
+    }
+
+    public void setNextRequestCode(Integer nextRequestCode) {
+        this.nextRequestCode = nextRequestCode;
+    }
+
+    public boolean isTimeToSleepNotification() {
+        return timeToSleepNotification;
+    }
+
+    public void setTimeToSleepNotification(boolean timeToSleepNotification) {
+        this.timeToSleepNotification = timeToSleepNotification;
+    }
+
+    public boolean isHeadsUp() {
+        return headsUp;
+    }
+
+    public void setHeadsUp(boolean headsUp) {
+        this.headsUp = headsUp;
+    }
+
+    public Long getNextTime() {
+        return nextTime;
+    }
+
+    public void setNextTime(Long nextTime) {
+        this.nextTime = nextTime;
+    }
 
     public AlarmEntity(Cursor cursor) {
 
@@ -131,7 +281,7 @@ public class AlarmEntity {
         return getNextTime() + MINUTES.toMillis(getTicksTime());
     }
 
-    @ToString.Include
+    //@ToString.Include
     private String nextTime() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         return format.format(new Date(nextTime));

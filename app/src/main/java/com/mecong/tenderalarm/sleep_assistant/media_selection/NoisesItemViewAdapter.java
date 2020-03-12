@@ -13,16 +13,12 @@ import com.mecong.tenderalarm.R;
 
 import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NoisesItemViewAdapter extends RecyclerView.Adapter<NoisesItemViewAdapter.ViewHolder> {
 
-    int selectedPosition;
-    List<SleepNoise> mData;
-    LayoutInflater mInflater;
-    NoisesItemClickListener mClickListener;
+    private int selectedPosition;
+    private List<SleepNoise> mData;
+    private LayoutInflater mInflater;
+    private NoisesItemClickListener mClickListener;
 
     // data is passed into the constructor
     NoisesItemViewAdapter(Context context, List<SleepNoise> data, int selectedPosition) {

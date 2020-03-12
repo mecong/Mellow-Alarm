@@ -41,17 +41,11 @@ import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType;
 
 import org.greenrobot.eventbus.EventBus;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.experimental.FieldDefaults;
-
 import static com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 import static com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType.ONLINE;
 import static timber.log.Timber.i;
 
-@Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RadioService extends Service implements Player.EventListener, AudioManager.OnAudioFocusChangeListener {
 
     public static final String ACTION_PLAY = "com.mecong.myalarm.ACTION_PLAY";

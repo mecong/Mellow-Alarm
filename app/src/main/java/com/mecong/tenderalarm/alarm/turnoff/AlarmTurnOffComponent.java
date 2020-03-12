@@ -19,15 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
-
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AlarmTurnOffComponent extends View {
     public static final int STROKE_WIDTH = 9;
     public static final int MAX_COMPLEXITY = 6;
-    @Setter
+//    @Setter
     int complexity;
     Paint lockingPaint = new Paint();
     DraggableCircle[] figures;
@@ -38,6 +33,86 @@ public class AlarmTurnOffComponent extends View {
     Paint[] spiritPaints;
     List<Point> positions;
 
+
+    public int getComplexity() {
+        return complexity;
+    }
+
+    public void setComplexity(int complexity) {
+        this.complexity = complexity;
+    }
+
+    public Paint getLockingPaint() {
+        return lockingPaint;
+    }
+
+    public void setLockingPaint(Paint lockingPaint) {
+        this.lockingPaint = lockingPaint;
+    }
+
+    public DraggableCircle[] getFigures() {
+        return figures;
+    }
+
+    public void setFigures(DraggableCircle[] figures) {
+        this.figures = figures;
+    }
+
+    public Integer getActiveFigure() {
+        return activeFigure;
+    }
+
+    public void setActiveFigure(Integer activeFigure) {
+        this.activeFigure = activeFigure;
+    }
+
+    public Rect getViewPortBoundsForEvent() {
+        return viewPortBoundsForEvent;
+    }
+
+    public void setViewPortBoundsForEvent(Rect viewPortBoundsForEvent) {
+        this.viewPortBoundsForEvent = viewPortBoundsForEvent;
+    }
+
+    public int getPrevX() {
+        return prevX;
+    }
+
+    public void setPrevX(int prevX) {
+        this.prevX = prevX;
+    }
+
+    public int getPrevY() {
+        return prevY;
+    }
+
+    public void setPrevY(int prevY) {
+        this.prevY = prevY;
+    }
+
+    public Paint[] getDraggableCirclePaints() {
+        return draggableCirclePaints;
+    }
+
+    public void setDraggableCirclePaints(Paint[] draggableCirclePaints) {
+        this.draggableCirclePaints = draggableCirclePaints;
+    }
+
+    public Paint[] getSpiritPaints() {
+        return spiritPaints;
+    }
+
+    public void setSpiritPaints(Paint[] spiritPaints) {
+        this.spiritPaints = spiritPaints;
+    }
+
+    public List<Point> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<Point> positions) {
+        this.positions = positions;
+    }
 
     public AlarmTurnOffComponent(Context context, AttributeSet attrs) {
         super(context, attrs);

@@ -14,17 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mecong.tenderalarm.R;
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
-
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NoisesFragment extends Fragment implements NoisesItemViewAdapter.NoisesItemClickListener {
     private static final String SELECTED_POSITION = "selectedPosition";
-    int selectedPosition;
-    NoisesItemViewAdapter adapter;
-    SleepAssistantPlayListModel model;
+    private int selectedPosition;
+    private NoisesItemViewAdapter adapter;
+    private SleepAssistantPlayListModel model;
+
 
     private NoisesFragment(SleepAssistantPlayListModel model) {
         this.model = model;

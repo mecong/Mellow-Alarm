@@ -23,16 +23,10 @@ import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
-
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor //required
 public class OnlineMediaFragment extends Fragment implements MediaItemViewAdapter.ItemClickListener {
 
-    MediaItemViewAdapter adapter;
-    SleepAssistantPlayListModel model;
+    private MediaItemViewAdapter adapter;
+    private SleepAssistantPlayListModel model;
 
 
     OnlineMediaFragment(SleepAssistantPlayListModel model) {

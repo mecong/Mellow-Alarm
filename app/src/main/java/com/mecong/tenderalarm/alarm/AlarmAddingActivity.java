@@ -35,12 +35,9 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 
 import static com.mecong.tenderalarm.model.AlarmEntity.daysMarshaling;
 
-@FieldDefaults(level = AccessLevel.PACKAGE)
 public class AlarmAddingActivity extends AppCompatActivity {
     private static final int READ_REQUEST_CODE = 42;
 
@@ -396,21 +393,21 @@ public class AlarmAddingActivity extends AppCompatActivity {
                 checkBoxFr.isChecked(), checkBoxSa.isChecked(),
                 checkBoxSu.isChecked());
 
-        AlarmEntity alarmEntity = AlarmEntity.builder()
-                .id(Long.parseLong(alarmId))
-                .hour(selectedHour)
-                .minute(selectedMinute)
-                .exactDate(exactDate)
-                .complexity(seekBarComplexity.getProgress())
-                .days(days)
-                .message(getMessage())
-                .melodyName(txtMelody.getText().toString())
-                .melodyUrl(melodyUrl)
-                .snoozeMaxTimes(seekBarSnooze.getProgress())
-                .ticksTime(seekBarTicks.getProgress())
-                .headsUp(chbHeadsUp.isChecked())
-                .timeToSleepNotification(chbTimeToSleepNotification.isChecked())
-                .build();
+        AlarmEntity alarmEntity = new AlarmEntity();
+        alarmEntity.setId(Long.parseLong(alarmId));
+        alarmEntity.setHour(selectedHour);
+        alarmEntity.setMinute(selectedMinute);
+        alarmEntity.setExactDate(exactDate);
+        alarmEntity.setComplexity(seekBarComplexity.getProgress());
+        alarmEntity.setDays(days);
+        alarmEntity.setMessage(getMessage());
+        alarmEntity.setMelodyName(txtMelody.getText().toString());
+        alarmEntity.setMelodyUrl(melodyUrl);
+        alarmEntity.setSnoozeMaxTimes(seekBarSnooze.getProgress());
+        alarmEntity.setTicksTime(seekBarTicks.getProgress());
+        alarmEntity.setHeadsUp(chbHeadsUp.isChecked());
+        alarmEntity.setTimeToSleepNotification(chbTimeToSleepNotification.isChecked());
+
 
         SQLiteDBHelper sqLiteDBHelper = SQLiteDBHelper.getInstance(this);
         long id = sqLiteDBHelper.addOrUpdateAlarm(alarmEntity);

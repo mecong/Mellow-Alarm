@@ -9,16 +9,7 @@ import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class SleepAssistantPlayListModel extends ViewModel {
     MutableLiveData<PlayList> playlist = new MutableLiveData<>();
     MutableLiveData<Boolean> playing = new MutableLiveData<>();
@@ -31,11 +22,17 @@ public class SleepAssistantPlayListModel extends ViewModel {
         this.playlist.setValue(playlist);
     }
 
+    public SleepAssistantPlayListModel(MutableLiveData<PlayList> playlist, MutableLiveData<Boolean> playing) {
+        this.playlist = playlist;
+        this.playing = playing;
+    }
+
+    public SleepAssistantPlayListModel() {
+    }
+
     //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]
 
-    @Getter
-    @AllArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
+
     public static class PlayList {
         int index;
         List<Media> media;
@@ -46,15 +43,42 @@ public class SleepAssistantPlayListModel extends ViewModel {
             this.mediaType = mediaType;
             index = 0;
         }
+
+        public PlayList(int index, List<Media> media, SleepMediaType mediaType) {
+            this.index = index;
+            this.media = media;
+            this.mediaType = mediaType;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public List<Media> getMedia() {
+            return media;
+        }
+
+        public SleepMediaType getMediaType() {
+            return mediaType;
+        }
     }
 
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Media {
-        String url;
-        String title;
+        private String url;
+        private String title;
+
+        public Media(String url, String title) {
+            this.url = url;
+            this.title = title;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getTitle() {
+            return title;
+        }
     }
 }

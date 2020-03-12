@@ -7,25 +7,40 @@ import android.graphics.Rect;
 import java.util.List;
 import java.util.Random;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
-
-
-@Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 class DraggableCircle {
 
     private static final int AIM_DISTANCE = 15;
     private static final int MAX_DISPLACEMENT = 60;
 
     int radius;
-    @Setter
     boolean fixed = false;
     Random random = new Random();
     Rect proximity;
     Point currentPoint, aimPoint;
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public boolean isFixed() {
+        return fixed;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public Rect getProximity() {
+        return proximity;
+    }
+
+    public Point getCurrentPoint() {
+        return currentPoint;
+    }
+
+    public Point getAimPoint() {
+        return aimPoint;
+    }
 
     DraggableCircle(List<Point> positions, int circleRadius) {
         this.radius = circleRadius;

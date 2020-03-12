@@ -13,11 +13,10 @@ class AlarmUtilsTest {
     @Test
     void getNextAlarmDate() {
 
-        AlarmEntity entity = AlarmEntity.builder()
-                .hour(17)
-                .minute(54)
-                .days(0b00000000)
-                .build();
+        AlarmEntity entity = new AlarmEntity();
+        entity.setHour(17);
+        entity.setMinute(54);
+        entity.setDays(0b00000000);
 
         Calendar expectedCalendar = Calendar.getInstance();
         expectedCalendar.set(Calendar.HOUR_OF_DAY, 17);

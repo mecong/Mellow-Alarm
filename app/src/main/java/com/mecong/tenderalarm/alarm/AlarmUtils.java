@@ -19,14 +19,10 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static com.mecong.tenderalarm.alarm.SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AlarmUtils {
     public static final String TAG = "A.L.A.R.M.A";
     static final String ALARM_ID_PARAM = BuildConfig.APPLICATION_ID + ".alarm_id";

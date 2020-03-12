@@ -43,12 +43,9 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 
 import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 
-@FieldDefaults(level = AccessLevel.PUBLIC)
 public class SleepAssistantFragment extends Fragment {
 
     private static final long STEP_MILLIS = TimeUnit.SECONDS.toMillis(10);

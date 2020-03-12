@@ -34,8 +34,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import timber.log.Timber;
 
 import static androidx.core.app.NotificationCompat.FLAG_NO_CLEAR;
@@ -44,7 +42,7 @@ import static androidx.core.app.NotificationCompat.FLAG_SHOW_LIGHTS;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM;
 import static com.mecong.tenderalarm.alarm.AlarmUtils.TAG;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class AlarmNotifyingService extends Service {
     private static final Uri CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/alarms");
     MediaPlayer alarmMediaPlayer;

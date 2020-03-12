@@ -27,17 +27,11 @@ import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
-
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor //required
 public class LocalFilesMediaFragment extends Fragment implements MediaItemViewAdapter.ItemClickListener {
 
     private static final int READ_REQUEST_CODE = 42;
-    MediaItemViewAdapter adapter;
-    SleepAssistantPlayListModel model;
+    private MediaItemViewAdapter adapter;
+    private SleepAssistantPlayListModel model;
 
     LocalFilesMediaFragment(SleepAssistantPlayListModel model) {
         this.model = model;

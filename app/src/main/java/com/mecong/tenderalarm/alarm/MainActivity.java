@@ -202,14 +202,14 @@ public class MainActivity extends AppCompatActivity {
     private void createDebugAlarm() {
         Calendar calendar = Calendar.getInstance();
         final SQLiteDBHelper instance = SQLiteDBHelper.getInstance(this);
-        AlarmEntity alarmEntity = AlarmEntity.builder()
-                .hour(calendar.get(Calendar.HOUR_OF_DAY))
-                .minute(calendar.get(Calendar.MINUTE) + 2)
-                .complexity(1)
-                .snoozeMaxTimes(10)
-                .ticksTime(1)
-                .headsUp(true)
-                .build();
+        AlarmEntity alarmEntity = new AlarmEntity();
+        alarmEntity.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+        alarmEntity.setMinute(calendar.get(Calendar.MINUTE) + 2);
+        alarmEntity.setComplexity(1);
+        alarmEntity.setSnoozeMaxTimes(10);
+        alarmEntity.setTicksTime(1);
+        alarmEntity.setHeadsUp(true);
+
 
         long id = instance.addOrUpdateAlarm(alarmEntity);
 

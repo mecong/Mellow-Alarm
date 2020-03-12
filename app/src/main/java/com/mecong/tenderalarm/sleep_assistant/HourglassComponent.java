@@ -15,27 +15,19 @@ import com.mecong.tenderalarm.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
-
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-@Getter
-@Setter
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class HourglassComponent extends View {
-    Color mColor;
-    long max, currentValue;
-    boolean changingMode = false;
-    Paint filledPaint = new Paint();
-    Paint framedPaint = new Paint();
-    Paint changingPaint = new Paint();
-    List<SleepTimerViewValueListener> listeners = new ArrayList<>(1);
-    Rect frame;
-    float frameHeightDivMax, maxDivFrameHeight;
+    private Color mColor;
+    private long max, currentValue;
+    private boolean changingMode = false;
+    private Paint filledPaint = new Paint();
+    private Paint framedPaint = new Paint();
+    private Paint changingPaint = new Paint();
+    private List<SleepTimerViewValueListener> listeners = new ArrayList<>(1);
+    private Rect frame;
+    private float frameHeightDivMax, maxDivFrameHeight;
 
     public HourglassComponent(Context context, AttributeSet attrs) {
         super(context, attrs);
