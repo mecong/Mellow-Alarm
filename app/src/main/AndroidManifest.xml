@@ -27,12 +27,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AdditionalActivity"></activity>
+        <activity android:name=".AdditionalActivity" />
 
         <service
             android:name=".alarm.AlarmNotifyingService"
             android:enabled="true"
             android:exported="true" />
+
+        <service
+            android:name=".sleep_assistant.RadioService"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".alarm.MainActivity"
@@ -96,9 +101,6 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".sleep_assistant.RadioService"
-            android:exported="false" />
     </application>
 
 </manifest>

@@ -14,7 +14,8 @@ import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 
 class LogsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListener {
-    var adapter: MyRecyclerViewAdapter? = null
+    private var adapter: MyRecyclerViewAdapter? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logs)
@@ -34,7 +35,7 @@ class LogsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListene
     }
 
 
-    override fun onItemClick(view: View, position: Int) {
+    override fun onItemClick(view: View?, position: Int) {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Log row", adapter!!.getItem(position))
         clipboard.setPrimaryClip(clip)
