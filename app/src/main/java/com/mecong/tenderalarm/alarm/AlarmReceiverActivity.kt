@@ -26,11 +26,12 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.sqrt
 
 class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
-    var mLastShakeTime: Long = 0
-    var shakeCount = 0
+    private var mLastShakeTime: Long = 0
+    private var shakeCount = 0
     var snoozedMinutes: Long = 0
     private fun turnScreenOnThroughKeyguard() {
         usePowerManagerWakeup()
@@ -62,10 +63,8 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     private fun usePowerManagerWakeup() {
         HyperLog.i(TAG, "alarm receiver PowerManagerWakeup")
         val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-        if (pm != null) {
-            val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.localClassName)
-            wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
-        }
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.localClassName)
+        wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -186,7 +185,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
         EventBus.getDefault().post(AlarmMessage.STOP_ALARM)
     }
 
-    fun initializeShaker() {
+    private fun initializeShaker() {
         // Get a sensor manager to listen for shakes
         val mSensorMgr = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -208,20 +207,20 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 val x = event.values[0]
                 val y = event.values[1]
                 val z = event.values[2]
-                val acceleration = Math.sqrt(x * x + y * y + (z * z).toDouble()) - SensorManager.GRAVITY_EARTH
+                val acceleration = sqrt(x * x + y * y + (z * z).toDouble()) - SensorManager.GRAVITY_EARTH
                 //                Log.d(TAG, "Acceleration is " + acceleration + "m/s^2");
                 if (acceleration > SHAKE_THRESHOLD) {
                     mLastShakeTime = curTime
-                    Log.d(TAG, "Shake, Rattle, and Roll")
+                    HyperLog.d(TAG, "Shake, Rattle, and Roll")
                     val vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    if (vibrator != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(VibrationEffect.createOneShot(200,
-                                    VibrationEffect.DEFAULT_AMPLITUDE))
-                        } else {
-                            vibrator.vibrate(200)
-                        }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(200,
+                                VibrationEffect.DEFAULT_AMPLITUDE))
+                    } else {
+                        vibrator.vibrate(200)
                     }
+
                     cancelVolumeIncreasing()
                     if (--shakeCount <= 0) {
                         HyperLog.d(TAG, "Alarm stopped by accelerometer")

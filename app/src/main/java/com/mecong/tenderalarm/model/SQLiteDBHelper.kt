@@ -35,6 +35,16 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         values.put(TITLE, "Classical")
         values.put(URI, "http://mediaserv30.live-streams.nl:8088/live")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+        values.put(TITLE, "MilanoLounge")
+        values.put(URI, "http://antares.dribb.com:5080/autodj")
+        database.insert(TABLE_ONLINE_MEDIA, null, values)
+        values.put(TITLE, "Ibiza chill")
+        values.put(URI, "http://edge3.peta.live365.net/b05055_128mp3?listenerId=1d6272312a62c2b159db7deeed43254b&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1567659697")
+        database.insert(TABLE_ONLINE_MEDIA, null, values)
+        values.put(TITLE, "JR.FM chill/Lounge Radio")
+        values.put(URI, "http://149.56.157.81:5104/;stream/1")
+        database.insert(TABLE_ONLINE_MEDIA, null, values)
+
     }
 
     private fun initializeDefaultProperties(database: SQLiteDatabase) {
@@ -62,7 +72,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         get() = getAlarmEntity(SELECT_NEXT_ALARM)
 
     fun getAlarmById(id: String?): AlarmEntity? {
-        return getAlarmEntity(String.format("SELECT * FROM %s WHERE _id=%s LIMIT 1", TABLE_ALARMS, id))
+        return getAlarmEntity("SELECT * FROM $TABLE_ALARMS WHERE _id=$id LIMIT 1")
     }
 
     val nextMorningAlarm: AlarmEntity?
@@ -78,29 +88,31 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
 
     fun addOrUpdateAlarm(entity: AlarmEntity): Long {
         this.writableDatabase.use { database ->
-            val values = ContentValues()
-            values.put("hour", entity.hour)
-            values.put("minute", entity.minute)
-            values.put("message", entity.message)
-            values.put("days", entity.days)
-            values.put("ticks_time", entity.ticksTime)
-            values.put("canceled_next_alarms", entity.canceledNextAlarms)
-            values.put("active", entity.isActive)
-            values.put("exact_date", entity.exactDate)
-            values.put("complexity", entity.complexity)
-            values.put("snooze_max_times", entity.snoozeMaxTimes)
-            values.put("melody_url", entity.melodyUrl)
-            values.put("melody_name", entity.melodyName)
-            values.put("next_time", entity.nextTime)
-            values.put("next_not_canceled_time", entity.nextNotCanceledTime)
-            values.put("next_request_code", entity.nextRequestCode)
-            values.put("tts_notification", entity.isTimeToSleepNotification)
-            values.put("heads_up", entity.isHeadsUp)
+            val values = ContentValues().apply {
+                put("hour", entity.hour)
+                put("minute", entity.minute)
+                put("message", entity.message)
+                put("days", entity.days)
+                put("ticks_time", entity.ticksTime)
+                put("canceled_next_alarms", entity.canceledNextAlarms)
+                put("active", entity.isActive)
+                put("exact_date", entity.exactDate)
+                put("complexity", entity.complexity)
+                put("snooze_max_times", entity.snoozeMaxTimes)
+                put("melody_url", entity.melodyUrl)
+                put("melody_name", entity.melodyName)
+                put("next_time", entity.nextTime)
+                put("next_not_canceled_time", entity.nextNotCanceledTime)
+                put("next_request_code", entity.nextRequestCode)
+                put("tts_notification", entity.isTimeToSleepNotification)
+                put("heads_up", entity.isHeadsUp)
+            }
+
             return if (entity.id == 0L) {
                 HyperLog.d(AlarmUtils.TAG, "Alarm added :: $entity")
                 database.insert(TABLE_ALARMS, null, values)
             } else {
-                database.update(TABLE_ALARMS, values, "_id=?", arrayOf(entity.id.toString() + ""))
+                database.update(TABLE_ALARMS, values, "_id=$entity.id", null)
                 HyperLog.d(AlarmUtils.TAG, "Alarm updated :: $entity")
                 entity.id
             }
@@ -123,7 +135,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
 
     fun deleteAlarm(id: String) {
         this.writableDatabase.use { writableDatabase ->
-            writableDatabase.delete(TABLE_ALARMS, "_id=?", arrayOf(id))
+            writableDatabase.delete(TABLE_ALARMS, "_id=$id", null)
             HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] deleted")
         }
     }
@@ -132,8 +144,8 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         sqLiteDatabase.execSQL(createAlarmTable())
         sqLiteDatabase.execSQL(createOnlineMediaResourcesTable())
         sqLiteDatabase.execSQL(createOfflineMediaResourcesTable())
-        setDefaultOnlineMedia(sqLiteDatabase)
         sqLiteDatabase.execSQL(createPropertiesTable())
+        setDefaultOnlineMedia(sqLiteDatabase)
         initializeDefaultProperties(sqLiteDatabase)
         HyperLog.i(AlarmUtils.TAG, "Database created")
     }
@@ -147,28 +159,28 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
     }
 
     private fun createAlarmTable(): String {
-        return String.format("CREATE TABLE %s ("
-                + "_id INTEGER PRIMARY KEY,"
-                + "hour TINYINT,"
-                + "minute TINYINT,"
-                + "complexity TINYINT,"
-                + "days TINYINT,"
-                + "exact_date LONG,"
-                + "message TEXT,"
-                + "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
-                + "heads_up BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
-                + "tts_notification BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1,"
-                + "ticks_time TINYINT," // for how long before main alarm to play ticks (null - not play)
-                + "melody_name TEXT,"
-                + "melody_url TEXT,"
-                + "vibration_type TEXT,"
-                + "volume INTEGER,"
-                + "canceled_next_alarms TINYINT DEFAULT 0,"
-                + "snooze_max_times TINYINT,"
-                + "next_time LONG,"
-                + "next_not_canceled_time LONG,"
-                + "next_request_code INTEGER"
-                + ")", TABLE_ALARMS)
+        return "CREATE TABLE $TABLE_ALARMS (" +
+                "_id INTEGER PRIMARY KEY," +
+                "hour TINYINT," +
+                "minute TINYINT," +
+                "complexity TINYINT," +
+                "days TINYINT," +
+                "exact_date LONG," +
+                "message TEXT," +
+                "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
+                "heads_up BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
+                "tts_notification BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
+                "ticks_time TINYINT," +
+                "melody_name TEXT," +
+                "melody_url TEXT," +
+                "vibration_type TEXT," +
+                "volume INTEGER," +
+                "canceled_next_alarms TINYINT DEFAULT 0," +
+                "snooze_max_times TINYINT," +
+                "next_time LONG," +
+                "next_not_canceled_time LONG," +
+                "next_request_code INTEGER" +
+                ")"
     }
 
     private fun createOnlineMediaResourcesTable(): String {
@@ -238,8 +250,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
     }
 
     val allOnlineMedia: Cursor
-        get() = this.readableDatabase.rawQuery("SELECT * FROM $TABLE_ONLINE_MEDIA",
-                null)
+        get() = this.readableDatabase.rawQuery("SELECT * FROM $TABLE_ONLINE_MEDIA", null)
 
     fun addMediaUrl(url: String) {
         this.writableDatabase.use { database ->
@@ -281,14 +292,13 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
     companion object {
         private const val TITLE = "title"
         private const val URI = "uri"
-        private const val DATABASE_VERSION = 25
+        private const val DATABASE_VERSION = 26
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"
         private const val TABLE_PROPERTIES = "properties"
         private const val SELECT_ALL_ALARMS = "SELECT * FROM $TABLE_ALARMS"
-        private val SELECT_NEXT_ALARM = String.format(
-                "SELECT * FROM %s WHERE active=1 and canceled_next_alarms=0 ORDER BY next_not_canceled_time LIMIT 1", TABLE_ALARMS)
+        private const val SELECT_NEXT_ALARM = "SELECT * FROM $TABLE_ALARMS WHERE active=1 and canceled_next_alarms=0 ORDER BY next_not_canceled_time LIMIT 1"
         private const val DATABASE_NAME = "my_alarm_database"
         private const val DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS "
         private var sInstance: SQLiteDBHelper? = null
@@ -297,7 +307,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         @Synchronized
         fun sqLiteDBHelper(context: Context): SQLiteDBHelper? {
             if (sInstance == null) {
-                sInstance = SQLiteDBHelper(context.applicationContext)
+                sInstance = SQLiteDBHelper(context)
             }
             return sInstance
         }

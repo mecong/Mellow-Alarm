@@ -10,7 +10,6 @@ import androidx.core.app.NotificationManagerCompat
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
-import com.mecong.tenderalarm.alarm.AlarmUtils.MINUTE
 import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.AlarmEntity

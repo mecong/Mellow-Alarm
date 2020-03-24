@@ -14,7 +14,13 @@ import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.MediaEntity.Companion.fromCursor
 import com.mecong.tenderalarm.sleep_assistant.media_selection.MediaItemViewAdapter.MediaItemViewHolder
 
-class MediaItemViewAdapter internal constructor(private val context: Context, cursor: Cursor?, private val mClickListener: ItemClickListener?, private val showUrl: Boolean) : CursorRecyclerViewAdapter<MediaItemViewHolder?>(context, cursor) {
+class MediaItemViewAdapter
+internal constructor(
+        private val context: Context,
+        cursor: Cursor?,
+        private val mClickListener: ItemClickListener?,
+        private val showUrl: Boolean) : CursorRecyclerViewAdapter<MediaItemViewHolder?>(context, cursor) {
+
     private var selectedPosition = 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -49,8 +55,9 @@ class MediaItemViewAdapter internal constructor(private val context: Context, cu
 
     // stores and recycles views as they are scrolled off screen
     inner class MediaItemViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        var headerText: TextView
-        var urlText: TextView
+        var headerText: TextView = itemView.findViewById(R.id.headerText)
+        var urlText: TextView = itemView.findViewById(R.id.urlText)
+
         override fun onClick(view: View) {
             if (adapterPosition == RecyclerView.NO_POSITION) return
             notifyItemChanged(selectedPosition)
@@ -60,8 +67,6 @@ class MediaItemViewAdapter internal constructor(private val context: Context, cu
         }
 
         init {
-            headerText = itemView.findViewById(R.id.headerText)
-            urlText = itemView.findViewById(R.id.urlText)
             val btnDeleteItem = itemView.findViewById<ImageButton>(R.id.btnDeleteItem)
             btnDeleteItem.setOnClickListener(View.OnClickListener {
                 if (adapterPosition == RecyclerView.NO_POSITION) return@OnClickListener

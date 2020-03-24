@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils.HOUR
 import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
 import com.mecong.tenderalarm.model.AlarmEntity
@@ -82,7 +81,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = nextActiveAlarm!!.nextTime
         val hour = calendar[Calendar.HOUR_OF_DAY]
-        return hour > 1 && hour < 11
+        return hour in 2..10
     }
 
     companion object {

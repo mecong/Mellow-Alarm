@@ -32,10 +32,7 @@ class SleepAssistantPlayListModel() : ViewModel() {
             this.media = media
             this.mediaType = mediaType
         }
-
     }
-
-
 }
 
 data class Media(val url: String?, val title: String?)

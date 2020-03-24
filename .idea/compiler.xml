@@ -14,6 +14,7 @@
     <bytecodeTargetLevel>
       <module name="app" target="1.8" />
       <module name="Tender-Alarm" target="1.8" />
+      <module name="Tender-Alarm.app" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -15,31 +15,28 @@ import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise.Compani
 
 class NoisesFragment private constructor(private val model: SleepAssistantPlayListModel) : Fragment(), NoisesItemClickListener {
     private var selectedPosition = 0
-    private var adapter: NoisesItemViewAdapter? = null
+    private lateinit var adapter: NoisesItemViewAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            selectedPosition = arguments!!.getInt(SELECTED_POSITION)
-        }
+        selectedPosition = arguments?.getInt(SELECTED_POSITION) ?: 0
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_noises, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recyclerView: RecyclerView = view.findViewById(R.id.noisesList)
         recyclerView.layoutManager = LinearLayoutManager(view.context)
-        adapter = NoisesItemViewAdapter(view.context,
-                retrieveNoises(), selectedPosition)
-        adapter!!.setClickListener(this)
+        adapter = NoisesItemViewAdapter(view.context, retrieveNoises(), selectedPosition)
+        adapter.setClickListener(this)
         recyclerView.adapter = adapter
     }
 
     override fun onItemClick(view: View?, position: Int) {
         val newPlayList = PlayList(
-                adapter!!.getItem(position).url, adapter!!.getItem(position).name, SleepMediaType.NOISE)
+                adapter.getItem(position).url, adapter.getItem(position).name, SleepMediaType.NOISE)
         model.playlist.value = newPlayList
     }
 

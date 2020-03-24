@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.AdditionalActivity
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils.MINUTE
 import com.mecong.tenderalarm.alarm.AlarmUtils.setBootReceiverActive
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
@@ -77,10 +76,10 @@ class MainAlarmFragment : Fragment() {
                 textNextAlarm!!.setText(R.string.all_alarms_are_off)
             } else if (difference < MINUTE) {
                 textNextAlarm!!.text = context.getString(R.string.next_alarm_soon)
-            } else if (difference < AlarmUtils.HOUR) {
+            } else if (difference < HOUR) {
                 textNextAlarm!!.text = context.getString(R.string.next_alarm_within_hour,
                         calendar[Calendar.MINUTE])
-            } else if (difference < AlarmUtils.DAY) {
+            } else if (difference < DAY) {
                 textNextAlarm!!.text = context.getString(R.string.next_alarm_today,
                         calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE])
             } else {

@@ -35,19 +35,19 @@ import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import org.greenrobot.eventbus.EventBus
 
 class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener {
-    val iBinder: IBinder = LocalBinder()
-    var playList: PlayList? = null
-    lateinit var notificationManager: MediaNotificationManager
-    lateinit var exoPlayer: SimpleExoPlayer
-    lateinit var mediaSession: MediaSession
-    lateinit var transportControls: MediaController.TransportControls
+    private val iBinder: IBinder = LocalBinder()
+    private var playList: PlayList? = null
+    private lateinit var notificationManager: MediaNotificationManager
+    private lateinit var exoPlayer: SimpleExoPlayer
+    private lateinit var mediaSession: MediaSession
+    private lateinit var transportControls: MediaController.TransportControls
     var onGoingCall = false
-    var telephonyManager: TelephonyManager? = null
-    var wifiLock: WifiLock? = null
-    var audioManager: AudioManager? = null
+    private var telephonyManager: TelephonyManager? = null
+    private var wifiLock: WifiLock? = null
+    private var audioManager: AudioManager? = null
     var status = IDLE
-    var currentTrackTitle = "Tender Alarm"
-    var streamUrl: String? = null
+    private var currentTrackTitle = "Tender Alarm"
+    private var streamUrl: String? = null
 
     var audioVolume = 0f
         set(value) {
@@ -56,9 +56,9 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         }
 
 
-    var bandwidthMeter: DefaultBandwidthMeter? = null
-    var dataSourceFactory: DataSource.Factory? = null
-    var phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
+    private var bandwidthMeter: DefaultBandwidthMeter? = null
+    private var dataSourceFactory: DataSource.Factory? = null
+    private var phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
             if ((state == TelephonyManager.CALL_STATE_OFFHOOK
                             || state == TelephonyManager.CALL_STATE_RINGING)) {
@@ -411,15 +411,15 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     companion object {
-        val ACTION_PLAY = "com.mecong.myalarm.ACTION_PLAY"
-        val ACTION_PAUSE = "com.mecong.myalarm.ACTION_PAUSE"
-        val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"
+        const val ACTION_PLAY = "com.mecong.myalarm.ACTION_PLAY"
+        const val ACTION_PAUSE = "com.mecong.myalarm.ACTION_PAUSE"
+        const val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"
 
-        val IDLE = "PlaybackStatus_IDLE"
-        val LOADING = "PlaybackStatus_LOADING"
-        val PLAYING = "PlaybackStatus_PLAYING"
-        val PAUSED = "PlaybackStatus_PAUSED"
-        val STOPPED = "PlaybackStatus_STOPPED"
-        val ERROR = "PlaybackStatus_ERROR"
+        const val IDLE = "PlaybackStatus_IDLE"
+        const val LOADING = "PlaybackStatus_LOADING"
+        const val PLAYING = "PlaybackStatus_PLAYING"
+        const val PAUSED = "PlaybackStatus_PAUSED"
+        const val STOPPED = "PlaybackStatus_STOPPED"
+        const val ERROR = "PlaybackStatus_ERROR"
     }
 }

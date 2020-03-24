@@ -10,7 +10,6 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.hypertrack.hyperlog.HyperLog
@@ -30,10 +29,10 @@ import java.util.concurrent.TimeUnit
 class AlarmNotifyingService : Service() {
     var alarmMediaPlayer: MediaPlayer? = null
     var handlerVolume: Handler? = null
-    var runnableVolume: Runnable? = null
+    private var runnableVolume: Runnable? = null
     var random = Random()
     var handlerTicks: Handler? = null
-    var runnableRealAlarm: Runnable? = null
+    private var runnableRealAlarm: Runnable? = null
     var ticksMediaPlayer: MediaPlayer? = null
     override fun onCreate() {
         EventBus.getDefault().register(this)
@@ -57,24 +56,28 @@ class AlarmNotifyingService : Service() {
     private fun usePowerManagerWakeup() {
         HyperLog.v(TAG, "Alarm Notifying service usePowerManagerWakeup")
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        if (pm != null) {
-            val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.javaClass.canonicalName)
-            wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
-        }
+        val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.javaClass.canonicalName)
+        wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
     }
 
     @Subscribe
     fun messageReceived(message: AlarmMessage) {
-        if (message === AlarmMessage.CANCEL_VOLUME_INCREASE) {
-            cancelVolumeIncreasing()
-        } else if (message === AlarmMessage.STOP_ALARM) {
-            stopAlarmNotification()
-        } else if (message === AlarmMessage.SNOOZE2M) {
-            snooze(2)
-        } else if (message === AlarmMessage.SNOOZE3M) {
-            snooze(3)
-        } else if (message === AlarmMessage.SNOOZE5M) {
-            snooze(5)
+        when {
+            message === AlarmMessage.CANCEL_VOLUME_INCREASE -> {
+                cancelVolumeIncreasing()
+            }
+            message === AlarmMessage.STOP_ALARM -> {
+                stopAlarmNotification()
+            }
+            message === AlarmMessage.SNOOZE2M -> {
+                snooze(2)
+            }
+            message === AlarmMessage.SNOOZE3M -> {
+                snooze(3)
+            }
+            message === AlarmMessage.SNOOZE5M -> {
+                snooze(5)
+            }
         }
     }
 
@@ -168,7 +171,7 @@ class AlarmNotifyingService : Service() {
             override fun run() {
                 try {
                     volume[0] += 0.001f
-                    Log.v(TAG, "New alarm volume: " + volume[0])
+                    HyperLog.v(TAG, "New alarm volume: " + volume[0])
                     if (alarmMediaPlayer!!.isPlaying) {
                         alarmMediaPlayer!!.setVolume(volume[0], volume[0])
                     }
@@ -224,14 +227,14 @@ class AlarmNotifyingService : Service() {
 
     private fun alarmEndVibration() {
         val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (vibrator != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(1000,
-                        VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                vibrator.vibrate(1000)
-            }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(1000,
+                    VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(1000)
         }
+
     }
 
     private fun startAlarmNotification(context: Context, entity: AlarmEntity?) {

@@ -17,18 +17,15 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+val MINUTE = TimeUnit.MINUTES.toMillis(1)
+val HOUR = TimeUnit.HOURS.toMillis(1)
+val DAY = TimeUnit.DAYS.toMillis(1)
+
 object AlarmUtils {
     const val TAG = "A.L.A.R.M.A"
     const val ALARM_ID_PARAM = BuildConfig.APPLICATION_ID + ".alarm_id"
 
-    @JvmField
-    val MINUTE = TimeUnit.MINUTES.toMillis(1)
 
-    @JvmField
-    val HOUR = TimeUnit.HOURS.toMillis(1)
-
-    @JvmField
-    val DAY = TimeUnit.DAYS.toMillis(1)
     fun setUpNextAlarm(alarmId: String, context: Context, manually: Boolean) {
         val entity = sqLiteDBHelper(context)!!.getAlarmById(alarmId)
         setUpNextAlarm(entity, context, manually)

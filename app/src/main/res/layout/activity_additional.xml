@@ -123,6 +123,8 @@
             <!--            values.put(URI, "http://mediaserv30.live-streams.nl:8088/live");-->
             <!--            database.insert(SQLiteDBHelper.TABLE_ONLINE_MEDIA, null, values);-->
 
+            <!--            https://www.milanolounge.net/-->
+
         </LinearLayout>
     </ScrollView>
 

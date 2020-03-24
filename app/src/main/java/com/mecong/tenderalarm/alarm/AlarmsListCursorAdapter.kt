@@ -2,6 +2,7 @@ package com.mecong.tenderalarm.alarm
 
 import android.content.Context
 import android.database.Cursor
+import android.os.Build
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -105,7 +106,12 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
                 getDaysHtml(entity, context)
             }
         }
-        textRow2.text = Html.fromHtml(daysMessage)
+
+        textRow2.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(daysMessage, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            Html.fromHtml(daysMessage)
+        }
     }
 
     private fun getDaysHtml(entity: AlarmEntity, context: Context): String {
