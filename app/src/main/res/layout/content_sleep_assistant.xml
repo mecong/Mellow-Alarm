@@ -6,7 +6,7 @@
     android:background="#121314">
 
     <com.mecong.tenderalarm.sleep_assistant.HourglassComponent
-        android:id="@+id/slliderSleepTime"
+        android:id="@+id/sliderSleepTime"
         android:layout_width="0dp"
 
         android:layout_height="0dp"
@@ -35,7 +35,7 @@
         app:layout_constraintDimensionRatio="0.5625"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/slliderSleepTime"
+        app:layout_constraintStart_toEndOf="@+id/sliderSleepTime"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         app:max="100"
@@ -50,13 +50,12 @@
         app:layout_constraintGuide_percent="0.32" />
 
     <TextView
-        android:id="@+id/textViewTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time"
         android:textColor="#E7E8E2"
-        app:layout_constraintBottom_toTopOf="@+id/slliderSleepTime"
-        app:layout_constraintStart_toStartOf="@+id/slliderSleepTime" />
+        app:layout_constraintBottom_toTopOf="@+id/sliderSleepTime"
+        app:layout_constraintStart_toStartOf="@+id/sliderSleepTime" />
 
     <TextView
         android:id="@+id/textViewMinutes"
@@ -64,12 +63,11 @@
         android:layout_height="wrap_content"
         android:text="@string/sleep_minutes"
         android:textColor="#E7E8E2"
-        app:layout_constraintEnd_toEndOf="@+id/slliderSleepTime"
-        app:layout_constraintStart_toStartOf="@+id/slliderSleepTime"
-        app:layout_constraintTop_toBottomOf="@+id/slliderSleepTime" />
+        app:layout_constraintEnd_toEndOf="@+id/sliderSleepTime"
+        app:layout_constraintStart_toStartOf="@+id/sliderSleepTime"
+        app:layout_constraintTop_toBottomOf="@+id/sliderSleepTime" />
 
     <TextView
-        android:id="@+id/textViewVolume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="1dp"
@@ -93,7 +91,6 @@
         android:id="@+id/nowPlayingText"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_marginStart="8dp"
         android:background="#1A1B1D"
         android:ellipsize="end"
         android:gravity="center_vertical"
@@ -110,7 +107,6 @@
         android:id="@+id/pp_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="8dp"
         android:adjustViewBounds="true"
         android:background="#1A1B1D"
         android:contentDescription="@string/play"
@@ -155,14 +151,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/logo_gold_cat"
-            android:icon="@drawable/local_media"
-            android:text="@string/offline" />
+            android:icon="@drawable/local_media" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/online_media"
-            android:text="@string/online" />
+            android:icon="@drawable/online_media" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -175,9 +169,6 @@
         android:id="@+id/viewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:background="#282828"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

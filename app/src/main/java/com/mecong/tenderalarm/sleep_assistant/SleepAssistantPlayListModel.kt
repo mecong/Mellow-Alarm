@@ -5,18 +5,18 @@ import androidx.lifecycle.ViewModel
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 
 class SleepAssistantPlayListModel() : ViewModel() {
-    var playlist = MutableLiveData<PlayList>()
+    var playlist = MutableLiveData<SleepAssistantPlayList>()
 
     @JvmField
     var playing = MutableLiveData<Boolean>()
 
-    constructor(playlist: MutableLiveData<PlayList>, playing: MutableLiveData<Boolean>) : this() {
+    constructor(playlist: MutableLiveData<SleepAssistantPlayList>, playing: MutableLiveData<Boolean>) : this() {
         this.playlist = playlist
         this.playing = playing
     }
 
     //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]
-    class PlayList {
+    class SleepAssistantPlayList {
         var index: Int
         var media: List<Media>
         var mediaType: SleepMediaType

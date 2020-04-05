@@ -44,7 +44,6 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         values.put(TITLE, "JR.FM chill/Lounge Radio")
         values.put(URI, "http://149.56.157.81:5104/;stream/1")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
-
     }
 
     private fun initializeDefaultProperties(database: SQLiteDatabase) {
@@ -52,7 +51,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
     }
 
     val allAlarms: Cursor
-        get() = this.readableDatabase.rawQuery(SELECT_ALL_ALARMS, null)
+        get() = this.readableDatabase.rawQuery("SELECT * FROM $TABLE_ALARMS", null)
 
     private fun getAlarmEntity(sql: String): AlarmEntity? {
         val cursor = this.readableDatabase.rawQuery(sql, null)
@@ -112,7 +111,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
                 HyperLog.d(AlarmUtils.TAG, "Alarm added :: $entity")
                 database.insert(TABLE_ALARMS, null, values)
             } else {
-                database.update(TABLE_ALARMS, values, "_id=$entity.id", null)
+                database.update(TABLE_ALARMS, values, "_id=${entity.id}", null)
                 HyperLog.d(AlarmUtils.TAG, "Alarm updated :: $entity")
                 entity.id
             }
@@ -144,17 +143,20 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         sqLiteDatabase.execSQL(createAlarmTable())
         sqLiteDatabase.execSQL(createOnlineMediaResourcesTable())
         sqLiteDatabase.execSQL(createOfflineMediaResourcesTable())
+        sqLiteDatabase.execSQL(createOfflineMediaPlaylistsTable())
         sqLiteDatabase.execSQL(createPropertiesTable())
         setDefaultOnlineMedia(sqLiteDatabase)
         initializeDefaultProperties(sqLiteDatabase)
         HyperLog.i(AlarmUtils.TAG, "Database created")
     }
 
+
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldDbVersion: Int, newVersion: Int) {
-        sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS + TABLE_ALARMS)
-        sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS + TABLE_ONLINE_MEDIA)
-        sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS + TABLE_OFFLINE_MEDIA)
-        sqLiteDatabase.execSQL(DROP_TABLE_IF_EXISTS + TABLE_PROPERTIES)
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ALARMS")
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ONLINE_MEDIA")
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_OFFLINE_MEDIA")
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLISTS")
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_PROPERTIES")
         onCreate(sqLiteDatabase)
     }
 
@@ -184,27 +186,19 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
     }
 
     private fun createOnlineMediaResourcesTable(): String {
-        return String.format("CREATE TABLE %s ("
-                + "_id INTEGER PRIMARY KEY,"
-                + "title TEXT,"
-                + "uri TEXT"
-                + ")", TABLE_ONLINE_MEDIA)
+        return "CREATE TABLE $TABLE_ONLINE_MEDIA (_id INTEGER PRIMARY KEY, title TEXT, uri TEXT)"
     }
 
     private fun createOfflineMediaResourcesTable(): String {
-        return String.format("CREATE TABLE %s ("
-                + "_id INTEGER PRIMARY KEY,"
-                + "title TEXT,"
-                + "uri TEXT"
-                + ")", TABLE_OFFLINE_MEDIA)
+        return "CREATE TABLE $TABLE_OFFLINE_MEDIA (_id INTEGER PRIMARY KEY, playlist_id INTEGER, title TEXT, uri TEXT)"
+    }
+
+    private fun createOfflineMediaPlaylistsTable(): String {
+        return "CREATE TABLE $TABLE_PLAYLISTS (_id INTEGER PRIMARY KEY, title TEXT)"
     }
 
     private fun createPropertiesTable(): String {
-        return String.format("CREATE TABLE %s ("
-                + "_id INTEGER PRIMARY KEY,"
-                + "property_name TEXT,"
-                + "property_value TEXT"
-                + ")", TABLE_PROPERTIES)
+        return "CREATE TABLE $TABLE_PROPERTIES (_id INTEGER PRIMARY KEY, property_name TEXT, property_value TEXT)"
     }
 
     fun getPropertyInt(propertyName: PropertyName): Int? {
@@ -268,19 +262,23 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         }
     }
 
-    val allLocalMedia: Cursor
-        get() = this.readableDatabase.rawQuery("SELECT * FROM $TABLE_OFFLINE_MEDIA",
-                null)
+    //---------------------------------------
+    fun getLocalMedia(playlistId: Long): Cursor {
+        return this.readableDatabase.rawQuery("SELECT * FROM $TABLE_OFFLINE_MEDIA WHERE playlist_id=$playlistId", null)
+    }
 
-    fun addLocalMediaUrl(url: String, title: String?) {
+
+    fun addLocalMediaUrl(playlistId: Long, url: String, title: String?) {
         this.writableDatabase.use { database ->
             val values = ContentValues()
             values.put(URI, url)
+            values.put(PLAYLIST_ID, playlistId)
             values.put(TITLE, title)
-            HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url")
+            HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url to playlist $playlistId")
             database.insert(TABLE_OFFLINE_MEDIA, null, values)
         }
     }
+
 
     fun deleteLocalMedia(id: String) {
         this.writableDatabase.use { writableDatabase ->
@@ -288,19 +286,45 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
             HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
         }
     }
+    //-----------------------------------------
+
+    fun getAllPlaylists(): Cursor {
+        return this.readableDatabase.rawQuery("SELECT * FROM $TABLE_PLAYLISTS", null)
+    }
+
+    fun addPlaylist(title: String): Long {
+        this.writableDatabase.use { database ->
+            val values = ContentValues()
+            values.put(TITLE, title)
+            HyperLog.v(AlarmUtils.TAG, "Add playlist :: $title")
+            return@addPlaylist database.insert(TABLE_PLAYLISTS, null, values)
+        }
+    }
+
+    fun deletePlaylist(id: Long) {
+        this.writableDatabase.use { writableDatabase ->
+            val deleted = writableDatabase.delete(TABLE_OFFLINE_MEDIA, "playlist_id=$id", null)
+            HyperLog.v(AlarmUtils.TAG, "Online Media with [playlist_id=$id] deleted $deleted row")
+
+            writableDatabase.delete(TABLE_PLAYLISTS, "_id=$id", null)
+            HyperLog.v(AlarmUtils.TAG, "Playlist [id=$id] deleted")
+        }
+    }
+
 
     companion object {
         private const val TITLE = "title"
         private const val URI = "uri"
-        private const val DATABASE_VERSION = 26
+        private const val PLAYLIST_ID = "playlist_id"
+        private const val DATABASE_VERSION = 27
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"
+        private const val TABLE_PLAYLISTS = "offline_media_playlists"
         private const val TABLE_PROPERTIES = "properties"
-        private const val SELECT_ALL_ALARMS = "SELECT * FROM $TABLE_ALARMS"
         private const val SELECT_NEXT_ALARM = "SELECT * FROM $TABLE_ALARMS WHERE active=1 and canceled_next_alarms=0 ORDER BY next_not_canceled_time LIMIT 1"
         private const val DATABASE_NAME = "my_alarm_database"
-        private const val DROP_TABLE_IF_EXISTS = "DROP TABLE IF EXISTS "
+
         private var sInstance: SQLiteDBHelper? = null
 
         @JvmStatic

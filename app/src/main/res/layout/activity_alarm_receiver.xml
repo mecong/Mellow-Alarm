@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/OriginLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
@@ -10,16 +9,15 @@
     tools:context=".alarm.AlarmReceiverActivity">
 
     <TextClock
-        android:id="@+id/textClock"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:format12Hour="hh:mm"
+        android:format24Hour="hh:mm"
         android:gravity="center_horizontal"
         android:textAlignment="center"
         android:textColor="#327C1F"
         android:textSize="44sp" />
-    <TextView
 
+    <TextView
         android:id="@+id/alarm_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +42,6 @@
         android:textSize="12sp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -52,7 +49,6 @@
             android:id="@+id/sleepTimer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="TextView"
             android:textAlignment="center"
             android:textSize="24sp"
             android:visibility="visible" />

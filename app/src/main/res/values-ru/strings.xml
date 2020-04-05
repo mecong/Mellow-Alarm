@@ -6,7 +6,6 @@
     <string name="we">CР</string>
     <string name="upcoming_alarm_notification_title">Будильник</string>
     <string name="add">Добавить</string>
-    <string name="alarm_date">%D</string>
     <string name="alarm_time">%02d:%02d</string>
     <string name="all_alarms_are_off">Все будильники выключены</string>
     <string name="work_days">Рабочие дни</string>
@@ -17,8 +16,6 @@
     <string name="internet_streams">Интернет потоки</string>
     <string name="local_audio">Локальные медиа</string>
     <string name="can_not_stream">Не могу воспроизвести медиа!</string>
-    <string name="action_settings" translatable="false">Настройки</string>
-    <string name="add_alarm" translatable="false">Новый будильник</string>
     <string name="alarm_complexity" translatable="false">Сложность будильника %d</string>
     <string name="alarm_sound">Мелодия будильника</string>
     <string name="alarm_turn_off_prompt">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</string>

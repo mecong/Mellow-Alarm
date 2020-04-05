@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/ivory</item>
+        <item name="colorAccent">@color/appGreen</item>
 
         <item name="android:textColor">@color/textColor2</item>
         <item name="android:editTextColor">@color/textColor2</item>
@@ -16,7 +16,6 @@
         <item name="android:radioButtonStyle">@style/MyRadioButtonStyle</item>
         <item name="android:editTextStyle">@style/MyEditText</item>
 
-
         <item name="android:textColorHint">@color/dimgray</item>
 
         <item name="android:progressBackgroundTint">@color/dimgray</item>
@@ -25,14 +24,7 @@
         <item name="android:colorControlNormal">@color/dimgray</item>
 
         <item name="android:itemBackground">@color/gray</item>
-    </style>
-
-    <style name="UrlDialogCustom">
-        <!--        <item name="android:textColor">@color/white</item>-->
-        <!--        <item name="android:textStyle">bold</item>-->
-        <!--        <item name="android:headerDividersEnabled">true</item>-->
-        <!--        <item name="android:typeface">normal</item>-->
-        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:popupMenuStyle">@style/MyPopupMenu</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -46,6 +38,22 @@
         <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
+
+    <style name="MyPopupMenu" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@color/red</item>
+        <item name="android:textColor">@color/appGreen</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:actionMenuTextColor">@color/green</item>
+    </style>
+
+    <style name="UrlDialogCustom">
+        <!--        <item name="android:textColor">@color/white</item>-->
+        <!--        <item name="android:textStyle">bold</item>-->
+        <!--        <item name="android:headerDividersEnabled">true</item>-->
+        <!--        <item name="android:typeface">normal</item>-->
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
 
     <style name="MyEditText" parent="Widget.AppCompat.EditText">
         <item name="android:textColor">@color/textColor2</item>
@@ -70,7 +78,4 @@
         <item name="android:colorControlNormal">@color/red</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

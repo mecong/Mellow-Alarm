@@ -87,7 +87,7 @@ class SleepAssistantFragment : Fragment() {
         volume = 105 - 100 * volumeCoefficient
         timeMinutes = 39
 
-        slliderSleepTime.addListener(object : SleepTimerViewValueListener {
+        sliderSleepTime.addListener(object : SleepTimerViewValueListener {
             override fun onValueChanged(newValue: Long) {
                 textViewMinutes.text = context.getString(R.string.sleep_minutes, newValue)
                 timeMinutes = newValue
@@ -105,7 +105,7 @@ class SleepAssistantFragment : Fragment() {
             }
         })
 
-        slliderSleepTime.setCurrentValue(timeMinutes)
+        sliderSleepTime.setCurrentValue(timeMinutes)
         sliderVolume.setCurrentValue(volume.toLong())
         timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
         volumeStep = volume * STEP_MILLIS / timeMs
@@ -121,7 +121,7 @@ class SleepAssistantFragment : Fragment() {
                 if (radioService.isPlaying) {
                     radioService.stop()
                     timeMinutes = 30
-                    slliderSleepTime.setCurrentValue(timeMinutes)
+                    sliderSleepTime.setCurrentValue(timeMinutes)
                     textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
 
                     volume = 30f
@@ -131,7 +131,7 @@ class SleepAssistantFragment : Fragment() {
                 }
             } else {
                 timeMinutes = TimeUnit.MILLISECONDS.toMinutes(timeMs)
-                slliderSleepTime.setCurrentValue(timeMinutes)
+                sliderSleepTime.setCurrentValue(timeMinutes)
                 textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
 
                 volume -= volumeStep
@@ -169,21 +169,21 @@ class SleepAssistantFragment : Fragment() {
     private fun initializeTabsAndMediaFragments(context: Context?, activeTab: Int) {
         if (context == null) return
 
-        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity!!.supportFragmentManager, context, playListModel)
+        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager, context, playListModel)
         viewPager.adapter = soundListsPagerAdapter
         tabs.setupWithViewPager(viewPager)
         tabs.setSelectedTabIndicator(null)
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             val instance = sqLiteDBHelper(getContext()!!)
             override fun onTabSelected(tab: TabLayout.Tab) {
-                tab.customView!!.findViewById<View>(R.id.view).visibility = View.INVISIBLE
-                tab.customView!!.background = resources.getDrawable(R.drawable.tr2_background)
-                instance!!.setPropertyString(PropertyName.ACTIVE_TAB, tab.position.toString())
+                tab.customView?.findViewById<View>(R.id.view)?.visibility = View.INVISIBLE
+                tab.customView?.background = resources.getDrawable(R.drawable.tr2_background)
+                instance?.setPropertyString(PropertyName.ACTIVE_TAB, tab.position.toString())
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                tab.customView!!.findViewById<View>(R.id.view).visibility = View.VISIBLE
-                tab.customView!!.background = resources.getDrawable(R.drawable.tr1_background)
+                tab.customView?.findViewById<View>(R.id.view)?.visibility = View.VISIBLE
+                tab.customView?.background = resources.getDrawable(R.drawable.tr1_background)
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
@@ -191,7 +191,7 @@ class SleepAssistantFragment : Fragment() {
             }
         })
         for (i in 0 until tabs.tabCount) {
-            tabs.getTabAt(i)!!.setCustomView(R.layout.media_tab)
+            tabs.getTabAt(i)?.setCustomView(R.layout.media_tab)
         }
         (tabs.getTabAt(0)?.customView?.findViewById<View>(R.id.imageView) as ImageView).setImageResource(R.drawable.local_media)
         (tabs.getTabAt(1)?.customView?.findViewById<View>(R.id.imageView) as ImageView).setImageResource(R.drawable.online_media)

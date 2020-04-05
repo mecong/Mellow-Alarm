@@ -2,7 +2,6 @@ package com.mecong.tenderalarm.sleep_assistant.media_selection
 
 import android.content.Context
 import android.database.Cursor
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,60 +9,55 @@ import android.widget.ImageButton
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.util.Strings
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.model.MediaEntity.Companion.fromCursor
-import com.mecong.tenderalarm.sleep_assistant.media_selection.MediaItemViewAdapter.MediaItemViewHolder
+import com.mecong.tenderalarm.model.PlaylistEntity.Companion.fromCursor
 
-class MediaItemViewAdapter
+class PlaylistViewAdapter
 internal constructor(
         private val context: Context,
         cursor: Cursor?,
-        private val mClickListener: ItemClickListener?,
-        private val showUrl: Boolean) : CursorRecyclerViewAdapter<MediaItemViewHolder?>(context, cursor) {
+        private val mClickListenerPlaylist: PlaylistItemClickListener?)
+    : CursorRecyclerViewAdapter<PlaylistViewAdapter.PlaylistViewHolder?>(context, cursor) {
 
     private var selectedPosition = 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
         val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.fragment_media_row, parent, false)
-        return MediaItemViewHolder(itemView)
+        return PlaylistViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(viewHolder: MediaItemViewHolder?, cursor: Cursor?, position: Int) {
+    override fun onBindViewHolder(viewHolder: PlaylistViewHolder?, cursor: Cursor?, position: Int) {
         if (viewHolder == null) return
         val myListItem = fromCursor(cursor!!)
 
-        viewHolder.headerText.tag = myListItem.uri
-        viewHolder.headerText.text = if (Strings.isEmptyOrWhitespace(myListItem.header)) myListItem.uri else myListItem.header
-        if (showUrl) {
-            viewHolder.urlText.text = myListItem.uri
-            viewHolder.urlText.visibility = View.VISIBLE
-        } else {
-            viewHolder.urlText.visibility = View.GONE
-        }
+        viewHolder.title.text = "[${myListItem.title}]"
+        viewHolder.title.tag = myListItem.title.toString()
         viewHolder.itemView.isSelected = selectedPosition == position
+        viewHolder.urlText.visibility = View.GONE
+        viewHolder.id = myListItem.id
     }
 
     /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 // parent activity will implement this method to respond to click events
-    interface ItemClickListener {
-        fun onItemClick(url: String?, position: Int)
-        fun onItemDeleteClick(position: Int)
+    interface PlaylistItemClickListener {
+        fun onPlaylistItemClick(title: String?, id: Long, position: Int)
+        fun onPlaylistDeleteClick(id: Long, position: Int)
     }
 
     // stores and recycles views as they are scrolled off screen
-    inner class MediaItemViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        var headerText: TextView = itemView.findViewById(R.id.headerText)
+    inner class PlaylistViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        var title: TextView = itemView.findViewById(R.id.headerText)
         var urlText: TextView = itemView.findViewById(R.id.urlText)
+        var id: Long = -1L
 
         override fun onClick(view: View) {
             if (adapterPosition == RecyclerView.NO_POSITION) return
             notifyItemChanged(selectedPosition)
             selectedPosition = adapterPosition
-            mClickListener?.onItemClick(headerText.tag.toString(), selectedPosition)
+            mClickListenerPlaylist?.onPlaylistItemClick(title.tag.toString(), id, selectedPosition)
             notifyItemChanged(selectedPosition)
         }
 
@@ -71,15 +65,12 @@ internal constructor(
             val btnDeleteItem = itemView.findViewById<ImageButton>(R.id.btnDeleteItem)
             btnDeleteItem.setOnClickListener(View.OnClickListener {
                 if (adapterPosition == RecyclerView.NO_POSITION) return@OnClickListener
-
-                val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
-                val popup = PopupMenu(wrapper, btnDeleteItem)
-//                val popup = PopupMenu(context, btnDeleteItem)
+                val popup = PopupMenu(context, btnDeleteItem)
                 //Inflating the Popup using xml file
                 popup.menuInflater.inflate(R.menu.menu_media_element, popup.menu)
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener {
-                    mClickListener!!.onItemDeleteClick(adapterPosition)
+                    mClickListenerPlaylist!!.onPlaylistDeleteClick(id, adapterPosition)
                     true
                 }
                 popup.show() //showing popup menu

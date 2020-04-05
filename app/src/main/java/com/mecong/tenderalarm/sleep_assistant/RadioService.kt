@@ -30,13 +30,13 @@ import com.google.android.exoplayer2.util.Util
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.PlayList
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import org.greenrobot.eventbus.EventBus
 
 class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener {
     private val iBinder: IBinder = LocalBinder()
-    private var playList: PlayList? = null
+    private var sleepAssistantPlayList: SleepAssistantPlayList? = null
     private lateinit var notificationManager: MediaNotificationManager
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var mediaSession: MediaSession
@@ -112,7 +112,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                 .createDefaultLoadControl()
 
         exoPlayer = SimpleExoPlayer.Builder(applicationContext)
-                .setLoadControl(loadControl)
+//                .setLoadControl(loadControl)
                 .build()
                 .apply {
                     setHandleWakeLock(true)
@@ -263,7 +263,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                         WifiManager.WIFI_MODE_FULL_HIGH_PERF, "mcScPAmpLock")
             }
         }
-        if (!wifiLock!!.isHeld && playList!!.mediaType === SleepMediaType.ONLINE) {
+        if (!wifiLock!!.isHeld && sleepAssistantPlayList!!.mediaType === SleepMediaType.ONLINE) {
             wifiLock!!.acquire()
             HyperLog.v(AlarmUtils.TAG, "WiFi lock acquired")
         }
@@ -286,23 +286,23 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         exoPlayer.playWhenReady = true
     }
 
-    fun playMediaList(playList: PlayList) {
-        this.playList = playList
+    fun playMediaList(sleepAssistantPlayList: SleepAssistantPlayList) {
+        this.sleepAssistantPlayList = sleepAssistantPlayList
         val concatenatingMediaSource = ConcatenatingMediaSource()
-        for (media: Media in this.playList!!.media) {
+        for (media: Media in this.sleepAssistantPlayList!!.media) {
             concatenatingMediaSource.addMediaSource(
                     ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(media.url)))
         }
         exoPlayer.prepare(concatenatingMediaSource)
-        if (this.playList!!.mediaType === SleepMediaType.LOCAL) {
+        if (this.sleepAssistantPlayList!!.mediaType === SleepMediaType.LOCAL) {
             exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
-        } else if (this.playList!!.mediaType === SleepMediaType.ONLINE) {
+        } else if (this.sleepAssistantPlayList!!.mediaType === SleepMediaType.ONLINE) {
             exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
-        } else if (this.playList!!.mediaType === SleepMediaType.NOISE) {
+        } else if (this.sleepAssistantPlayList!!.mediaType === SleepMediaType.NOISE) {
             exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
         }
         acquireWifiLock()
-        exoPlayer.seekTo(playList.index, 0)
+        exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
         exoPlayer.playWhenReady = true
     }
 
@@ -384,7 +384,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     fun hasPlayList(): Boolean {
-        return playList != null && !playList!!.media.isEmpty()
+        return sleepAssistantPlayList != null && !sleepAssistantPlayList!!.media.isEmpty()
     }
 
     /*
@@ -395,8 +395,8 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     override fun onPositionDiscontinuity(reason: Int) {
         HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
         if (hasPlayList()) {
-            HyperLog.v(AlarmUtils.TAG, playList!!.media[exoPlayer.currentWindowIndex].title)
-            val playingMedia = playList!!.media[exoPlayer.currentWindowIndex]
+            HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex].title)
+            val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
             currentTrackTitle = playingMedia.title!!
             notificationManager.startNotify(status, currentTrackTitle)

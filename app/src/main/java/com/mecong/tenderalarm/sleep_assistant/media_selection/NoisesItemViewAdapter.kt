@@ -8,7 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
 
-class NoisesItemViewAdapter internal constructor(context: Context?, data: List<SleepNoise>, private var selectedPosition: Int) : RecyclerView.Adapter<NoisesItemViewAdapter.ViewHolder>() {
+class NoisesItemViewAdapter
+constructor(context: Context?, data: List<SleepNoise>, private var selectedPosition: Int)
+    : RecyclerView.Adapter<NoisesItemViewAdapter.ViewHolder>() {
+
     private val mData: List<SleepNoise> = data
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: NoisesItemClickListener? = null
@@ -50,13 +53,16 @@ class NoisesItemViewAdapter internal constructor(context: Context?, data: List<S
     }
 
     // stores and recycles views as they are scrolled off screen
-    inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder internal constructor(itemView: View)
+        : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+
         var headerText: TextView = itemView.findViewById(R.id.headerText)
+
         override fun onClick(view: View) {
             if (adapterPosition == RecyclerView.NO_POSITION) return
             notifyItemChanged(selectedPosition)
             selectedPosition = adapterPosition
-            if (mClickListener != null) mClickListener!!.onItemClick(view, adapterPosition)
+            mClickListener?.onItemClick(view, adapterPosition)
             notifyItemChanged(selectedPosition)
         }
 

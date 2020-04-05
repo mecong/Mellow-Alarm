@@ -6,12 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.PlayList
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import com.mecong.tenderalarm.sleep_assistant.media_selection.NoisesItemViewAdapter.NoisesItemClickListener
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise.Companion.retrieveNoises
+import kotlinx.android.synthetic.main.fragment_noises.*
 
 class NoisesFragment private constructor(private val model: SleepAssistantPlayListModel) : Fragment(), NoisesItemClickListener {
     private var selectedPosition = 0
@@ -27,15 +27,14 @@ class NoisesFragment private constructor(private val model: SleepAssistantPlayLi
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val recyclerView: RecyclerView = view.findViewById(R.id.noisesList)
-        recyclerView.layoutManager = LinearLayoutManager(view.context)
+        noisesList.layoutManager = LinearLayoutManager(view.context)
         adapter = NoisesItemViewAdapter(view.context, retrieveNoises(), selectedPosition)
         adapter.setClickListener(this)
-        recyclerView.adapter = adapter
+        noisesList.adapter = adapter
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        val newPlayList = PlayList(
+        val newPlayList = SleepAssistantPlayList(
                 adapter.getItem(position).url, adapter.getItem(position).name, SleepMediaType.NOISE)
         model.playlist.value = newPlayList
     }
