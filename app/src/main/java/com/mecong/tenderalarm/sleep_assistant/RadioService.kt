@@ -3,6 +3,8 @@ package com.mecong.tenderalarm.sleep_assistant
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaMetadata
@@ -12,6 +14,7 @@ import android.net.Uri
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.WifiLock
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
@@ -36,7 +39,7 @@ import org.greenrobot.eventbus.EventBus
 
 class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener {
     private val iBinder: IBinder = LocalBinder()
-    private var sleepAssistantPlayList: SleepAssistantPlayList? = null
+    private lateinit var sleepAssistantPlayList: SleepAssistantPlayList
     private lateinit var notificationManager: MediaNotificationManager
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var mediaSession: MediaSession
@@ -164,11 +167,28 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val action = intent.action
         if (TextUtils.isEmpty(action)) return START_NOT_STICKY
-        val result = audioManager!!.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+
+        val result =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val mPlaybackAttributes = AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .build()
+                    val focusRequest: AudioFocusRequest = AudioFocusRequest
+                            .Builder(AudioManager.AUDIOFOCUS_GAIN)
+                            .setAcceptsDelayedFocusGain(true)
+                            .setAudioAttributes(mPlaybackAttributes)
+                            .build()
+                    audioManager!!.requestAudioFocus(focusRequest)
+                } else {
+                    audioManager!!.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+                }
+
         if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             stop()
             return START_NOT_STICKY
         }
+
         when {
             ACTION_PLAY.equals(action, ignoreCase = true) -> {
                 transportControls.play()
@@ -263,7 +283,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                         WifiManager.WIFI_MODE_FULL_HIGH_PERF, "mcScPAmpLock")
             }
         }
-        if (!wifiLock!!.isHeld && sleepAssistantPlayList!!.mediaType === SleepMediaType.ONLINE) {
+        if (!wifiLock!!.isHeld && sleepAssistantPlayList.mediaType === SleepMediaType.ONLINE) {
             wifiLock!!.acquire()
             HyperLog.v(AlarmUtils.TAG, "WiFi lock acquired")
         }
@@ -289,17 +309,24 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     fun playMediaList(sleepAssistantPlayList: SleepAssistantPlayList) {
         this.sleepAssistantPlayList = sleepAssistantPlayList
         val concatenatingMediaSource = ConcatenatingMediaSource()
-        for (media: Media in this.sleepAssistantPlayList!!.media) {
+        for (media: Media in this.sleepAssistantPlayList.media) {
             concatenatingMediaSource.addMediaSource(
                     ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(media.url)))
         }
+
         exoPlayer.prepare(concatenatingMediaSource)
-        if (this.sleepAssistantPlayList!!.mediaType === SleepMediaType.LOCAL) {
-            exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
-        } else if (this.sleepAssistantPlayList!!.mediaType === SleepMediaType.ONLINE) {
-            exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
-        } else if (this.sleepAssistantPlayList!!.mediaType === SleepMediaType.NOISE) {
-            exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+
+
+        when (this.sleepAssistantPlayList.mediaType) {
+            SleepMediaType.LOCAL -> {
+                exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
+            }
+            SleepMediaType.ONLINE -> {
+                exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
+            }
+            SleepMediaType.NOISE -> {
+                exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+            }
         }
         acquireWifiLock()
         exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
@@ -384,7 +411,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     fun hasPlayList(): Boolean {
-        return sleepAssistantPlayList != null && !sleepAssistantPlayList!!.media.isEmpty()
+        return sleepAssistantPlayList != null && sleepAssistantPlayList.media.isNotEmpty()
     }
 
     /*
@@ -395,8 +422,9 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     override fun onPositionDiscontinuity(reason: Int) {
         HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
         if (hasPlayList()) {
-            HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex].title)
-            val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex]
+            sleepAssistantPlayList.index = exoPlayer.currentWindowIndex
+            HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
+            val playingMedia = sleepAssistantPlayList.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
             currentTrackTitle = playingMedia.title!!
             notificationManager.startNotify(status, currentTrackTitle)

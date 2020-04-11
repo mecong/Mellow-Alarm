@@ -19,10 +19,10 @@ class MediaItemViewAdapter
 internal constructor(
         private val context: Context,
         cursor: Cursor?,
-        private val mClickListener: ItemClickListener?,
+        private val mClickListenerFile: FileItemClickListener?,
         private val showUrl: Boolean) : CursorRecyclerViewAdapter<MediaItemViewHolder?>(context, cursor) {
 
-    private var selectedPosition = 0
+    var selectedPosition = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -49,9 +49,9 @@ internal constructor(
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 // parent activity will implement this method to respond to click events
-    interface ItemClickListener {
-        fun onItemClick(url: String?, position: Int)
-        fun onItemDeleteClick(position: Int)
+    interface FileItemClickListener {
+        fun onFileItemClick(url: String?, position: Int)
+        fun onFileItemDeleteClick(position: Int)
     }
 
     // stores and recycles views as they are scrolled off screen
@@ -63,7 +63,8 @@ internal constructor(
             if (adapterPosition == RecyclerView.NO_POSITION) return
             notifyItemChanged(selectedPosition)
             selectedPosition = adapterPosition
-            mClickListener?.onItemClick(headerText.tag.toString(), selectedPosition)
+
+            mClickListenerFile?.onFileItemClick(headerText.tag.toString(), selectedPosition)
             notifyItemChanged(selectedPosition)
         }
 
@@ -79,7 +80,7 @@ internal constructor(
                 popup.menuInflater.inflate(R.menu.menu_media_element, popup.menu)
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener {
-                    mClickListener!!.onItemDeleteClick(adapterPosition)
+                    mClickListenerFile!!.onFileItemDeleteClick(adapterPosition)
                     true
                 }
                 popup.show() //showing popup menu

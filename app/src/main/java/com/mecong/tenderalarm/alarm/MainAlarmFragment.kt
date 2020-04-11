@@ -24,15 +24,13 @@ import java.util.*
 class MainAlarmFragment : Fragment() {
     private var alarmsAdapter: AlarmsListCursorAdapter? = null
 
-    //    private var textNextAlarm: TextView? = null
-//    private var textNextAlarmDate: TextView? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
         val context = this.activity!!
         HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.INFO)
+        HyperLog.setLogLevel(Log.VERBOSE)
         textNextAlarm.setOnClickListener(View.OnClickListener {
             val addAlarmIntent = Intent(context, LogsActivity::class.java)
             startActivity(addAlarmIntent)

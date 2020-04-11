@@ -7,11 +7,9 @@
     android:layout_height="match_parent"
     tools:context=".alarm.AlarmAddingActivity">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <LinearLayout
             android:id="@+id/topButtonsLayout"
@@ -125,6 +123,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="0dp"
                 android:text="@string/mo"
                 app:layout_constraintEnd_toStartOf="@+id/checkBoxTu"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -139,6 +139,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="0dp"
                 android:text="@string/tu"
                 app:layout_constraintEnd_toStartOf="@+id/checkBoxWe"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -152,6 +154,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="0dp"
                 android:text="@string/we"
                 app:layout_constraintEnd_toStartOf="@+id/checkBoxTh"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -165,6 +169,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="0dp"
                 android:text="@string/th"
                 app:layout_constraintEnd_toStartOf="@+id/checkBoxFr"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -178,6 +184,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="0dp"
                 android:text="@string/fr"
                 app:layout_constraintEnd_toStartOf="@+id/checkBoxSa"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -191,6 +199,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="0dp"
                 android:text="@string/sa"
                 app:layout_constraintEnd_toStartOf="@+id/checkBoxSu"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -204,7 +214,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:paddingEnd="8dp"
+                android:paddingStart="-5dp"
+                android:paddingEnd="5dp"
                 android:text="@string/su"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -411,13 +422,13 @@
                 android:id="@+id/chbHeadsUp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Show heads up notification" />
+                android:text="@string/show_heads_up_notification" />
 
             <CheckBox
                 android:id="@+id/chbTimeToSleepNotification"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Show time to sleep notificaton" />
+                android:text="@string/show_time_to_sleep_notificaton" />
         </LinearLayout>
 
         <LinearLayout

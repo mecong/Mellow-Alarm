@@ -4,11 +4,9 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.hypertrack.hyperlog.HyperLog
@@ -44,16 +42,18 @@ class MainActivity : AppCompatActivity() {
             HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
             fragmentTransaction.show(sleepFragment!!)
             HyperLog.i(TAG, "sleepFragment show $sleepFragment")
-            val audioManager = this@MainActivity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-            if (volumeCoefficient < 0.3f || volumeCoefficient > 0.4f) {
-                volumeCoefficient = 0.35f
-                audioManager.setStreamVolume(
-                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).toInt(), 0)
-                Toast.makeText(this@MainActivity, "System volume set to 30%", Toast.LENGTH_SHORT).show()
-            }
+
+//            val audioManager = this@MainActivity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//            val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+//            val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+//            var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
+//            if (volumeCoefficient < 0.3f || volumeCoefficient > 0.4f) {
+//                volumeCoefficient = 0.35f
+//                audioManager.setStreamVolume(
+//                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).toInt(), 0)
+//                Toast.makeText(this@MainActivity, "System volume set to 30%", Toast.LENGTH_SHORT).show()
+//            }
+
             ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_active)
             ibOpenAlarm!!.setImageResource(R.drawable.alarm_inactive)
             fragmentTransaction.commit()

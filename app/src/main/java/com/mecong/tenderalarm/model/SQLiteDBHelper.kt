@@ -301,6 +301,14 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         }
     }
 
+    fun renamePlaylist(id: Long, newName: String) {
+        this.writableDatabase.use { writableDatabase ->
+            val contentValues = ContentValues()
+            contentValues.put("title", newName)
+            writableDatabase.update(TABLE_PLAYLISTS, contentValues, "_id=$id", null)
+        }
+    }
+
     fun deletePlaylist(id: Long) {
         this.writableDatabase.use { writableDatabase ->
             val deleted = writableDatabase.delete(TABLE_OFFLINE_MEDIA, "playlist_id=$id", null)

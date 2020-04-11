@@ -38,14 +38,14 @@
 
     <ImageButton
         android:id="@+id/ibtnInfo"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="14dp"
         android:background="@drawable/baseline_copyright_24"
         android:backgroundTint="#999B9B"
         android:foregroundTintMode="src_in"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintBottom_toTopOf="@+id/alarms_list"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
@@ -55,8 +55,9 @@
 
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/round_add_24"
         android:backgroundTint="#999B9B"
+        android:baselineAlignBottom="false"
+        android:foreground="@drawable/round_add_24"
         android:foregroundTintMode="src_in"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -66,14 +67,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.37" />
+        app:layout_constraintGuide_begin="271dp" />
 
     <ListView
         android:id="@+id/alarms_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:choiceMode="none"
         android:minHeight="300dp"
         app:layout_constraintBottom_toBottomOf="parent"

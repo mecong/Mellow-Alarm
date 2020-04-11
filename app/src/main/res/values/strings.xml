@@ -84,5 +84,7 @@
     <string name="alarm_sound">Alarm sound</string>
     <string name="default_sound">Default</string>
     <string name="switch_alarm_state" translatable="false">Switch alarm state</string>
+    <string name="show_heads_up_notification">Show heads up notification</string>
+    <string name="show_time_to_sleep_notificaton">Show time to sleep notificaton</string>
 
 </resources>

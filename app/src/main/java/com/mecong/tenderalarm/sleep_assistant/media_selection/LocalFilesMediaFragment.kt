@@ -6,23 +6,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils
+import com.mecong.tenderalarm.model.PlaylistEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import com.mecong.tenderalarm.sleep_assistant.Media
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import kotlinx.android.synthetic.main.fragment_local_media.*
 import java.util.*
@@ -30,16 +29,14 @@ import java.util.*
 
 private const val READ_REQUEST_CODE = 42
 
-class LocalFilesMediaFragment internal constructor(private val model: SleepAssistantPlayListModel)
-    : Fragment(), MediaItemViewAdapter.ItemClickListener, PlaylistViewAdapter.PlaylistItemClickListener {
+class LocalFilesMediaFragment internal constructor()
+    : Fragment(), MediaItemViewAdapter.FileItemClickListener, PlaylistItemClickListener {
 
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
     private var playlistViewAdapter: PlaylistViewAdapter? = null
     private var currentPlaylistID: Long = -1
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? { // Inflate the layout for this fragment
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_local_media, container, false)
     }
 
@@ -49,14 +46,23 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         mediaListView.layoutManager = LinearLayoutManager(view.context)
 
-        playlistViewAdapter = PlaylistViewAdapter(this.context!!, sqLiteDBHelper.getAllPlaylists(), this)
+        val allPlaylists = sqLiteDBHelper.getAllPlaylists()
+
+        val list = allPlaylists.use {
+            generateSequence { if (it.moveToNext()) it else null }
+                    .map { PlaylistEntity.fromCursor(it) }
+                    .toList()
+        }
+
+        playlistViewAdapter = PlaylistViewAdapter(this.context!!, list, this)
+
         mediaItemViewAdapter =
                 MediaItemViewAdapter(this.context!!, sqLiteDBHelper.getLocalMedia(currentPlaylistID), this, false)
 
         setMode(sqLiteDBHelper)
 
         val function: (v: View) -> Unit = {
-            fragmentTitle.text = "Local media"
+            fragmentTitle.text = context?.getString(R.string.local_audio)
             currentPlaylistID = -1
             setMode(sqLiteDBHelper)
         }
@@ -69,13 +75,19 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
         mediaListView.adapter = when (currentPlaylistID) {
             -1L -> {
                 backButton.visibility = GONE
-                playlistViewAdapter?.changeCursor(sqLiteDBHelper.getAllPlaylists())
+                playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
                 playlistViewAdapter
             }
 
             else -> {
                 backButton.visibility = VISIBLE
                 mediaItemViewAdapter?.changeCursor(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
+                mediaItemViewAdapter?.selectedPosition =
+                        if (currentPlaylistID == SleepAssistantFragment.playListModel.playlist.value?.playListId) {
+                            SleepAssistantFragment.playListModel.playlist.value?.index ?: 0
+                        } else {
+                            0
+                        }
                 mediaItemViewAdapter
             }
         }
@@ -94,25 +106,40 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
         dialog.setContentView(R.layout.url_input_dialog)
         val textUrl = dialog.findViewById<EditText>(R.id.textUrl)
         textUrl.setText("Playlist ${playlistViewAdapter!!.itemCount + 1}")
+        textUrl.hint = "Playlist name"
 
         val buttonOk = dialog.findViewById<Button>(R.id.buttonOk)
-        buttonOk.setOnClickListener {
-            val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-            sqLiteDBHelper.addPlaylist(textUrl.text.toString())
-            dialog.dismiss()
-            playlistViewAdapter?.changeCursor(sqLiteDBHelper.getAllPlaylists())
-        }
-
+        val buttonOkTop = dialog.findViewById<Button>(R.id.buttonOkTop)
         val buttonCancel = dialog.findViewById<Button>(R.id.buttonCancel)
+        val buttonCancelTop = dialog.findViewById<Button>(R.id.buttonCancelTop)
+
+        val okOnclickListener: (v: View) -> Unit = {
+            val title = textUrl.text.toString()
+            if (title.isNotBlank()) {
+                val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+                sqLiteDBHelper.addPlaylist(title)
+                dialog.dismiss()
+                playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
+            } else {
+                Toast.makeText(context, "Playlist name should not be empty", Toast.LENGTH_SHORT).show()
+            }
+        }
+        buttonOk.setOnClickListener(okOnclickListener)
+        buttonOkTop.setOnClickListener(okOnclickListener)
+
         buttonCancel.setOnClickListener { dialog.dismiss() }
+        buttonCancelTop.setOnClickListener { dialog.dismiss() }
+
 
         val lp = WindowManager.LayoutParams()
         lp.copyFrom(dialog.window!!.attributes)
         lp.width = WindowManager.LayoutParams.MATCH_PARENT
         lp.horizontalMargin = 1000.0f
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT
+        lp.gravity = Gravity.CENTER
         dialog.show()
-        dialog.window!!.attributes = lp
+        dialog.window?.attributes = lp
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -125,20 +152,20 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.
             // Pull that URI using resultData.getData().
-            val uri: Uri?
+
             if (resultData != null) {
                 val clipData = resultData.clipData
                 if (clipData == null) {
-                    uri = resultData.data
-                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
-                    addLocalFileMediaRecord(uri.toString(), dumpFileMetaData(uri))
+                    val uri = resultData.data
+                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
                     context!!.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addLocalFileMediaRecord(uri.toString(), dumpFileMetaData(uri))
                 } else {
                     for (i in 0 until clipData.itemCount) {
                         val path = clipData.getItemAt(i)
-                        addLocalFileMediaRecord(path.uri.toString(), dumpFileMetaData(path.uri))
+                        HyperLog.i(AlarmUtils.TAG, "Uri: " + path.uri.path!! + " i=$i")
                         context!!.contentResolver.takePersistableUriPermission(path.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        HyperLog.i("Path:", path.toString())
+                        addLocalFileMediaRecord(path.uri.toString(), dumpFileMetaData(path.uri))
                     }
                 }
             }
@@ -201,7 +228,7 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
         startActivityForResult(intent, READ_REQUEST_CODE)
     }
 
-    override fun onItemClick(url: String?, position: Int) {
+    override fun onFileItemClick(url: String?, position: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         var media: MutableList<Media>
         sqLiteDBHelper.getLocalMedia(currentPlaylistID).use { allLocalMedia ->
@@ -211,12 +238,12 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
                 val title = allLocalMedia.getString(allLocalMedia.getColumnIndex("title"))
                 media.add(Media(uri, title))
             }
-            val newPlayList = SleepAssistantPlayList(position, media, SleepMediaType.LOCAL)
-            model.playlist.value = newPlayList
+            val newPlayList = SleepAssistantPlayList(position, media, SleepMediaType.LOCAL, currentPlaylistID)
+            SleepAssistantFragment.playListModel.playlist.value = newPlayList
         }
     }
 
-    override fun onItemDeleteClick(position: Int) {
+    override fun onFileItemDeleteClick(position: Int) {
         val itemId = mediaItemViewAdapter?.getItemId(position)
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         sqLiteDBHelper.deleteLocalMedia(itemId.toString())
@@ -230,10 +257,20 @@ class LocalFilesMediaFragment internal constructor(private val model: SleepAssis
         fragmentTitle.text = title
     }
 
+
+    override fun onPlaylistItemEditClick(newTitle: String, id: Long, position: Int) {
+        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+
+        sqLiteDBHelper.renamePlaylist(id, newTitle)
+        playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
+    }
+
+
     override fun onPlaylistDeleteClick(id: Long, position: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+
         sqLiteDBHelper.deletePlaylist(id)
-        playlistViewAdapter?.changeCursor(sqLiteDBHelper.getAllPlaylists())
+        playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
     }
 
 }

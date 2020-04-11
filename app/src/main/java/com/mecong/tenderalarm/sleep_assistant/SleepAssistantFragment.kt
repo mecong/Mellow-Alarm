@@ -40,7 +40,8 @@ class SleepAssistantFragment : Fragment() {
     var volumeStep = 0f
     private val handler: Handler = Handler()
     private lateinit var runnable: Runnable
-    lateinit var playListModel: SleepAssistantPlayListModel
+
+    //    lateinit var playListModel: SleepAssistantPlayListModel
     var serviceBound = false
     lateinit var radioService: RadioService
 
@@ -120,14 +121,19 @@ class SleepAssistantFragment : Fragment() {
 
                 if (radioService.isPlaying) {
                     radioService.stop()
+
                     timeMinutes = 30
                     sliderSleepTime.setCurrentValue(timeMinutes)
+                    timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
+
                     textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
 
                     volume = 30f
-                    radioService.audioVolume = volume / 100f
                     sliderVolume.setCurrentValue(volume.toLong())
                     textViewVolumePercent.text = context.getString(R.string.volume_percent, volume.roundToInt())
+                    radioService.audioVolume = volume / 100f
+
+                    volumeStep = volume * STEP_MILLIS / timeMs
                 }
             } else {
                 timeMinutes = TimeUnit.MILLISECONDS.toMinutes(timeMs)
@@ -169,7 +175,7 @@ class SleepAssistantFragment : Fragment() {
     private fun initializeTabsAndMediaFragments(context: Context?, activeTab: Int) {
         if (context == null) return
 
-        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager, context, playListModel)
+        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager, context)
         viewPager.adapter = soundListsPagerAdapter
         tabs.setupWithViewPager(viewPager)
         tabs.setSelectedTabIndicator(null)
@@ -256,11 +262,13 @@ class SleepAssistantFragment : Fragment() {
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
         handler.removeCallbacks(runnable)
-        if (radioService.isPlaying) {
-            radioService.stop()
-        }
-        if (serviceBound) {
-            this.activity?.application?.unbindService(serviceConnection)
+        if (::radioService.isInitialized) {
+            if (radioService.isPlaying) {
+                radioService.stop()
+            }
+            if (serviceBound) {
+                this.activity?.application?.unbindService(serviceConnection)
+            }
         }
         super.onDestroy()
     }
@@ -282,5 +290,6 @@ class SleepAssistantFragment : Fragment() {
 
     companion object {
         private val STEP_MILLIS = TimeUnit.SECONDS.toMillis(10)
+        lateinit var playListModel: SleepAssistantPlayListModel
     }
 }

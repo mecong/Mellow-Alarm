@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import com.mecong.tenderalarm.sleep_assistant.media_selection.NoisesItemViewAdapter.NoisesItemClickListener
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise.Companion.retrieveNoises
 import kotlinx.android.synthetic.main.fragment_noises.*
 
-class NoisesFragment private constructor(private val model: SleepAssistantPlayListModel) : Fragment(), NoisesItemClickListener {
+class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener {
     private var selectedPosition = 0
     private lateinit var adapter: NoisesItemViewAdapter
 
@@ -36,7 +36,7 @@ class NoisesFragment private constructor(private val model: SleepAssistantPlayLi
     override fun onItemClick(view: View?, position: Int) {
         val newPlayList = SleepAssistantPlayList(
                 adapter.getItem(position).url, adapter.getItem(position).name, SleepMediaType.NOISE)
-        model.playlist.value = newPlayList
+        SleepAssistantFragment.playListModel.playlist.value = newPlayList
     }
 
     companion object {
@@ -50,8 +50,8 @@ class NoisesFragment private constructor(private val model: SleepAssistantPlayLi
          * @return A new instance of fragment NoisesFragment.
          */
         @JvmStatic
-        fun newInstance(selectedPosition: Int, model: SleepAssistantPlayListModel): NoisesFragment {
-            val fragment = NoisesFragment(model)
+        fun noisesFragmentNewInstance(selectedPosition: Int): NoisesFragment {
+            val fragment = NoisesFragment()
             val args = Bundle()
             args.putInt(SELECTED_POSITION, selectedPosition)
             fragment.arguments = args

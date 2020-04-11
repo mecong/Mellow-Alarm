@@ -14,21 +14,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import java.net.MalformedURLException
 import java.net.URL
 
-class OnlineMediaFragment internal constructor(private val model: SleepAssistantPlayListModel) : Fragment(), MediaItemViewAdapter.ItemClickListener {
+class OnlineMediaFragment internal constructor() : Fragment(), MediaItemViewAdapter.FileItemClickListener {
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? { // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_online_media, container, false)
     }
 
     private fun addUrl(url: String) {
-        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)
-        sqLiteDBHelper!!.addMediaUrl(url)
+        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+        sqLiteDBHelper.addMediaUrl(url)
         mediaItemViewAdapter!!.changeCursor(sqLiteDBHelper.allOnlineMedia)
     }
 
@@ -66,14 +67,14 @@ class OnlineMediaFragment internal constructor(private val model: SleepAssistant
         }
     }
 
-    override fun onItemClick(url: String?, position: Int) {
-        model.playlist.value = SleepAssistantPlayList(url, url, SleepMediaType.ONLINE)
+    override fun onFileItemClick(url: String?, position: Int) {
+        SleepAssistantFragment.playListModel.playlist.value = SleepAssistantPlayList(url, url, SleepMediaType.ONLINE)
     }
 
-    override fun onItemDeleteClick(position: Int) {
+    override fun onFileItemDeleteClick(position: Int) {
         val itemId = mediaItemViewAdapter!!.getItemId(position)
-        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)
-        sqLiteDBHelper!!.deleteOnlineMedia(itemId.toString())
+        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+        sqLiteDBHelper.deleteOnlineMedia(itemId.toString())
         mediaItemViewAdapter!!.changeCursor(sqLiteDBHelper.allOnlineMedia)
     }
 
