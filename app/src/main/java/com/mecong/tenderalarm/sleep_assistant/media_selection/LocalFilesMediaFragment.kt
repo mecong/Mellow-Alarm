@@ -29,8 +29,7 @@ import java.util.*
 
 private const val READ_REQUEST_CODE = 42
 
-class LocalFilesMediaFragment internal constructor()
-    : Fragment(), MediaItemViewAdapter.FileItemClickListener, PlaylistItemClickListener {
+class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemClickListener {
 
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
     private var playlistViewAdapter: PlaylistViewAdapter? = null
@@ -46,9 +45,7 @@ class LocalFilesMediaFragment internal constructor()
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         mediaListView.layoutManager = LinearLayoutManager(view.context)
 
-        val allPlaylists = sqLiteDBHelper.getAllPlaylists()
-
-        val list = allPlaylists.use {
+        val list = sqLiteDBHelper.getAllPlaylists().use {
             generateSequence { if (it.moveToNext()) it else null }
                     .map { PlaylistEntity.fromCursor(it) }
                     .toList()
@@ -57,7 +54,7 @@ class LocalFilesMediaFragment internal constructor()
         playlistViewAdapter = PlaylistViewAdapter(this.context!!, list, this)
 
         mediaItemViewAdapter =
-                MediaItemViewAdapter(this.context!!, sqLiteDBHelper.getLocalMedia(currentPlaylistID), this, false)
+                MediaItemViewAdapter(this.context!!, emptyList(), this, false)
 
         setMode(sqLiteDBHelper)
 
@@ -81,7 +78,7 @@ class LocalFilesMediaFragment internal constructor()
 
             else -> {
                 backButton.visibility = VISIBLE
-                mediaItemViewAdapter?.changeCursor(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
+                mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
                 mediaItemViewAdapter?.selectedPosition =
                         if (currentPlaylistID == SleepAssistantFragment.playListModel.playlist.value?.playListId) {
                             SleepAssistantFragment.playListModel.playlist.value?.index ?: 0
@@ -175,7 +172,7 @@ class LocalFilesMediaFragment internal constructor()
     private fun addLocalFileMediaRecord(url: String, title: String?) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, url, title)
-        mediaItemViewAdapter?.changeCursor(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
+        mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
     }
 
     private fun dumpFileMetaData(uri: Uri?): String? {
@@ -243,11 +240,10 @@ class LocalFilesMediaFragment internal constructor()
         }
     }
 
-    override fun onFileItemDeleteClick(position: Int) {
-        val itemId = mediaItemViewAdapter?.getItemId(position)
+    override fun onFileItemDeleteClick(itemId: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         sqLiteDBHelper.deleteLocalMedia(itemId.toString())
-        mediaItemViewAdapter?.changeCursor(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
+        mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
     }
 
     override fun onPlaylistItemClick(title: String?, id: Long, position: Int) {
@@ -272,5 +268,4 @@ class LocalFilesMediaFragment internal constructor()
         sqLiteDBHelper.deletePlaylist(id)
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
     }
-
 }

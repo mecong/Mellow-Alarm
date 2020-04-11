@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
-import com.mecong.tenderalarm.sleep_assistant.media_selection.NoisesItemViewAdapter.NoisesItemClickListener
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise.Companion.retrieveNoises
 import kotlinx.android.synthetic.main.fragment_noises.*
 

@@ -12,15 +12,21 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.common.util.Strings
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.model.MediaEntity.Companion.fromCursor
+import com.mecong.tenderalarm.model.MediaEntity
 import com.mecong.tenderalarm.sleep_assistant.media_selection.MediaItemViewAdapter.MediaItemViewHolder
+
+// parent activity will implement this method to respond to click events
+interface FileItemClickListener {
+    fun onFileItemClick(url: String?, position: Int)
+    fun onFileItemDeleteClick(itemId: Int)
+}
 
 class MediaItemViewAdapter
 internal constructor(
         private val context: Context,
-        cursor: Cursor?,
+        private var list: List<MediaEntity>,
         private val mClickListenerFile: FileItemClickListener?,
-        private val showUrl: Boolean) : CursorRecyclerViewAdapter<MediaItemViewHolder?>(context, cursor) {
+        private val showUrl: Boolean) : RecyclerView.Adapter<MediaItemViewHolder?>() {
 
     var selectedPosition = 0
 
@@ -30,9 +36,8 @@ internal constructor(
         return MediaItemViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(viewHolder: MediaItemViewHolder?, cursor: Cursor?, position: Int) {
-        if (viewHolder == null) return
-        val myListItem = fromCursor(cursor!!)
+    override fun onBindViewHolder(viewHolder: MediaItemViewHolder, position: Int) {
+        val myListItem = list[position]
 
         viewHolder.headerText.tag = myListItem.uri
         viewHolder.headerText.text = if (Strings.isEmptyOrWhitespace(myListItem.header)) myListItem.uri else myListItem.header
@@ -45,14 +50,17 @@ internal constructor(
         viewHolder.itemView.isSelected = selectedPosition == position
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-// parent activity will implement this method to respond to click events
-    interface FileItemClickListener {
-        fun onFileItemClick(url: String?, position: Int)
-        fun onFileItemDeleteClick(position: Int)
+    fun updateDataSet(cursor: Cursor) {
+        cursor.use {
+            list = generateSequence { if (cursor.moveToNext()) cursor else null }
+                    .map { MediaEntity.fromCursor(it) }
+                    .toList()
+        }
+
+        notifyDataSetChanged()
     }
+
+    override fun getItemCount(): Int = list.size
 
     // stores and recycles views as they are scrolled off screen
     inner class MediaItemViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -75,12 +83,9 @@ internal constructor(
 
                 val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
                 val popup = PopupMenu(wrapper, btnDeleteItem)
-//                val popup = PopupMenu(context, btnDeleteItem)
-                //Inflating the Popup using xml file
                 popup.menuInflater.inflate(R.menu.menu_media_element, popup.menu)
-                //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener {
-                    mClickListenerFile!!.onFileItemDeleteClick(adapterPosition)
+                    mClickListenerFile!!.onFileItemDeleteClick(list[adapterPosition].id)
                     true
                 }
                 popup.show() //showing popup menu

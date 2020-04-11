@@ -8,11 +8,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
 
+interface NoisesItemClickListener {
+    fun onItemClick(view: View?, position: Int)
+}
+
 class NoisesItemViewAdapter
-constructor(context: Context?, data: List<SleepNoise>, private var selectedPosition: Int)
+constructor(private val context: Context?, private val mData: List<SleepNoise>, private var selectedPosition: Int)
     : RecyclerView.Adapter<NoisesItemViewAdapter.ViewHolder>() {
 
-    private val mData: List<SleepNoise> = data
+
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
     private var mClickListener: NoisesItemClickListener? = null
 
@@ -48,9 +52,7 @@ constructor(context: Context?, data: List<SleepNoise>, private var selectedPosit
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 // parent activity will implement this method to respond to click events
-    interface NoisesItemClickListener {
-        fun onItemClick(view: View?, position: Int)
-    }
+
 
     // stores and recycles views as they are scrolled off screen
     inner class ViewHolder internal constructor(itemView: View)

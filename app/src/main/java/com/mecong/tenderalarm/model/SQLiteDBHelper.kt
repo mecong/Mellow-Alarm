@@ -282,7 +282,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
 
     fun deleteLocalMedia(id: String) {
         this.writableDatabase.use { writableDatabase ->
-            writableDatabase.delete(TABLE_OFFLINE_MEDIA, "_id=?", arrayOf(id))
+            writableDatabase.delete(TABLE_OFFLINE_MEDIA, "_id=$id", null)
             HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
         }
     }

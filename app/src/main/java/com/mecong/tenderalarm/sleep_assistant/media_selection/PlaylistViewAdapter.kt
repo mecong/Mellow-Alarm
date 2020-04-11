@@ -22,7 +22,7 @@ interface PlaylistItemClickListener {
 
 class PlaylistViewAdapter constructor(
         private val context: Context,
-        private var playlists: List<PlaylistEntity>,
+        private var list: List<PlaylistEntity>,
         private val mClickListenerPlaylist: PlaylistItemClickListener)
     : RecyclerView.Adapter<PlaylistViewAdapter.PlaylistViewHolder>() {
 
@@ -33,7 +33,7 @@ class PlaylistViewAdapter constructor(
     }
 
     override fun onBindViewHolder(viewHolder: PlaylistViewHolder, position: Int) {
-        val myListItem = playlists[position]
+        val myListItem = list[position]
 
         viewHolder.title.text = "[${myListItem.title}]"
         viewHolder.title.tag = myListItem.title
@@ -42,13 +42,15 @@ class PlaylistViewAdapter constructor(
 
     fun updateDataSet(cursor: Cursor) {
         cursor.use {
-            playlists = generateSequence { if (cursor.moveToNext()) cursor else null }
+            list = generateSequence { if (cursor.moveToNext()) cursor else null }
                     .map { fromCursor(it) }
                     .toList()
         }
 
         notifyDataSetChanged()
     }
+
+    override fun getItemCount(): Int = list.size
 
 
     // stores and recycles views as they are scrolled off screen
@@ -122,5 +124,5 @@ class PlaylistViewAdapter constructor(
         }
     }
 
-    override fun getItemCount(): Int = playlists.size
+
 }
