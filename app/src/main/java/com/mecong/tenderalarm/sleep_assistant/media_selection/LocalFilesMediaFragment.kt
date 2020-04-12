@@ -121,6 +121,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 Toast.makeText(context, "Playlist name should not be empty", Toast.LENGTH_SHORT).show()
             }
         }
+
         buttonOk.setOnClickListener(okOnclickListener)
         buttonOkTop.setOnClickListener(okOnclickListener)
 

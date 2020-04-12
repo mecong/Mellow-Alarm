@@ -18,6 +18,7 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import java.util.*
 
 class SleepTimeAlarmReceiver : BroadcastReceiver() {
+
     override fun onReceive(context: Context, intent: Intent) {
         HyperLog.initialize(context)
         HyperLog.setLogLevel(Log.INFO)

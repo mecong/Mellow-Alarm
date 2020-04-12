@@ -41,12 +41,14 @@ internal constructor(
 
         viewHolder.headerText.tag = myListItem.uri
         viewHolder.headerText.text = if (Strings.isEmptyOrWhitespace(myListItem.header)) myListItem.uri else myListItem.header
+
         if (showUrl) {
             viewHolder.urlText.text = myListItem.uri
             viewHolder.urlText.visibility = View.VISIBLE
         } else {
             viewHolder.urlText.visibility = View.GONE
         }
+
         viewHolder.itemView.isSelected = selectedPosition == position
     }
 

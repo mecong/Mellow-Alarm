@@ -81,8 +81,7 @@ class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickList
         SleepAssistantFragment.playListModel.playlist.value = SleepAssistantPlayList(url, url, SleepMediaType.ONLINE)
     }
 
-    override fun onFileItemDeleteClick(position: Int) {
-        val itemId = mediaItemViewAdapter!!.getItemId(position)
+    override fun onFileItemDeleteClick(itemId: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         sqLiteDBHelper.deleteOnlineMedia(itemId.toString())
         mediaItemViewAdapter!!.updateDataSet(sqLiteDBHelper.allOnlineMedia)

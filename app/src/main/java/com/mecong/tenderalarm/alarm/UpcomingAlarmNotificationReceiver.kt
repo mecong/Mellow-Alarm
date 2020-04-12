@@ -17,6 +17,7 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 
 class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
     private val actionCancelAlarm = UpcomingAlarmNotificationReceiver::class.java.canonicalName + "--CANCEL_ALARM"
+
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancelAll()

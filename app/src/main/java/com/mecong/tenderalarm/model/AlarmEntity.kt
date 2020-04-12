@@ -43,7 +43,7 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
     val nextTimeWithTicks: Long
         get() = nextTime + TimeUnit.MINUTES.toMillis(ticksTime.toLong())
 
-    val nextTimeFormatted: String
+    private val nextTimeFormatted: String
         get() {
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
             return format.format(Date(nextTime))

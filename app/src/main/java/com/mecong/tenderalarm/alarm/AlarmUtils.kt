@@ -16,6 +16,7 @@ import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 val MINUTE = TimeUnit.MINUTES.toMillis(1)
 val HOUR = TimeUnit.HOURS.toMillis(1)
@@ -81,14 +82,15 @@ object AlarmUtils {
         if (alarmIsTooSoon(alarmEntity) || !alarmEntity!!.isHeadsUp || alarmEntity.canceledNextAlarms != 0) {
             return
         }
+
         val intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
         intentToFire.putExtra(ALARM_ID_PARAM, alarmEntity.id.toString())
         val alarmIntent = PendingIntent.getBroadcast(context,
                 alarmEntity.nextRequestCode + 1, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
-        var at = ((SystemClock.elapsedRealtime()
-                + alarmEntity.nextTime) - HOUR
-                - Calendar.getInstance().timeInMillis)
-        at = Math.max(0, at)
+
+        var at = (SystemClock.elapsedRealtime() + alarmEntity.nextTime) - HOUR - Calendar.getInstance().timeInMillis
+        at = max(0, at)
+
         HyperLog.i(TAG, "Upcoming alarm notification will start in " + (at - SystemClock.elapsedRealtime()) + " ms")
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmMgr.set(AlarmManager.ELAPSED_REALTIME, at, alarmIntent)
@@ -108,7 +110,8 @@ object AlarmUtils {
         if (nextMorningAlarm != null) {
             var triggerAfter = (SystemClock.elapsedRealtime()
                     + nextMorningAlarm.nextTime) - SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME * HOUR - Calendar.getInstance().timeInMillis
-            triggerAfter = Math.max(0, triggerAfter)
+
+            triggerAfter = max(0, triggerAfter)
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     AlarmManager.INTERVAL_FIFTEEN_MINUTES, operation)
             HyperLog.d(TAG, "Sleep time will start in " +

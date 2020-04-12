@@ -27,13 +27,15 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AlarmNotifyingService : Service() {
+    private var runnableVolume: Runnable? = null
+    private var runnableRealAlarm: Runnable? = null
+
     var alarmMediaPlayer: MediaPlayer? = null
     var handlerVolume: Handler? = null
-    private var runnableVolume: Runnable? = null
     var random = Random()
     var handlerTicks: Handler? = null
-    private var runnableRealAlarm: Runnable? = null
     var ticksMediaPlayer: MediaPlayer? = null
+
     override fun onCreate() {
         EventBus.getDefault().register(this)
     }

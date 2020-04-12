@@ -13,8 +13,9 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
+import java.util.*
 
-class AlarmsListCursorAdapter internal constructor(private val mainActivity: MainAlarmFragment, c: Cursor?) : CursorAdapter(mainActivity.activity, c, 0) {
+class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFragment, c: Cursor?) : CursorAdapter(mainActivity.activity, c, 0) {
     override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
         return LayoutInflater.from(context)
                 .inflate(R.layout.alarm_row_item, parent, false)
@@ -28,6 +29,7 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
         val textViewCanceled = view.findViewById<TextView>(R.id.textViewCanceled)
         val toggleButton = view.findViewById<ImageButton>(R.id.toggleButton)
         val btnDeleteAlarm = view.findViewById<ImageButton>(R.id.btnDeleteAlarm)
+
         view.setOnClickListener { mainActivity.editAlarm(alarmId) }
         btnDeleteAlarm.setOnClickListener { v ->
             val menu = PopupMenu(context, v)
@@ -38,6 +40,7 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
             }
             menu.show()
         }
+
         val popup = PopupMenu(context, toggleButton)
         popup.menuInflater.inflate(R.menu.menu_alarm_enable, popup.menu)
         popup.setOnMenuItemClickListener { item ->
@@ -58,6 +61,7 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
             }
             true
         }
+
         if (entity.isActive) {
             toggleButton.setImageResource(R.drawable.ic_alarm_on)
             toggleButton.tag = true
@@ -65,6 +69,7 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
             toggleButton.setImageResource(R.drawable.ic_alarm_off)
             toggleButton.tag = false
         }
+
         val recurrentAlarmSwitch = View.OnClickListener {
             val checked = toggleButton.tag as Boolean
             if (checked) {
@@ -75,6 +80,7 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
                 toggleButton.tag = true
             }
         }
+
         val oneTimeAlarmSwitch = View.OnClickListener {
             val checked = toggleButton.tag as Boolean
             if (checked) {
@@ -87,23 +93,30 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
                 toggleButton.tag = true
             }
         }
+
         toggleButton.setOnClickListener(
                 if (entity.days > 0) recurrentAlarmSwitch else oneTimeAlarmSwitch)
+
         time.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
+
         textViewCanceled.text = if (entity.canceledNextAlarms > 0) context.getString(R.string.next_s_cancel, entity.canceledNextAlarms) else ""
-        val daysMessage: String
-        daysMessage = if (entity.nextTime == -1L) {
+
+        val daysMessage = if (entity.nextTime == -1L) {
             context.getString(R.string.never)
         } else {
-            val days = entity.days
-            if (days == 254) {
-                context.getString(R.string.every_day)
-            } else if (days == 248) {
-                context.getString(R.string.work_days)
-            } else if (days == 0) {
-                context.getString(R.string.single_day, entity.nextTime)
-            } else {
-                getDaysHtml(entity, context)
+            when (entity.days) {
+                254 -> {
+                    context.getString(R.string.every_day)
+                }
+                248 -> {
+                    context.getString(R.string.work_days)
+                }
+                0 -> {
+                    context.getString(R.string.single_day, entity.nextTime)
+                }
+                else -> {
+                    getDaysHtml(entity, context)
+                }
             }
         }
 
@@ -119,11 +132,11 @@ class AlarmsListCursorAdapter internal constructor(private val mainActivity: Mai
         for ((key, value) in entity.daysAsMap) {
             if (java.lang.Boolean.TRUE == value) {
                 builder.append("<font color='#DDDDDD'>")
-                        .append(context.getString(key).toUpperCase())
+                        .append(context.getString(key).toUpperCase(Locale.getDefault()))
                         .append("</font>")
             } else {
                 builder.append("<font color='#555555'>")
-                        .append(context.getString(key).toUpperCase())
+                        .append(context.getString(key).toUpperCase(Locale.getDefault()))
                         .append("</font>")
             }
             builder.append(" ")

@@ -6,8 +6,8 @@ import java.util.*
 
 internal class DraggableCircle(positions: MutableList<Point>, var radius: Int) {
     var isFixed = false
-    var random = Random()
-    var proximity: Rect? = null
+    private var random = Random()
+    private var proximity: Rect? = null
     lateinit var currentPoint: Point
     lateinit var aimPoint: Point
 

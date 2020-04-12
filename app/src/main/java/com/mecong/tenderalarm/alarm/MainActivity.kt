@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         createNotificationChannels(this)
         val supportFragmentManager = this@MainActivity.supportFragmentManager
+
         ibOpenSleepAssistant!!.setOnClickListener {
             HyperLog.i(TAG, "Open Sleep Assistant button clicked")
             val fragmentTransaction = supportFragmentManager.beginTransaction()
@@ -82,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
         fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
+
         if (ASSISTANT_FRAGMENT == desiredFragment) {
             fragmentTransaction.hide(alarmFragment)
             HyperLog.i(TAG, "alarmFragment hide $sleepFragment")

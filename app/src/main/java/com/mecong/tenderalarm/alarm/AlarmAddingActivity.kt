@@ -24,14 +24,15 @@ import kotlinx.android.synthetic.main.activity_alarm_adding.*
 import java.util.*
 
 class AlarmAddingActivity : AppCompatActivity() {
-    var selectedMinute = 0
-    var selectedHour = 0
-    var selectedYear = 0
-    var selectedMonth = 0
-    var getSelectedDayOfMonth = 0
-    var exactDate: Long = 0
-    var alarmId: String? = "0"
-    var melodyUrl: String? = null
+    private var selectedMinute = 0
+    private var selectedHour = 0
+    private var selectedYear = 0
+    private var selectedMonth = 0
+    private var getSelectedDayOfMonth = 0
+    private var exactDate: Long = 0
+    private var alarmId: String? = "0"
+    private var melodyUrl: String? = null
+
     fun timeTextViewClick(v: View?) { // Launch Time Picker Dialog
         val timePickerDialog = TimePickerDialog(this,
                 android.R.style.Theme_DeviceDefault_Dialog,
@@ -286,8 +287,7 @@ class AlarmAddingActivity : AppCompatActivity() {
                 isTimeToSleepNotification = chbTimeToSleepNotification!!.isChecked)
 
         val sqLiteDBHelper = sqLiteDBHelper(this)
-        val id = sqLiteDBHelper!!.addOrUpdateAlarm(alarmEntity)
-        alarmEntity.id = id
+        alarmEntity.id = sqLiteDBHelper!!.addOrUpdateAlarm(alarmEntity)
         setUpNextAlarm(alarmEntity, this, true)
     }
 

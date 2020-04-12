@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.Subscribe
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.sqrt
+import kotlin.system.exitProcess
 
 class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
@@ -106,7 +107,6 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             EventBus.getDefault().register(this)
             turnScreenOnThroughKeyguard()
 
-
             // Close dialogs and window shade, so this is fully visible
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
 
@@ -119,7 +119,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             val context = applicationContext
             if (alarmId == null) {
                 HyperLog.e(TAG, "Alarm id is null")
-                System.exit(0)
+                exitProcess(0)
                 //                alarmId = "1";
             }
             initializeShaker()

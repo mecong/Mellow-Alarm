@@ -27,37 +27,37 @@ class MainAlarmFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val context = this.activity!!
         HyperLog.initialize(context)
         HyperLog.setLogLevel(Log.VERBOSE)
-        textNextAlarm.setOnClickListener(View.OnClickListener {
+        textNextAlarm.setOnClickListener {
             val addAlarmIntent = Intent(context, LogsActivity::class.java)
             startActivity(addAlarmIntent)
-        })
+        }
 
         ibtnInfo.setOnClickListener {
             val additionalIntent = Intent(context, AdditionalActivity::class.java)
             this@MainAlarmFragment.startActivity(additionalIntent)
         }
+
         val sqLiteDBHelper = sqLiteDBHelper(context)
         alarmsAdapter = AlarmsListCursorAdapter(this, sqLiteDBHelper!!.allAlarms)
 
         alarms_list.adapter = alarmsAdapter
         updateNextActiveAlarm(sqLiteDBHelper)
+
         ibtnAddAlarm.setOnClickListener {
             val addAlarmIntent = Intent(context, AlarmAddingActivity::class.java)
             this@MainAlarmFragment.startActivityForResult(addAlarmIntent, ALARM_ADDING_REQUEST_CODE)
         }
+
         sqLiteDBHelper.close()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(
+        return inflater.inflate(
                 R.layout.content_main, container, false) as ViewGroup
-
-        return rootView
     }
 
     private fun updateNextActiveAlarm(sqLiteDBHelper: SQLiteDBHelper?) {
@@ -70,19 +70,25 @@ class MainAlarmFragment : Fragment() {
             val difference = nextAlarmTime - calendar.timeInMillis
             calendar.time = Date(difference)
             calendar.timeZone = TimeZone.getTimeZone("UTC")
-            if (difference < 0) {
-                textNextAlarm!!.setText(R.string.all_alarms_are_off)
-            } else if (difference < MINUTE) {
-                textNextAlarm!!.text = context.getString(R.string.next_alarm_soon)
-            } else if (difference < HOUR) {
-                textNextAlarm!!.text = context.getString(R.string.next_alarm_within_hour,
-                        calendar[Calendar.MINUTE])
-            } else if (difference < DAY) {
-                textNextAlarm!!.text = context.getString(R.string.next_alarm_today,
-                        calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE])
-            } else {
-                textNextAlarm!!.text = context.getString(R.string.next_alarm,
-                        calendar[Calendar.DAY_OF_YEAR])
+            when {
+                difference < 0 -> {
+                    textNextAlarm!!.setText(R.string.all_alarms_are_off)
+                }
+                difference < MINUTE -> {
+                    textNextAlarm!!.text = context.getString(R.string.next_alarm_soon)
+                }
+                difference < HOUR -> {
+                    textNextAlarm!!.text = context.getString(R.string.next_alarm_within_hour,
+                            calendar[Calendar.MINUTE])
+                }
+                difference < DAY -> {
+                    textNextAlarm!!.text = context.getString(R.string.next_alarm_today,
+                            calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE])
+                }
+                else -> {
+                    textNextAlarm!!.text = context.getString(R.string.next_alarm,
+                            calendar[Calendar.DAY_OF_YEAR])
+                }
             }
             textNextAlarmDate!!.text = context
                     .getString(R.string.next_alarm_date_time, nextAlarmTime)

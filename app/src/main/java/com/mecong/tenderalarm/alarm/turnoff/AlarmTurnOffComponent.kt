@@ -10,21 +10,20 @@ import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-    //    @Setter
     var complexity = 0
-    var lockingPaint = Paint()
+    private var lockingPaint = Paint()
     private var figures: Array<DraggableCircle?>? = null
-    var activeFigure: Int? = null
-    var viewPortBoundsForEvent: Rect? = null
-    var prevX = 0
-    var prevY = 0
+    private var activeFigure: Int? = null
+    private var viewPortBoundsForEvent: Rect? = null
+    private var prevX = 0
+    private var prevY = 0
     private var draggableCirclePaints: Array<Paint?> = arrayOfNulls(50)
     private var spiritPaints: Array<Paint?> = arrayOfNulls(10)
     private lateinit var positions: MutableList<Point>
 
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
+
         if (oldw != 0 || oldh != 0) {
             figures = arrayOfNulls(complexity)
             val viewPortBounds = Rect(paddingLeft, paddingTop,
@@ -32,15 +31,16 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
             viewPortBoundsForEvent = Rect(paddingLeft, paddingTop,
                     this.width - paddingRight, this.height - paddingBottom)
             viewPortBoundsForEvent!!.inset(50, 50)
-            val maxRadius = 90 + 20 * (MAX_COMPLEXITY - 1)
-            positions = calculatePositions(maxRadius, viewPortBounds)
+            positions = calculatePositions(viewPortBounds)
+
             for (i in figures!!.indices.reversed()) {
                 figures!![i] = DraggableCircle(positions, 90 + 20 * (MAX_COMPLEXITY - 1 - i))
             }
         }
     }
 
-    private fun calculatePositions(maxRadius: Int, viewPortBounds: Rect): MutableList<Point> {
+    private fun calculatePositions(viewPortBounds: Rect): MutableList<Point> {
+        val maxRadius = 90 + 20 * (MAX_COMPLEXITY - 1)
         positions = ArrayList()
         val diameter = maxRadius * 2
         val maxVertical = viewPortBounds.height() / diameter
@@ -54,38 +54,43 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
                 positions.add(point)
             }
         }
-        Collections.shuffle(positions)
+        positions.shuffle()
         return positions
     }
 
-
     init {
         val effect = DashPathEffect(floatArrayOf(10f, 20f), 0f)
+
         spiritPaints[0] = Paint()
         spiritPaints[0]!!.color = Color.rgb(30, 86, 49)
         spiritPaints[0]!!.style = Paint.Style.STROKE
         spiritPaints[0]!!.strokeWidth = STROKE_WIDTH.toFloat()
         spiritPaints[0]!!.pathEffect = effect
+
         spiritPaints[1] = Paint()
         spiritPaints[1]!!.color = Color.rgb(164, 222, 2)
         spiritPaints[1]!!.style = Paint.Style.STROKE
         spiritPaints[1]!!.strokeWidth = STROKE_WIDTH.toFloat()
         spiritPaints[1]!!.pathEffect = effect
+
         spiritPaints[2] = Paint()
         spiritPaints[2]!!.color = Color.rgb(118, 186, 27)
         spiritPaints[2]!!.style = Paint.Style.STROKE
         spiritPaints[2]!!.strokeWidth = STROKE_WIDTH.toFloat()
         spiritPaints[2]!!.pathEffect = effect
+
         spiritPaints[3] = Paint()
         spiritPaints[3]!!.color = Color.rgb(76, 154, 42)
         spiritPaints[3]!!.style = Paint.Style.STROKE
         spiritPaints[3]!!.strokeWidth = STROKE_WIDTH.toFloat()
         spiritPaints[3]!!.pathEffect = effect
+
         spiritPaints[4] = Paint()
         spiritPaints[4]!!.color = Color.rgb(104, 187, 89)
         spiritPaints[4]!!.style = Paint.Style.STROKE
         spiritPaints[4]!!.strokeWidth = STROKE_WIDTH.toFloat()
         spiritPaints[4]!!.pathEffect = effect
+
         for (i in 5 until spiritPaints.size) {
             spiritPaints[i] = Paint()
             spiritPaints[i]!!.color = Color.rgb(49, 99, 0)
@@ -99,18 +104,23 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
         draggableCirclePaints[0] = Paint()
         draggableCirclePaints[0]!!.color = Color.rgb(30, 86, 49)
         draggableCirclePaints[0]!!.style = Paint.Style.FILL
+
         draggableCirclePaints[1] = Paint()
         draggableCirclePaints[1]!!.color = Color.rgb(164, 222, 2)
         draggableCirclePaints[1]!!.style = Paint.Style.FILL
+
         draggableCirclePaints[2] = Paint()
         draggableCirclePaints[2]!!.color = Color.rgb(118, 186, 27)
         draggableCirclePaints[2]!!.style = Paint.Style.FILL
+
         draggableCirclePaints[3] = Paint()
         draggableCirclePaints[3]!!.color = Color.rgb(76, 154, 42)
         draggableCirclePaints[3]!!.style = Paint.Style.FILL
+
         draggableCirclePaints[4] = Paint()
         draggableCirclePaints[4]!!.color = Color.rgb(104, 187, 89)
         draggableCirclePaints[4]!!.style = Paint.Style.FILL
+
         for (i in 5 until draggableCirclePaints.size) {
             draggableCirclePaints[i] = Paint()
             draggableCirclePaints[i]!!.color = Color.rgb(49, 99, 0)
@@ -148,9 +158,11 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
                 canvas.drawCircle(figure.currentPoint.x.toFloat(), figure.currentPoint.y.toFloat(), figure.radius.toFloat(), draggableCirclePaints[i]!!)
             }
         }
+
         if (amountOfFixed == 2) {
             EventBus.getDefault().post(AlarmMessage.CANCEL_VOLUME_INCREASE)
         }
+
         if (amountOfFixed >= figures!!.size) {
             EventBus.getDefault().postSticky(AlarmMessage.STOP_ALARM)
             //            getContext().stopService(new Intent(getContext(), AlarmNotifyingService.class));

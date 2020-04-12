@@ -13,7 +13,7 @@ import com.google.android.exoplayer2.util.Util
 /**
  * The default [LoadControl] implementation.
  */
-class CustomLoadControl protected constructor(
+class CustomLoadControl private constructor(
         allocator: DefaultAllocator,
         minBufferAudioMs: Int,
         minBufferVideoMs: Int,

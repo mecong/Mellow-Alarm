@@ -13,6 +13,7 @@ class MediaNotificationManager(private val service: RadioService) {
     private val strAppName: String
     private val resources: Resources = service.resources
     private val notificationManager: NotificationManagerCompat
+
     fun startNotify(playbackStatus: String, contentText: String?) {
         val largeIcon = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
         var icon = R.drawable.ic_pause_white
