@@ -25,7 +25,9 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         HyperLog.i(TAG, "Sleep time job started")
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val nextActiveAlarm = sqLiteDBHelper!!.nextActiveAlarm
+
         if (noNextActiveAlarms(nextActiveAlarm)) return
+
         if (nextActiveAlarm!!.nextNotCanceledTime - Calendar.getInstance().timeInMillis < 4 * HOUR) {
             setUpNextSleepTimeNotification(context)
         }

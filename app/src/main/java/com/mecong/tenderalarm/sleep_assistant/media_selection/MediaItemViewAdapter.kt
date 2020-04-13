@@ -64,15 +64,14 @@ internal constructor(
 
     override fun getItemCount(): Int = list.size
 
-    // stores and recycles views as they are scrolled off screen
     inner class MediaItemViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var headerText: TextView = itemView.findViewById(R.id.headerText)
         var urlText: TextView = itemView.findViewById(R.id.urlText)
 
         override fun onClick(view: View) {
-            if (adapterPosition == RecyclerView.NO_POSITION) return
+            if (absoluteAdapterPosition == RecyclerView.NO_POSITION) return
             notifyItemChanged(selectedPosition)
-            selectedPosition = adapterPosition
+            selectedPosition = absoluteAdapterPosition
 
             mClickListenerFile?.onFileItemClick(headerText.tag.toString(), selectedPosition)
             notifyItemChanged(selectedPosition)
@@ -81,7 +80,7 @@ internal constructor(
         init {
             val btnDeleteItem = itemView.findViewById<ImageButton>(R.id.btnDeleteItem)
             btnDeleteItem.setOnClickListener(View.OnClickListener {
-                if (adapterPosition == RecyclerView.NO_POSITION) return@OnClickListener
+                if (absoluteAdapterPosition == RecyclerView.NO_POSITION) return@OnClickListener
 
                 val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
                 val popup = PopupMenu(wrapper, btnDeleteItem)

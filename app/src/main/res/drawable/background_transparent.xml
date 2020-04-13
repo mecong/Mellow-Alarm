@@ -1,0 +1,13 @@
+<?xml version ="1.0" encoding ="utf-8"?><!--  Learn More about how to use App Actions: https://developer.android.com/guide/actions/index.html -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--    <item android:drawable="@android:color/holo_blue_bright" android:state_pressed="true" />-->
+    <!--    <item android:drawable="@android:color/transparent" android:state_selected="true" />-->
+    <!--    <item android:drawable="@android:color/transparent" android:state_focused="true" />-->
+    <!--    <item android:drawable="@android:color/transparent" />-->
+    <!--    <item android:drawable="@android:color/transparent" android:state_selected="true"/>-->
+    <item android:drawable="@android:color/black"
+
+
+        android:state_checkable="true" android:state_checked="true" android:state_enabled="true" android:state_focused="true" android:state_pressed="true" android:state_selected="true" android:state_window_focused="true" />
+</selector>
+

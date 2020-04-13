@@ -14,7 +14,7 @@
     <string name="su">SU</string>
 
     <string name="upcoming_alarm_notification_channel_name" translatable="false">☕️ Upcoming alarm</string>
-    <string name="upcoming_alarm_channel_description" translatable="false">Kindly reminder about upcoming alarm</string>
+    <string name="upcoming_alarm_channel_description" translatable="false">😼 Kindly reminder about upcoming alarm</string>
     <string name="upcoming_alarm_notification_title">☕️ Upcoming alarm</string>
     <string name="upcoming_alarm_notification_message" translatable="false">Cancel upcoming alarm at %1$tH:%1$tM</string>
     <string name="upcoming_alarm_canceled_toast" translatable="false">Upcoming alarm at %1$tH:%1$tM canceled</string>
@@ -23,7 +23,7 @@
     <string name="time_to_sleep_channel_description" translatable="false">Kindly reminder about upcoming morning alarm when not much sleep time remain</string>
     <string name="time_to_sleep_notification_title" translatable="false">🛏 Time to sleep</string>
     <string name="time_to_sleep_notification_message" translatable="false">
-       😼 There are only %1$tH hours %1$tM minutes until your morning alarm. Tap to open the Sleep Assistant.</string>
+       It\'s only %1$tH hour(s) %1$tM minute(s) until your morning alarm. Tap to open the Sleep Assistant.</string>
 
     <string name="buzzer_channel_description" translatable="false">Alarm Signal</string>
     <string name="buzzer_channel_name" translatable="false">Tender Alarm Buzzer</string>

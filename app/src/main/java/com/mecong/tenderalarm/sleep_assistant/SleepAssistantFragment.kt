@@ -24,13 +24,13 @@ import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
-import com.mecong.tenderalarm.sleep_assistant.HourglassComponent.SleepTimerViewValueListener
 import com.mecong.tenderalarm.sleep_assistant.RadioService.LocalBinder
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SoundListsPagerAdapter
 import kotlinx.android.synthetic.main.content_sleep_assistant.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class SleepAssistantFragment : Fragment() {
@@ -41,7 +41,6 @@ class SleepAssistantFragment : Fragment() {
     private val handler: Handler = Handler()
     private lateinit var runnable: Runnable
 
-    //    lateinit var playListModel: SleepAssistantPlayListModel
     var serviceBound = false
     lateinit var radioService: RadioService
 
@@ -55,12 +54,6 @@ class SleepAssistantFragment : Fragment() {
             playListModel.playlist.observe(viewLifecycleOwner, Observer {
                 radioService.playMediaList(it)
             })
-
-//            if (playListModel.playlist.value == null) {
-//                val defaultPlayList = PlayList(retrieveNoises()[0].url,
-//                        retrieveNoises()[0].name, SleepMediaType.NOISE)
-//                playListModel.playlist.value = defaultPlayList
-//            }
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -81,12 +74,10 @@ class SleepAssistantFragment : Fragment() {
         val activeTab = dbHelper!!.getPropertyInt(PropertyName.ACTIVE_TAB)
         initializeTabsAndMediaFragments(context, activeTab!!)
 
-        val audioManager = this.activity!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-        volume = 105 - 100 * volumeCoefficient
         timeMinutes = 39
+
+        sliderSleepTime.setCurrentValue(timeMinutes)
+        textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
 
         sliderSleepTime.addListener(object : SleepTimerViewValueListener {
             override fun onValueChanged(newValue: Long) {
@@ -105,14 +96,6 @@ class SleepAssistantFragment : Fragment() {
                 volumeStep = volume * STEP_MILLIS / timeMs
             }
         })
-
-        sliderSleepTime.setCurrentValue(timeMinutes)
-        sliderVolume.setCurrentValue(volume.toLong())
-        timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
-        volumeStep = volume * STEP_MILLIS / timeMs
-        textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
-        textViewVolumePercent.text = context.getString(R.string.volume_percent, volume.roundToInt())
-
 
         runnable = Runnable {
             timeMs -= STEP_MILLIS
@@ -179,16 +162,17 @@ class SleepAssistantFragment : Fragment() {
         viewPager.adapter = soundListsPagerAdapter
         tabs.setupWithViewPager(viewPager)
         tabs.setSelectedTabIndicator(null)
+
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             val instance = sqLiteDBHelper(getContext()!!)
             override fun onTabSelected(tab: TabLayout.Tab) {
-                tab.customView?.findViewById<View>(R.id.view)?.visibility = View.INVISIBLE
+                tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.INVISIBLE
                 tab.customView?.background = resources.getDrawable(R.drawable.tr2_background)
                 instance?.setPropertyString(PropertyName.ACTIVE_TAB, tab.position.toString())
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
-                tab.customView?.findViewById<View>(R.id.view)?.visibility = View.VISIBLE
+                tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.VISIBLE
                 tab.customView?.background = resources.getDrawable(R.drawable.tr1_background)
             }
 
@@ -196,12 +180,19 @@ class SleepAssistantFragment : Fragment() {
                 onTabSelected(tab)
             }
         })
+
+        tabs.tabRippleColor = null
+
         for (i in 0 until tabs.tabCount) {
             tabs.getTabAt(i)?.setCustomView(R.layout.media_tab)
         }
-        (tabs.getTabAt(0)?.customView?.findViewById<View>(R.id.imageView) as ImageView).setImageResource(R.drawable.local_media)
-        (tabs.getTabAt(1)?.customView?.findViewById<View>(R.id.imageView) as ImageView).setImageResource(R.drawable.online_media)
-        (tabs.getTabAt(2)?.customView?.findViewById<View>(R.id.imageView) as ImageView).setImageResource(R.drawable.noises)
+
+        (tabs.getTabAt(0)?.customView?.findViewById<View>(R.id.imageView) as ImageView)
+                .setImageResource(R.drawable.local_media)
+        (tabs.getTabAt(1)?.customView?.findViewById<View>(R.id.imageView) as ImageView)
+                .setImageResource(R.drawable.online_media)
+        (tabs.getTabAt(2)?.customView?.findViewById<View>(R.id.imageView) as ImageView)
+                .setImageResource(R.drawable.noises)
         tabs.getTabAt(activeTab % tabs.tabCount)!!.select()
     }
 
@@ -276,11 +267,28 @@ class SleepAssistantFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         HyperLog.i(AlarmUtils.TAG, "SA onResume")
-        val audioManager = this.activity!!.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-        volume = 105 - 100 * volumeCoefficient
+
+        if (!::radioService.isInitialized || !radioService.isPlaying) {
+            val audioManager = this.activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
+            if (volumeCoefficient < 0.4f) {
+                volumeCoefficient = 0.4f
+                audioManager.setStreamVolume(
+                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).toInt(), 0)
+                Toast.makeText(this.activity!!, "System volume set to 40%", Toast.LENGTH_SHORT).show()
+            }
+
+            volume = 140 - 100 * volumeCoefficient
+            volume = min(volume, 100f)
+
+            sliderVolume.setCurrentValue(volume.toLong())
+            timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
+            volumeStep = volume * STEP_MILLIS / timeMs
+            textViewVolumePercent.text = this.activity?.getString(R.string.volume_percent, volume.roundToInt())
+        }
+
     }
 
     private fun bindRadioService() {

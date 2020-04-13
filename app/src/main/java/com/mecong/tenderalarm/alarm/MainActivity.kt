@@ -44,17 +44,6 @@ class MainActivity : AppCompatActivity() {
             fragmentTransaction.show(sleepFragment!!)
             HyperLog.i(TAG, "sleepFragment show $sleepFragment")
 
-//            val audioManager = this@MainActivity.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//            val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-//            val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-//            var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-//            if (volumeCoefficient < 0.3f || volumeCoefficient > 0.4f) {
-//                volumeCoefficient = 0.35f
-//                audioManager.setStreamVolume(
-//                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).toInt(), 0)
-//                Toast.makeText(this@MainActivity, "System volume set to 30%", Toast.LENGTH_SHORT).show()
-//            }
-
             ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_active)
             ibOpenAlarm!!.setImageResource(R.drawable.alarm_inactive)
             fragmentTransaction.commit()

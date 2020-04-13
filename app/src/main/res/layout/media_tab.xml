@@ -11,14 +11,14 @@
         android:layout_height="15dp"
         android:contentDescription="@string/image_button"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintBottom_toTopOf="@+id/blackLine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/noises" />
 
     <View
-        android:id="@+id/view"
+        android:id="@+id/blackLine"
         android:layout_width="0dp"
         android:layout_height="2dp"
         android:background="#030000"

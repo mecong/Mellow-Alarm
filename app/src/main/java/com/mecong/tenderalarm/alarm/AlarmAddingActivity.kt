@@ -36,7 +36,7 @@ class AlarmAddingActivity : AppCompatActivity() {
     fun timeTextViewClick(v: View?) { // Launch Time Picker Dialog
         val timePickerDialog = TimePickerDialog(this,
                 android.R.style.Theme_DeviceDefault_Dialog,
-                OnTimeSetListener { view, hourOfDay, minute ->
+                OnTimeSetListener { _, hourOfDay, minute ->
                     selectedHour = hourOfDay
                     selectedMinute = minute
                     updateTimeTextView()
@@ -47,16 +47,27 @@ class AlarmAddingActivity : AppCompatActivity() {
     fun selectDateClick(v: View?) { // Launch Time Picker Dialog
         val datePickerDialog = DatePickerDialog(this,
                 android.R.style.Theme_DeviceDefault_Dialog,
-                OnDateSetListener { view, year, month, dayOfMonth ->
+                OnDateSetListener { _, year, month, dayOfMonth ->
                     selectedYear = year
                     selectedMonth = month
                     getSelectedDayOfMonth = dayOfMonth
                     val c = Calendar.getInstance()
                     c[selectedYear, selectedMonth, getSelectedDayOfMonth, selectedHour, selectedMinute] = 0
                     exactDate = c.timeInMillis
+                    uncheckDaysCheckboxes()
                     updateDateTextView()
                 }, selectedYear, selectedMonth, getSelectedDayOfMonth)
         datePickerDialog.show()
+    }
+
+    private fun uncheckDaysCheckboxes() {
+        checkBoxMo.isChecked = false
+        checkBoxTu.isChecked = false
+        checkBoxWe.isChecked = false
+        checkBoxTh.isChecked = false
+        checkBoxFr.isChecked = false
+        checkBoxSa.isChecked = false
+        checkBoxSu.isChecked = false
     }
 
     private fun performFileSearch() { // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
@@ -128,15 +139,15 @@ class AlarmAddingActivity : AppCompatActivity() {
     }
 
     private fun updateTimeTextView() {
-        timeTextView!!.text = baseContext.getString(R.string.alarm_time, selectedHour, selectedMinute)
+        timeTextView.text = baseContext.getString(R.string.alarm_time, selectedHour, selectedMinute)
     }
 
     private fun updateDateTextView() {
         if (exactDate == 0L) {
-            dateTextView!!.visibility = View.GONE
+            dateTextView.visibility = View.GONE
         } else {
-            dateTextView!!.visibility = View.VISIBLE
-            dateTextView!!.text = this.getString(R.string.next_alarm_date, exactDate)
+            dateTextView.visibility = View.VISIBLE
+            dateTextView.text = this.getString(R.string.next_alarm_date, exactDate)
         }
     }
 
@@ -156,40 +167,45 @@ class AlarmAddingActivity : AppCompatActivity() {
     }
 
     fun workDaysClick(v: View?) {
-        checkBoxMo!!.isChecked = !checkBoxMo!!.isChecked
-        checkBoxTu!!.isChecked = !checkBoxTu!!.isChecked
-        checkBoxWe!!.isChecked = !checkBoxWe!!.isChecked
-        checkBoxTh!!.isChecked = !checkBoxTh!!.isChecked
-        checkBoxFr!!.isChecked = !checkBoxFr!!.isChecked
+        checkBoxMo.isChecked = !checkBoxMo.isChecked
+        checkBoxTu.isChecked = !checkBoxTu.isChecked
+        checkBoxWe.isChecked = !checkBoxWe.isChecked
+        checkBoxTh.isChecked = !checkBoxTh.isChecked
+        checkBoxFr.isChecked = !checkBoxFr.isChecked
     }
 
     fun allDaysClick(v: View?) {
         workDaysClick(v)
-        checkBoxSa!!.isChecked = !checkBoxSa!!.isChecked
-        checkBoxSu!!.isChecked = !checkBoxSu!!.isChecked
+        checkBoxSa.isChecked = !checkBoxSa.isChecked
+        checkBoxSu.isChecked = !checkBoxSu.isChecked
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         initLogsAndControls()
+
         val extras = intent.extras
         if (extras != null) {
             alarmId = extras.getString("alarmId")
         }
-        txtTicks!!.text = this.getString(R.string.ticks, seekBarTicks!!.progress)
-        seekBarTicks!!.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
+
+        txtTicks.text = this.getString(R.string.ticks, seekBarTicks!!.progress)
+        seekBarTicks.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                txtTicks!!.text = this@AlarmAddingActivity.getString(R.string.ticks, progress)
+                txtTicks.text = this@AlarmAddingActivity.getString(R.string.ticks, progress)
             }
         })
-        txtSnooze!!.text = this.getString(R.string.snooze, seekBarSnooze!!.progress)
-        seekBarSnooze!!.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
+
+        txtSnooze.text = this.getString(R.string.snooze, seekBarSnooze!!.progress)
+        seekBarSnooze.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 txtSnooze!!.text = this@AlarmAddingActivity.getString(R.string.snooze, progress)
             }
         })
-        txtComplexity!!.text = this.getString(R.string.alarm_complexity, seekBarComplexity!!.progress)
-        seekBarComplexity!!.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
+
+        txtComplexity.text = this.getString(R.string.alarm_complexity, seekBarComplexity!!.progress)
+        seekBarComplexity.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (progress < 1) {
                     seekBarComplexity!!.progress = 1
@@ -198,16 +214,30 @@ class AlarmAddingActivity : AppCompatActivity() {
                 }
             }
         })
+
         val melodySelect = View.OnClickListener { performFileSearch() }
-        txtMelody!!.setOnClickListener(melodySelect)
-        txtMelodyCaption!!.setOnClickListener(melodySelect)
+        txtMelody.setOnClickListener(melodySelect)
+        txtMelodyCaption.setOnClickListener(melodySelect)
+
+        val resetExactDate: (v: View) -> Unit = {
+            exactDate = 0
+            updateDateTextView()
+        }
+        checkBoxMo.setOnClickListener(resetExactDate)
+        checkBoxTu.setOnClickListener(resetExactDate)
+        checkBoxWe.setOnClickListener(resetExactDate)
+        checkBoxTh.setOnClickListener(resetExactDate)
+        checkBoxFr.setOnClickListener(resetExactDate)
+        checkBoxSa.setOnClickListener(resetExactDate)
+        checkBoxSu.setOnClickListener(resetExactDate)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+
         if (alarmId == "0") {
             initFormForNewAlarm()
-            timeTextView!!.performClick()
+            timeTextView.performClick()
         } else {
             initFormForExistingAlarm(alarmId)
         }
@@ -218,30 +248,37 @@ class AlarmAddingActivity : AppCompatActivity() {
     private fun initFormForExistingAlarm(alarmId: String?) {
         val sqLiteDBHelper = sqLiteDBHelper(this)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId)
+
         selectedMinute = entity!!.minute
         selectedHour = entity.hour
+
         txtAlarmMessage!!.setText(entity.message)
+
         exactDate = entity.exactDate
         val c = Calendar.getInstance()
         if (exactDate > 0) c.timeInMillis = exactDate
         selectedYear = c[Calendar.YEAR]
         selectedMonth = c[Calendar.MONTH]
+
         getSelectedDayOfMonth = c[Calendar.DAY_OF_MONTH]
         seekBarTicks!!.progress = entity.ticksTime
+
         val daysAsMap = entity.daysAsMap
-        checkBoxMo!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.mo]
-        checkBoxTu!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.tu]
-        checkBoxWe!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.we]
-        checkBoxTh!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.th]
-        checkBoxFr!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.fr]
-        checkBoxSa!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.sa]
-        checkBoxSu!!.isChecked = java.lang.Boolean.TRUE == daysAsMap[R.string.su]
+        checkBoxMo!!.isChecked = true == daysAsMap[R.string.mo]
+        checkBoxTu!!.isChecked = true == daysAsMap[R.string.tu]
+        checkBoxWe!!.isChecked = true == daysAsMap[R.string.we]
+        checkBoxTh!!.isChecked = true == daysAsMap[R.string.th]
+        checkBoxFr!!.isChecked = true == daysAsMap[R.string.fr]
+        checkBoxSa!!.isChecked = true == daysAsMap[R.string.sa]
+        checkBoxSu!!.isChecked = true == daysAsMap[R.string.su]
+
         seekBarComplexity!!.progress = entity.complexity
         seekBarSnooze!!.progress = entity.snoozeMaxTimes
         if (!Strings.isEmptyOrWhitespace(entity.melodyName)) {
             txtMelody!!.text = entity.melodyName
             melodyUrl = entity.melodyUrl
         }
+
         chbHeadsUp!!.isChecked = entity.isHeadsUp
         chbTimeToSleepNotification!!.isChecked = entity.isTimeToSleepNotification
     }

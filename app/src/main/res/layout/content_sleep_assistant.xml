@@ -20,7 +20,6 @@
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
         app:max="60" />
 
     <com.mecong.tenderalarm.sleep_assistant.HourglassComponent
@@ -127,9 +126,7 @@
         app:srcCompat="@drawable/play_btn" />
 
     <com.google.android.material.tabs.TabLayout
-
         android:id="@+id/tabs"
-
         android:layout_width="0dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
@@ -140,7 +137,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pp_button"
         app:tabGravity="fill"
-        app:tabIndicatorColor="#7CE7E8E2"
         app:tabMode="fixed"
         app:tabPaddingEnd="4dp"
         app:tabPaddingStart="4dp"
@@ -150,7 +146,6 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/logo_gold_cat"
             android:icon="@drawable/local_media" />
 
         <com.google.android.material.tabs.TabItem
