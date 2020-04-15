@@ -24,6 +24,8 @@ import com.mecong.tenderalarm.sleep_assistant.Media
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import kotlinx.android.synthetic.main.fragment_local_media.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.util.*
 
 
@@ -65,6 +67,17 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         }
         fragmentTitle.setOnClickListener(function)
         backButton.setOnClickListener(function)
+    }
+
+    @Subscribe
+    fun onPlayFileChanged(playList: SleepAssistantPlayList) {
+        HyperLog.i(AlarmUtils.TAG, "Sleep assistant message received ")
+
+        if (currentPlaylistID == playList.playListId) {
+            mediaListView.scrollToPosition(playList.index)
+            mediaItemViewAdapter?.selectedPosition = playList.index
+            mediaItemViewAdapter?.notifyDataSetChanged()
+        }
     }
 
     private fun setMode(sqLiteDBHelper: SQLiteDBHelper) {
@@ -254,7 +267,6 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         fragmentTitle.text = title
     }
 
-
     override fun onPlaylistItemEditClick(newTitle: String, id: Long, position: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
 
@@ -262,11 +274,22 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
     }
 
-
     override fun onPlaylistDeleteClick(id: Long, position: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
 
         sqLiteDBHelper.deletePlaylist(id)
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
+    }
+
+    override fun onStart() {
+        super.onStart()
+        HyperLog.i(AlarmUtils.TAG, "LocalFilesMediaFragment OnStart")
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        HyperLog.i(AlarmUtils.TAG, "LocalFilesMediaFragment OnStop")
+        EventBus.getDefault().unregister(this)
     }
 }

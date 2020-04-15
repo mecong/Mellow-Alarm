@@ -62,11 +62,11 @@ class HourglassComponent(context: Context, attrs: AttributeSet?) : View(context,
                 frame.bottom.toFloat(),
                 filledPaint)
         //        canvas.drawRect(frame, framedPaint);
-//        if (changingMode) {
-////            canvas.drawLine(frame.left, filled, frame.right, filled, changingPaint);
+        if (changingMode) {
+            canvas.drawLine(frame.left + padding, filled, frame.right - padding, filled, changingPaint)
 ////            canvas.drawCircle(0, filled, 5, changingPaint);
 ////            canvas.drawCircle(frame.width(), filled, 5, changingPaint);
-//        }
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -121,8 +121,8 @@ class HourglassComponent(context: Context, attrs: AttributeSet?) : View(context,
         framedPaint.style = Paint.Style.STROKE
         framedPaint.strokeWidth = 1f
 
-        changingPaint.color = Color.GRAY
-        changingPaint.strokeWidth = 5f
+        changingPaint.color = Color.parseColor("#327C1F")
+        changingPaint.strokeWidth = 1f
 
         //TODO: remove?
         for (listener in listeners) {

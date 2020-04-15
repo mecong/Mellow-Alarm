@@ -140,7 +140,7 @@
         app:tabMode="fixed"
         app:tabPaddingEnd="4dp"
         app:tabPaddingStart="4dp"
-        app:tabSelectedTextColor="#EeEeEe"
+        app:tabRippleColor="@null"
         app:tabTextColor="#555353">
 
         <com.google.android.material.tabs.TabItem

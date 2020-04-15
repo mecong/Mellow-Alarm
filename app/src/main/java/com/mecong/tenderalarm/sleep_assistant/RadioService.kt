@@ -51,6 +51,8 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     var status = IDLE
     private var currentTrackTitle = "Tender Alarm"
     private var streamUrl: String? = null
+    private var bandwidthMeter: DefaultBandwidthMeter? = null
+    private var dataSourceFactory: DataSource.Factory? = null
 
     var audioVolume = 0f
         set(value) {
@@ -58,9 +60,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
             exoPlayer.volume = value
         }
 
-
-    private var bandwidthMeter: DefaultBandwidthMeter? = null
-    private var dataSourceFactory: DataSource.Factory? = null
     private var phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
             if ((state == TelephonyManager.CALL_STATE_OFFHOOK
@@ -75,6 +74,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
             }
         }
     }
+
     private val mediasSessionCallback: MediaSession.Callback = object : MediaSession.Callback() {
         override fun onPause() {
             super.onPause()
@@ -91,15 +91,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
             resume()
         }
     }
-
-//    fun setAudioVolume(audioVolume: Float) {
-//        this.audioVolume = audioVolume
-//        Timber.i("current position %d, buffered position %d, dff: %d",
-//                exoPlayer.currentPosition,
-//                exoPlayer.bufferedPosition,
-//                exoPlayer.bufferedPosition - exoPlayer.currentPosition)
-//        exoPlayer.volume = audioVolume
-//    }
 
     override fun onBind(intent: Intent): IBinder? {
         return iBinder
@@ -253,10 +244,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         EventBus.getDefault().postSticky(ERROR)
     }
 
-    fun play() {
-        exoPlayer.playWhenReady = true
-    }
-
     fun resume() {
         if (hasPlayList()) play()
     }
@@ -294,6 +281,10 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
             wifiLock!!.release()
             HyperLog.v(AlarmUtils.TAG, "WiFi lock released")
         }
+    }
+
+    fun play() {
+        exoPlayer.playWhenReady = true
     }
 
     fun play(streamUrl: String?) {
@@ -351,6 +342,10 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
     private val userAgent: String
         get() = Util.getUserAgent(this, javaClass.simpleName)
+
+    fun hasPlayList(): Boolean {
+        return sleepAssistantPlayList != null && sleepAssistantPlayList.media.isNotEmpty()
+    }
 
     val isPlaying: Boolean
         get() = (status == PLAYING)
@@ -410,10 +405,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         }
     }
 
-    fun hasPlayList(): Boolean {
-        return sleepAssistantPlayList != null && sleepAssistantPlayList.media.isNotEmpty()
-    }
-
     /*
     Reasons for position discontinuities. One of DISCONTINUITY_REASON_PERIOD_TRANSITION,
     DISCONTINUITY_REASON_SEEK, DISCONTINUITY_REASON_SEEK_ADJUSTMENT,
@@ -426,6 +417,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
             HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
             val playingMedia = sleepAssistantPlayList.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
+            EventBus.getDefault().post(sleepAssistantPlayList)
             currentTrackTitle = playingMedia.title!!
             notificationManager.startNotify(status, currentTrackTitle)
         }

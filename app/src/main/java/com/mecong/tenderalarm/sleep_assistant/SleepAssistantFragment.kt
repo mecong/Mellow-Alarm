@@ -181,8 +181,6 @@ class SleepAssistantFragment : Fragment() {
             }
         })
 
-        tabs.tabRippleColor = null
-
         for (i in 0 until tabs.tabCount) {
             tabs.getTabAt(i)?.setCustomView(R.layout.media_tab)
         }
@@ -273,14 +271,14 @@ class SleepAssistantFragment : Fragment() {
             val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
             val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
             var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-            if (volumeCoefficient < 0.4f) {
-                volumeCoefficient = 0.4f
+            if (volumeCoefficient < 0.3f || volumeCoefficient > 0.7f) {
+                volumeCoefficient = 0.32f
                 audioManager.setStreamVolume(
-                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).toInt(), 0)
-                Toast.makeText(this.activity!!, "System volume set to 40%", Toast.LENGTH_SHORT).show()
+                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
+                Toast.makeText(this.activity!!, "System volume set to 30%", Toast.LENGTH_SHORT).show()
             }
 
-            volume = 140 - 100 * volumeCoefficient
+            volume = 105 - 100 * volumeCoefficient
             volume = min(volume, 100f)
 
             sliderVolume.setCurrentValue(volume.toLong())

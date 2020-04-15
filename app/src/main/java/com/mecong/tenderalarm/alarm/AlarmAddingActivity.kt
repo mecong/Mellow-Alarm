@@ -172,12 +172,18 @@ class AlarmAddingActivity : AppCompatActivity() {
         checkBoxWe.isChecked = !checkBoxWe.isChecked
         checkBoxTh.isChecked = !checkBoxTh.isChecked
         checkBoxFr.isChecked = !checkBoxFr.isChecked
+
+        exactDate = 0
+        updateDateTextView()
     }
 
     fun allDaysClick(v: View?) {
         workDaysClick(v)
         checkBoxSa.isChecked = !checkBoxSa.isChecked
         checkBoxSu.isChecked = !checkBoxSu.isChecked
+
+        exactDate = 0
+        updateDateTextView()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

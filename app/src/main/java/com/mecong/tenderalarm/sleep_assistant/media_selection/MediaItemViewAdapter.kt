@@ -86,7 +86,7 @@ internal constructor(
                 val popup = PopupMenu(wrapper, btnDeleteItem)
                 popup.menuInflater.inflate(R.menu.menu_media_element, popup.menu)
                 popup.setOnMenuItemClickListener {
-                    mClickListenerFile!!.onFileItemDeleteClick(list[adapterPosition].id)
+                    mClickListenerFile!!.onFileItemDeleteClick(list[absoluteAdapterPosition].id)
                     true
                 }
                 popup.show() //showing popup menu
