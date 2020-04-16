@@ -18,11 +18,13 @@ import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.model.PlaylistEntity
+import com.mecong.tenderalarm.model.PropertyName.*
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import com.mecong.tenderalarm.sleep_assistant.Media
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayList
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListActive
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListIdle
 import kotlinx.android.synthetic.main.fragment_local_media.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -55,18 +57,30 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
         playlistViewAdapter = PlaylistViewAdapter(this.context!!, list, this)
 
+
         mediaItemViewAdapter =
-                MediaItemViewAdapter(this.context!!, emptyList(), this, false)
+                MediaItemViewAdapter(this.context!!, 0, emptyList(), this, false)
+
+
+        val savedActiveTab = sqLiteDBHelper.getPropertyInt(ACTIVE_TAB)
+
+        currentPlaylistID = (sqLiteDBHelper.getPropertyInt(PLAYLIST_ID) ?: -1).toLong()
+
+        var selectedPosition = 0
+        if (savedActiveTab == 0) {
+            selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_POSITION) ?: 0
+            initPlaylist(selectedPosition, false)
+        }
 
         setMode(sqLiteDBHelper)
 
-        val function: (v: View) -> Unit = {
+        val goBack: (v: View) -> Unit = {
             fragmentTitle.text = context?.getString(R.string.local_audio)
             currentPlaylistID = -1
             setMode(sqLiteDBHelper)
         }
-        fragmentTitle.setOnClickListener(function)
-        backButton.setOnClickListener(function)
+        fragmentTitle.setOnClickListener(goBack)
+        backButton.setOnClickListener(goBack)
     }
 
     @Subscribe
@@ -91,13 +105,16 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
             else -> {
                 backButton.visibility = VISIBLE
+                val savedActiveTab = sqLiteDBHelper.getPropertyInt(ACTIVE_TAB)
+                val savedPlayListId: Long = (sqLiteDBHelper.getPropertyInt(PLAYLIST_ID) ?: -1).toLong()
+
+                var selectedPosition = 0
+                if (savedActiveTab == 0 && savedPlayListId == currentPlaylistID) {
+                    selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_POSITION) ?: 0
+                }
+
                 mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
-                mediaItemViewAdapter?.selectedPosition =
-                        if (currentPlaylistID == SleepAssistantFragment.playListModel.playlist.value?.playListId) {
-                            SleepAssistantFragment.playListModel.playlist.value?.index ?: 0
-                        } else {
-                            0
-                        }
+                mediaItemViewAdapter?.selectedPosition = selectedPosition
                 mediaItemViewAdapter
             }
         }
@@ -240,6 +257,10 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     }
 
     override fun onFileItemClick(url: String?, position: Int) {
+        initPlaylist(position, true)
+    }
+
+    private fun initPlaylist(position: Int, active: Boolean) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         var media: MutableList<Media>
         sqLiteDBHelper.getLocalMedia(currentPlaylistID).use { allLocalMedia ->
@@ -249,8 +270,13 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 val title = allLocalMedia.getString(allLocalMedia.getColumnIndex("title"))
                 media.add(Media(uri, title))
             }
-            val newPlayList = SleepAssistantPlayList(position, media, SleepMediaType.LOCAL, currentPlaylistID)
-            SleepAssistantFragment.playListModel.playlist.value = newPlayList
+
+            val newPlayList = if (active)
+                SleepAssistantPlayListActive(position, media, SleepMediaType.LOCAL, currentPlaylistID)
+            else
+                SleepAssistantPlayListIdle(position, media, SleepMediaType.LOCAL, currentPlaylistID)
+
+            EventBus.getDefault().post(newPlayList)
         }
     }
 

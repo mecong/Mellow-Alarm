@@ -97,13 +97,13 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:textColor="#E7E8E2"
-        app:layout_constraintEnd_toStartOf="@+id/pp_button"
+        app:layout_constraintEnd_toStartOf="@+id/playButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <ImageButton
-        android:id="@+id/pp_button"
+        android:id="@+id/playButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:adjustViewBounds="true"
@@ -135,7 +135,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewPager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pp_button"
+        app:layout_constraintTop_toBottomOf="@+id/playButton"
         app:tabGravity="fill"
         app:tabMode="fixed"
         app:tabPaddingEnd="4dp"

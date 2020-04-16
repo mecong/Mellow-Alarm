@@ -24,13 +24,13 @@ interface FileItemClickListener {
 class MediaItemViewAdapter
 internal constructor(
         private val context: Context,
+        var selectedPosition: Int,
         private var list: List<MediaEntity>,
         private val mClickListenerFile: FileItemClickListener?,
         private val showUrl: Boolean) : RecyclerView.Adapter<MediaItemViewHolder?>() {
 
-    var selectedPosition = 0
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MediaItemViewHolder {
+
         val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.fragment_media_row, parent, false)
         return MediaItemViewHolder(itemView)

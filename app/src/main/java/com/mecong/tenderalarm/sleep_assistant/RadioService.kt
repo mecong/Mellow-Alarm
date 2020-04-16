@@ -33,7 +33,6 @@ import com.google.android.exoplayer2.util.Util
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import org.greenrobot.eventbus.EventBus
 
@@ -297,7 +296,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         exoPlayer.playWhenReady = true
     }
 
-    fun playMediaList(sleepAssistantPlayList: SleepAssistantPlayList) {
+    fun setMediaList(sleepAssistantPlayList: SleepAssistantPlayList) {
         this.sleepAssistantPlayList = sleepAssistantPlayList
         val concatenatingMediaSource = ConcatenatingMediaSource()
         for (media: Media in this.sleepAssistantPlayList.media) {
@@ -306,7 +305,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         }
 
         exoPlayer.prepare(concatenatingMediaSource)
-
 
         when (this.sleepAssistantPlayList.mediaType) {
             SleepMediaType.LOCAL -> {
@@ -321,7 +319,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         }
         acquireWifiLock()
         exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
-        exoPlayer.playWhenReady = true
     }
 
     @Deprecated("")
@@ -417,7 +414,9 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
             HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
             val playingMedia = sleepAssistantPlayList.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
-            EventBus.getDefault().post(sleepAssistantPlayList)
+            EventBus.getDefault().post(
+                    SleepAssistantPlayList(sleepAssistantPlayList.index, sleepAssistantPlayList.media, sleepAssistantPlayList.mediaType, sleepAssistantPlayList.playListId))
+
             currentTrackTitle = playingMedia.title!!
             notificationManager.startNotify(status, currentTrackTitle)
         }

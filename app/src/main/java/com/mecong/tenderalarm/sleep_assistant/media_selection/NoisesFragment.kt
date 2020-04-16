@@ -7,10 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
+import com.mecong.tenderalarm.model.PropertyName
+import com.mecong.tenderalarm.model.SQLiteDBHelper
+import com.mecong.tenderalarm.sleep_assistant.Media
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListActive
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListIdle
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise.Companion.retrieveNoises
 import kotlinx.android.synthetic.main.fragment_noises.*
+import org.greenrobot.eventbus.EventBus
 
 class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener {
     private var selectedPosition = 0
@@ -27,15 +31,35 @@ class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         noisesList.layoutManager = LinearLayoutManager(view.context)
+
+        val sqLiteDBHelper = SQLiteDBHelper.sqLiteDBHelper(this.context!!)!!
+
+        val savedActiveTab = sqLiteDBHelper.getPropertyInt(PropertyName.ACTIVE_TAB)
+
+        selectedPosition = 0
+        if (savedActiveTab == 2) {
+            selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_POSITION) ?: 0
+            initPlaylist(selectedPosition, false)
+        }
+
         adapter = NoisesItemViewAdapter(view.context, retrieveNoises(), selectedPosition)
         adapter.setClickListener(this)
         noisesList.adapter = adapter
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        val newPlayList = SleepAssistantPlayList(
-                adapter.getItem(position).url, adapter.getItem(position).name, SleepMediaType.NOISE)
-        SleepAssistantFragment.playListModel.playlist.value = newPlayList
+        initPlaylist(position, true)
+    }
+
+    private fun initPlaylist(position: Int, active: Boolean) {
+        val media = retrieveNoises().map { Media(it.url, it.name) }.toList()
+
+        val newPlayList = if (active)
+            SleepAssistantPlayListActive(position, media, SleepMediaType.NOISE, -1)
+        else
+            SleepAssistantPlayListIdle(position, media, SleepMediaType.NOISE, -1)
+
+        EventBus.getDefault().post(newPlayList)
     }
 
     companion object {

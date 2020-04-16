@@ -13,27 +13,17 @@ class SleepAssistantPlayListModel() : ViewModel() {
         this.playlist = playlist
         this.playing = playing
     }
-
-    //}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]
-    class SleepAssistantPlayList {
-        var index: Int
-        var media: List<Media>
-        var mediaType: SleepMediaType
-        var playListId: Long? = null
-
-        constructor(url: String?, name: String?, mediaType: SleepMediaType) {
-            media = listOf(Media(url, name))
-            this.mediaType = mediaType
-            index = 0
-        }
-
-        constructor(index: Int, media: List<Media>, mediaType: SleepMediaType, playListId: Long) {
-            this.index = index
-            this.media = media
-            this.mediaType = mediaType
-            this.playListId = playListId
-        }
-    }
 }
 
+
 data class Media(val url: String?, val title: String?)
+
+class SleepAssistantPlayListActive(index: Int, media: List<Media>, mediaType: SleepMediaType, playListId: Long) :
+        SleepAssistantPlayList(index, media, mediaType, playListId)
+
+class SleepAssistantPlayListIdle(index: Int, media: List<Media>, mediaType: SleepMediaType, playListId: Long) :
+        SleepAssistantPlayList(index, media, mediaType, playListId)
+
+open class SleepAssistantPlayList(var index: Int, val media: List<Media>, val mediaType: SleepMediaType, val playListId: Long) {
+    constructor(url: String?, name: String?, mediaType: SleepMediaType) : this(0, listOf(Media(url, name)), mediaType, -1)
+}

@@ -48,6 +48,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
 
     private fun initializeDefaultProperties(database: SQLiteDatabase) {
         setPropertyString(PropertyName.ACTIVE_TAB, "2", database)
+        setPropertyString(PropertyName.TRACK_POSITION, "0", database)
     }
 
     val allAlarms: Cursor
@@ -202,8 +203,11 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
     }
 
     fun getPropertyInt(propertyName: PropertyName): Int? {
-        val propertyString = getPropertyString(propertyName) ?: return null
-        return propertyString.toInt()
+        return getPropertyString(propertyName)?.toInt()
+    }
+
+    fun getPropertyLong(propertyName: PropertyName): Long? {
+        return getPropertyString(propertyName)?.toLong()
     }
 
     fun getPropertyString(propertyName: PropertyName): String? {
@@ -324,7 +328,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 27
+        private const val DATABASE_VERSION = 28
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"

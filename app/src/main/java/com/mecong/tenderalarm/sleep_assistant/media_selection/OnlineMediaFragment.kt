@@ -14,9 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.MediaEntity
+import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListModel.SleepAssistantPlayList
+import com.mecong.tenderalarm.sleep_assistant.Media
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListActive
+import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListIdle
+import org.greenrobot.eventbus.EventBus
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -46,7 +49,15 @@ class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickList
                     .toList()
         }
 
-        mediaItemViewAdapter = MediaItemViewAdapter(view.context,
+        val savedActiveTab = sqLiteDBHelper.getPropertyInt(PropertyName.ACTIVE_TAB)
+
+        var selectedPosition = 0
+        if (savedActiveTab == 1) {
+            selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_POSITION) ?: 0
+            initPlaylist(selectedPosition, false)
+        }
+
+        mediaItemViewAdapter = MediaItemViewAdapter(view.context, selectedPosition,
                 list, this, true)
 
         mediaListView.adapter = mediaItemViewAdapter
@@ -78,7 +89,27 @@ class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickList
     }
 
     override fun onFileItemClick(url: String?, position: Int) {
-        SleepAssistantFragment.playListModel.playlist.value = SleepAssistantPlayList(url, url, SleepMediaType.ONLINE)
+        initPlaylist(position, true)
+    }
+
+    private fun initPlaylist(position: Int, active: Boolean) {
+        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+
+        val list = sqLiteDBHelper.allOnlineMedia.use {
+            generateSequence { if (it.moveToNext()) it else null }
+                    .map { MediaEntity.fromCursor(it) }
+                    .toList()
+        }
+
+        val media = list.map { Media(it.uri, it.header) }.toList()
+
+        val newPlayList = if (active)
+            SleepAssistantPlayListActive(position, media, SleepMediaType.ONLINE, -1)
+        else
+            SleepAssistantPlayListIdle(position, media, SleepMediaType.ONLINE, -1)
+
+        EventBus.getDefault().post(newPlayList)
+
     }
 
     override fun onFileItemDeleteClick(itemId: Int) {

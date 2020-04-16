@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -25,6 +24,7 @@ import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import com.mecong.tenderalarm.sleep_assistant.RadioService.LocalBinder
+import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SoundListsPagerAdapter
 import kotlinx.android.synthetic.main.content_sleep_assistant.*
 import org.greenrobot.eventbus.EventBus
@@ -49,11 +49,6 @@ class SleepAssistantFragment : Fragment() {
             radioService = (binder as LocalBinder).service
             serviceBound = true
             radioService.audioVolume = volume / 100
-            EventBus.getDefault().post(radioService.status)
-
-            playListModel.playlist.observe(viewLifecycleOwner, Observer {
-                radioService.playMediaList(it)
-            })
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -69,18 +64,19 @@ class SleepAssistantFragment : Fragment() {
         playListModel = ViewModelProvider(this).get(SleepAssistantPlayListModel::class.java)
 
         val context = this.context!!
-        val dbHelper = sqLiteDBHelper(context)
+        val dbHelper = sqLiteDBHelper(context)!!
 
-        val activeTab = dbHelper!!.getPropertyInt(PropertyName.ACTIVE_TAB)
-        initializeTabsAndMediaFragments(context, activeTab!!)
+        val activeTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
+        initializeTabsAndMediaFragments(context, activeTab)
 
-        timeMinutes = 39
+        timeMinutes = dbHelper.getPropertyLong(PropertyName.SLEEP_TIME) ?: 39
 
         sliderSleepTime.setCurrentValue(timeMinutes)
         textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
 
         sliderSleepTime.addListener(object : SleepTimerViewValueListener {
             override fun onValueChanged(newValue: Long) {
+                dbHelper.setPropertyString(PropertyName.SLEEP_TIME, newValue.toString())
                 textViewMinutes.text = context.getString(R.string.sleep_minutes, newValue)
                 timeMinutes = newValue
                 timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
@@ -133,14 +129,14 @@ class SleepAssistantFragment : Fragment() {
             }
         }
 
-        pp_button.setOnClickListener {
+        playButton.setOnClickListener {
             if (radioService.isPlaying) {
                 radioService.pause()
             } else {
                 if (radioService.hasPlayList()) {
                     radioService.resume()
                 } else {
-                    radioService.playMediaList(playListModel.playlist.value!!)
+                    radioService.setMediaList(playListModel.playlist.value!!)
                 }
             }
         }
@@ -164,11 +160,9 @@ class SleepAssistantFragment : Fragment() {
         tabs.setSelectedTabIndicator(null)
 
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
-            val instance = sqLiteDBHelper(getContext()!!)
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.INVISIBLE
                 tab.customView?.background = resources.getDrawable(R.drawable.tr2_background)
-                instance?.setPropertyString(PropertyName.ACTIVE_TAB, tab.position.toString())
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
@@ -191,6 +185,7 @@ class SleepAssistantFragment : Fragment() {
                 .setImageResource(R.drawable.online_media)
         (tabs.getTabAt(2)?.customView?.findViewById<View>(R.id.imageView) as ImageView)
                 .setImageResource(R.drawable.noises)
+
         tabs.getTabAt(activeTab % tabs.tabCount)!!.select()
     }
 
@@ -202,29 +197,29 @@ class SleepAssistantFragment : Fragment() {
 
     @Subscribe(sticky = true)
     fun onEvent(status: String?) {
-        pp_button.isEnabled = true
+        playButton.isEnabled = true
         when (status) {
             RadioService.LOADING -> {
-                pp_button.setImageResource(R.drawable.pause_btn)
-                pp_button.setColorFilter(0)
+                playButton.setImageResource(R.drawable.pause_btn)
+                playButton.setColorFilter(0)
                 handler.removeCallbacks(runnable)
             }
             RadioService.ERROR -> {
                 nowPlayingText.text = getString(R.string.can_not_stream)
                 Toast.makeText(this.context, getString(R.string.can_not_stream), Toast.LENGTH_SHORT).show()
-                pp_button.setImageResource(R.drawable.play_btn)
+                playButton.setImageResource(R.drawable.play_btn)
                 playListModel.playing.setValue(false)
             }
             RadioService.PLAYING -> {
-                pp_button.setImageResource(R.drawable.pause_btn)
+                playButton.setImageResource(R.drawable.pause_btn)
                 //                pp_button.setPaddingRelative(10,10,10,10);
-                pp_button.imageTintMode = PorterDuff.Mode.ADD
+                playButton.imageTintMode = PorterDuff.Mode.ADD
                 playListModel.playing.value = true
                 handler.removeCallbacks(runnable)
                 handler.postDelayed(runnable, STEP_MILLIS)
             }
             else -> {
-                pp_button.setImageResource(R.drawable.play_btn)
+                playButton.setImageResource(R.drawable.play_btn)
                 playListModel.playing.value = false
                 handler.removeCallbacks(runnable)
             }
@@ -286,7 +281,34 @@ class SleepAssistantFragment : Fragment() {
             volumeStep = volume * STEP_MILLIS / timeMs
             textViewVolumePercent.text = this.activity?.getString(R.string.volume_percent, volume.roundToInt())
         }
+    }
 
+    @Subscribe
+    fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
+        radioService.setMediaList(playList)
+        playListModel.playlist.value = playList
+        radioService.play()
+    }
+
+    @Subscribe
+    fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
+        playListModel.playlist.value = playList
+        radioService.setMediaList(playList)
+    }
+
+    @Subscribe
+    fun persistMediaPosition(playList: SleepAssistantPlayList) {
+        val dbHelper = sqLiteDBHelper(this.context!!)!!
+
+        val activeTab = when (playList.mediaType) {
+            SleepMediaType.LOCAL -> "0"
+            SleepMediaType.ONLINE -> "1"
+            SleepMediaType.NOISE -> "2"
+        }
+
+        dbHelper.setPropertyString(PropertyName.ACTIVE_TAB, activeTab)
+        dbHelper.setPropertyString(PropertyName.TRACK_POSITION, playList.index.toString())
+        dbHelper.setPropertyString(PropertyName.PLAYLIST_ID, playList.playListId.toString())
     }
 
     private fun bindRadioService() {

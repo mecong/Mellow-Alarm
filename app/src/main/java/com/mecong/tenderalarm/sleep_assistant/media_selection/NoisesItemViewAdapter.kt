@@ -12,7 +12,7 @@ interface NoisesItemClickListener {
     fun onItemClick(view: View?, position: Int)
 }
 
-class NoisesItemViewAdapter constructor(context: Context?, private val mData: List<SleepNoise>, private var selectedPosition: Int)
+class NoisesItemViewAdapter constructor(context: Context?, private val mData: List<SleepNoise>, var selectedPosition: Int)
     : RecyclerView.Adapter<NoisesItemViewAdapter.ViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
