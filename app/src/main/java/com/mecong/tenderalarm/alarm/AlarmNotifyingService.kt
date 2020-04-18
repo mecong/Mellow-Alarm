@@ -27,8 +27,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AlarmNotifyingService : Service() {
-    private var runnableVolume: Runnable? = null
-    private var runnableRealAlarm: Runnable? = null
+    private lateinit var runnableVolume: Runnable
+    private lateinit var runnableRealAlarm: Runnable
 
     var alarmMediaPlayer: MediaPlayer? = null
     var handlerVolume: Handler? = null
@@ -112,6 +112,8 @@ class AlarmNotifyingService : Service() {
         val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, streamMaxVolume, 0)
 
+        val tick = if (entity?.ticksType == 0) R.raw.tick else R.raw.ding1
+
         // Create the Handler object (on the main thread by default)
         handlerTicks = Handler()
         val volume = floatArrayOf(0.01f)
@@ -119,7 +121,7 @@ class AlarmNotifyingService : Service() {
             ticksMediaPlayer = MediaPlayer()
             ticksMediaPlayer!!.setAudioAttributes(audioAttributesAlarm)
             ticksMediaPlayer!!.setDataSource(this, Uri.parse("android.resource://"
-                    + packageName + "/" + R.raw.tick))
+                    + packageName + "/" + tick))
             ticksMediaPlayer!!.prepare()
             ticksMediaPlayer!!.setVolume(volume[0], volume[0])
         } catch (e: IOException) {

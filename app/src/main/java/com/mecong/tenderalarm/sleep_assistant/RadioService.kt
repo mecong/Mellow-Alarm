@@ -87,7 +87,29 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
         override fun onPlay() {
             super.onPlay()
-            resume()
+
+            val audioFocusPermission =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val mPlaybackAttributes = AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .build()
+                        val focusRequest: AudioFocusRequest = AudioFocusRequest
+                                .Builder(AudioManager.AUDIOFOCUS_GAIN)
+                                .setAcceptsDelayedFocusGain(true)
+                                .setAudioAttributes(mPlaybackAttributes)
+                                .build()
+                        audioManager!!.requestAudioFocus(focusRequest)
+                    } else {
+                        audioManager!!.requestAudioFocus(this@RadioService, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+                    }
+
+            if (audioFocusPermission == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                resume()
+                notificationManager.startNotify(status, currentTrackTitle)
+            } else {
+                stop()
+            }
         }
     }
 
@@ -157,27 +179,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val action = intent.action
         if (TextUtils.isEmpty(action)) return START_NOT_STICKY
-
-        val result =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val mPlaybackAttributes = AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build()
-                    val focusRequest: AudioFocusRequest = AudioFocusRequest
-                            .Builder(AudioManager.AUDIOFOCUS_GAIN)
-                            .setAcceptsDelayedFocusGain(true)
-                            .setAudioAttributes(mPlaybackAttributes)
-                            .build()
-                    audioManager!!.requestAudioFocus(focusRequest)
-                } else {
-                    audioManager!!.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
-                }
-
-        if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            stop()
-            return START_NOT_STICKY
-        }
 
         when {
             ACTION_PLAY.equals(action, ignoreCase = true) -> {
@@ -418,7 +419,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                     SleepAssistantPlayList(sleepAssistantPlayList.index, sleepAssistantPlayList.media, sleepAssistantPlayList.mediaType, sleepAssistantPlayList.playListId))
 
             currentTrackTitle = playingMedia.title!!
-            notificationManager.startNotify(status, currentTrackTitle)
         }
     }
 

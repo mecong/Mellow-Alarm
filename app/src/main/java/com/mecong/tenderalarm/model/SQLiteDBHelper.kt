@@ -17,29 +17,17 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         values.put(TITLE, "Enigmatic radio")
         values.put(URI, "http://listen2.myradio24.com:9000/8226")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+        values.put(TITLE, "MilanoLounge")
+        values.put(URI, "http://antares.dribb.com:5080/autodj")
+        database.insert(TABLE_ONLINE_MEDIA, null, values)
         values.put(TITLE, "Zen noise")
         values.put(URI, "http://mynoise1.radioca.st/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
         values.put(TITLE, "Space noise")
         values.put(URI, "http://mynoise5.radioca.st/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
-        values.put(TITLE, "1.FM - Afterbeat Electronica Radio")
-        values.put(URI, "http://strm112.1.fm/electronica_mobile_mp3")
-        database.insert(TABLE_ONLINE_MEDIA, null, values)
-        values.put(TITLE, "Graal Radio")
-        values.put(URI, "http://graalradio.com:8123/future")
-        database.insert(TABLE_ONLINE_MEDIA, null, values)
-        values.put(TITLE, "Sleepy")
-        values.put(URI, "http://ample-10.radiojar.com/rrgq7vw4gxquv?rj-ttl=5&rj-token=AAABa1lok77_iuIXolNS9qjWnD31iEM1pwmTre7whSvHzvHEjWy5yg")
-        database.insert(TABLE_ONLINE_MEDIA, null, values)
         values.put(TITLE, "Classical")
         values.put(URI, "http://mediaserv30.live-streams.nl:8088/live")
-        database.insert(TABLE_ONLINE_MEDIA, null, values)
-        values.put(TITLE, "MilanoLounge")
-        values.put(URI, "http://antares.dribb.com:5080/autodj")
-        database.insert(TABLE_ONLINE_MEDIA, null, values)
-        values.put(TITLE, "Ibiza chill")
-        values.put(URI, "http://edge3.peta.live365.net/b05055_128mp3?listenerId=1d6272312a62c2b159db7deeed43254b&aw_0_1st.playerid=esPlayer&aw_0_1st.skey=1567659697")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
         values.put(TITLE, "JR.FM chill/Lounge Radio")
         values.put(URI, "http://149.56.157.81:5104/;stream/1")
@@ -94,6 +82,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
                 put("message", entity.message)
                 put("days", entity.days)
                 put("ticks_time", entity.ticksTime)
+                put("ticks_type", entity.ticksType)
                 put("canceled_next_alarms", entity.canceledNextAlarms)
                 put("active", entity.isActive)
                 put("exact_date", entity.exactDate)
@@ -174,6 +163,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
                 "heads_up BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
                 "tts_notification BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
                 "ticks_time TINYINT," +
+                "ticks_type INT," +
                 "melody_name TEXT," +
                 "melody_url TEXT," +
                 "vibration_type TEXT," +
@@ -328,7 +318,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 28
+        private const val DATABASE_VERSION = 30
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"

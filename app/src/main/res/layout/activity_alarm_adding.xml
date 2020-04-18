@@ -318,7 +318,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/ticks" />
+                android:text="@string/ticksLabel" />
 
             <SeekBar
                 android:id="@+id/seekBarTicks"
@@ -328,6 +328,34 @@
                 android:layout_weight="1"
                 android:max="10"
                 android:progress="10" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ticksTypeLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="#1C1C1E"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ticksLayout">
+
+            <TextView
+                android:id="@+id/txtTicksType"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/ticksTypeLabel" />
+
+            <Spinner
+                android:id="@+id/spinnerTicksType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
 
@@ -343,7 +371,7 @@
             android:paddingBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ticksLayout">
+            app:layout_constraintTop_toBottomOf="@+id/ticksTypeLayout">
 
             <TextView
                 android:id="@+id/txtSnooze"
@@ -428,7 +456,7 @@
                 android:id="@+id/chbTimeToSleepNotification"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/show_time_to_sleep_notificaton" />
+                android:text="@string/show_time_to_sleep_notification" />
         </LinearLayout>
 
         <LinearLayout

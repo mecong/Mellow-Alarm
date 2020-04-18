@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 
 data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0, var days: Int = 0,
                        var exactDate: Long = 0, var ticksTime: Int = 0,
+                       var ticksType: Int = 0,
                        var melodyUrl: String? = null, var melodyName: String? = null,
                        var vibrationType: String? = null, var volume: Int? = null,
                        var snoozeMaxTimes: Int = 10, var canceledNextAlarms: Int = 0,
@@ -17,28 +18,29 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
                        var isTimeToSleepNotification: Boolean = false, var isHeadsUp: Boolean = false) {
 
 
-    constructor(cursor: Cursor) : this() {
-        id = cursor.getLong(cursor.getColumnIndex("_id"))
-        hour = cursor.getInt(cursor.getColumnIndex("hour"))
-        minute = cursor.getInt(cursor.getColumnIndex("minute"))
-        days = cursor.getInt(cursor.getColumnIndex("days"))
-        complexity = cursor.getInt(cursor.getColumnIndex("complexity"))
-        exactDate = cursor.getLong(cursor.getColumnIndex("exact_date"))
-        message = cursor.getString(cursor.getColumnIndex("message"))
-        isActive = cursor.getInt(cursor.getColumnIndex("active")) == 1
-        ticksTime = cursor.getInt(cursor.getColumnIndex("ticks_time"))
-        melodyUrl = cursor.getString(cursor.getColumnIndex("melody_url"))
-        melodyName = cursor.getString(cursor.getColumnIndex("melody_name"))
-        vibrationType = cursor.getString(cursor.getColumnIndex("vibration_type"))
-        volume = cursor.getInt(cursor.getColumnIndex("volume"))
-        snoozeMaxTimes = cursor.getInt(cursor.getColumnIndex("snooze_max_times"))
-        canceledNextAlarms = cursor.getInt(cursor.getColumnIndex("canceled_next_alarms"))
-        nextTime = cursor.getLong(cursor.getColumnIndex("next_time"))
-        nextNotCanceledTime = cursor.getLong(cursor.getColumnIndex("next_not_canceled_time"))
-        nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code"))
-        isHeadsUp = cursor.getInt(cursor.getColumnIndex("heads_up")) == 1
-        isTimeToSleepNotification = cursor.getInt(cursor.getColumnIndex("tts_notification")) == 1
-    }
+    constructor(cursor: Cursor) : this(
+            id = cursor.getLong(cursor.getColumnIndex("_id")),
+            hour = cursor.getInt(cursor.getColumnIndex("hour")),
+            minute = cursor.getInt(cursor.getColumnIndex("minute")),
+            days = cursor.getInt(cursor.getColumnIndex("days")),
+            complexity = cursor.getInt(cursor.getColumnIndex("complexity")),
+            exactDate = cursor.getLong(cursor.getColumnIndex("exact_date")),
+            message = cursor.getString(cursor.getColumnIndex("message")),
+            isActive = cursor.getInt(cursor.getColumnIndex("active")) == 1,
+            ticksTime = cursor.getInt(cursor.getColumnIndex("ticks_time")),
+            ticksType = cursor.getInt(cursor.getColumnIndex("ticks_type")),
+            melodyUrl = cursor.getString(cursor.getColumnIndex("melody_url")),
+            melodyName = cursor.getString(cursor.getColumnIndex("melody_name")),
+            vibrationType = cursor.getString(cursor.getColumnIndex("vibration_type")),
+            volume = cursor.getInt(cursor.getColumnIndex("volume")),
+            snoozeMaxTimes = cursor.getInt(cursor.getColumnIndex("snooze_max_times")),
+            canceledNextAlarms = cursor.getInt(cursor.getColumnIndex("canceled_next_alarms")),
+            nextTime = cursor.getLong(cursor.getColumnIndex("next_time")),
+            nextNotCanceledTime = cursor.getLong(cursor.getColumnIndex("next_not_canceled_time")),
+            nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code")),
+            isHeadsUp = cursor.getInt(cursor.getColumnIndex("heads_up")) == 1,
+            isTimeToSleepNotification = cursor.getInt(cursor.getColumnIndex("tts_notification")) == 1
+    )
 
     val nextTimeWithTicks: Long
         get() = nextTime + TimeUnit.MINUTES.toMillis(ticksTime.toLong())

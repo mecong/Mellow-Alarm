@@ -38,7 +38,8 @@
     <string name="every_day">Every day</string>
     <string name="never">Never</string>
     <string name="single_day" translatable="false">%1$td.%1$tm.%1$tY</string>
-    <string name="ticks" translatable="false">Tender alarm %d minute(s) before</string>
+    <string name="ticksLabel" translatable="false">Tender alarm %d minute(s) before</string>
+    <string name="ticksTypeLabel" translatable="false">Ticks sound type</string>
     <string name="snooze" translatable="false">Snooze %d minute(s)</string>
     <string name="alarm_complexity">Alarm complexity %d</string>
 
@@ -84,7 +85,12 @@
     <string name="alarm_sound">Alarm sound</string>
     <string name="default_sound">Default</string>
     <string name="switch_alarm_state" translatable="false">Switch alarm state</string>
-    <string name="show_heads_up_notification">Show heads up notification</string>
-    <string name="show_time_to_sleep_notificaton">Show time to sleep notificaton</string>
+    <string name="show_heads_up_notification" translatable="false">Show heads up notification</string>
+    <string name="show_time_to_sleep_notification" translatable="false">Show time to sleep notification</string>
+
+    <string-array name="ticks_type_array">
+        <item>Low sound</item>
+        <item>High sound</item>
+    </string-array>
 
 </resources>

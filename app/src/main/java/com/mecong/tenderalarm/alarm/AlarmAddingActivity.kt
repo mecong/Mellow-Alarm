@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.util.Strings
@@ -196,10 +197,10 @@ class AlarmAddingActivity : AppCompatActivity() {
             alarmId = extras.getString("alarmId")
         }
 
-        txtTicks.text = this.getString(R.string.ticks, seekBarTicks!!.progress)
+        txtTicks.text = this.getString(R.string.ticksLabel, seekBarTicks!!.progress)
         seekBarTicks.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                txtTicks.text = this@AlarmAddingActivity.getString(R.string.ticks, progress)
+                txtTicks.text = this@AlarmAddingActivity.getString(R.string.ticksLabel, progress)
             }
         })
 
@@ -236,6 +237,17 @@ class AlarmAddingActivity : AppCompatActivity() {
         checkBoxFr.setOnClickListener(resetExactDate)
         checkBoxSa.setOnClickListener(resetExactDate)
         checkBoxSu.setOnClickListener(resetExactDate)
+
+        ArrayAdapter.createFromResource(
+                this,
+                R.array.ticks_type_array,
+                android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinnerTicksType.adapter = adapter
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -287,6 +299,8 @@ class AlarmAddingActivity : AppCompatActivity() {
 
         chbHeadsUp!!.isChecked = entity.isHeadsUp
         chbTimeToSleepNotification!!.isChecked = entity.isTimeToSleepNotification
+
+        spinnerTicksType.setSelection(entity.ticksType)
     }
 
     private fun initFormForNewAlarm() {
@@ -325,6 +339,7 @@ class AlarmAddingActivity : AppCompatActivity() {
                 melodyName = txtMelody!!.text.toString(),
                 melodyUrl = melodyUrl,
                 snoozeMaxTimes = seekBarSnooze!!.progress,
+                ticksType = spinnerTicksType.selectedItemPosition,
                 ticksTime = seekBarTicks!!.progress,
                 isHeadsUp = chbHeadsUp!!.isChecked,
                 isTimeToSleepNotification = chbTimeToSleepNotification!!.isChecked)
