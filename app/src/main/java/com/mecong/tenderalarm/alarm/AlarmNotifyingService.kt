@@ -196,7 +196,7 @@ class AlarmNotifyingService : Service() {
             Uri.parse(entity.melodyUrl)
         } else {
             Uri.parse(String.format(Locale.ENGLISH, "android.resource://%s/%d",
-                    context.packageName, R.raw.long_music))
+                    context.packageName, R.raw.default_alarm_sound))
         }
     }
 

@@ -14,21 +14,27 @@ import java.util.concurrent.TimeUnit
 class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), DatabaseProvider {
     private fun setDefaultOnlineMedia(database: SQLiteDatabase) {
         val values = ContentValues(2)
+
         values.put(TITLE, "Enigmatic radio")
         values.put(URI, "http://listen2.myradio24.com:9000/8226")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+
         values.put(TITLE, "MilanoLounge")
         values.put(URI, "http://antares.dribb.com:5080/autodj")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+
         values.put(TITLE, "Zen noise")
         values.put(URI, "http://mynoise1.radioca.st/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+
         values.put(TITLE, "Space noise")
         values.put(URI, "http://mynoise5.radioca.st/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+
         values.put(TITLE, "Classical")
         values.put(URI, "http://mediaserv30.live-streams.nl:8088/live")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
+
         values.put(TITLE, "JR.FM chill/Lounge Radio")
         values.put(URI, "http://149.56.157.81:5104/;stream/1")
         database.insert(TABLE_ONLINE_MEDIA, null, values)

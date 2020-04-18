@@ -87,6 +87,7 @@
     <string name="switch_alarm_state" translatable="false">Switch alarm state</string>
     <string name="show_heads_up_notification" translatable="false">Show heads up notification</string>
     <string name="show_time_to_sleep_notification" translatable="false">Show time to sleep notification</string>
+    <string name="patreon_link" translatable="false">https://www.patreon.com/mecong</string>
 
     <string-array name="ticks_type_array">
         <item>Low sound</item>
