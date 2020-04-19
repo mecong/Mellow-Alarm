@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="@string/alarm_turn_off_prompt"
+        android:text=""
         android:textAlignment="center"
         android:textColor="#A5D6A7"
         android:textSize="12sp" />

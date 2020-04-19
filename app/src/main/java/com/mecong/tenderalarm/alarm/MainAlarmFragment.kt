@@ -78,16 +78,20 @@ class MainAlarmFragment : Fragment() {
                     textNextAlarm!!.text = context.getString(R.string.next_alarm_soon)
                 }
                 difference < HOUR -> {
-                    textNextAlarm!!.text = context.getString(R.string.next_alarm_within_hour,
-                            calendar[Calendar.MINUTE])
+                    val minutes = calendar[Calendar.MINUTE]
+                    textNextAlarm!!.text = context.resources.getQuantityString(R.plurals.next_alarm_within_hour, minutes, minutes)
                 }
                 difference < DAY -> {
-                    textNextAlarm!!.text = context.getString(R.string.next_alarm_today,
-                            calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE])
+                    val hours = calendar[Calendar.HOUR_OF_DAY]
+                    val minutes = calendar[Calendar.MINUTE]
+                    val nHours = context.resources.getQuantityString(R.plurals.n_hours_plural, hours, hours)
+                    val nMinutes = context.resources.getQuantityString(R.plurals.n_minutes_plural, minutes, minutes)
+
+                    textNextAlarm!!.text = context.getString(R.string.next_alarm_today, nHours, nMinutes)
                 }
                 else -> {
-                    textNextAlarm!!.text = context.getString(R.string.next_alarm,
-                            calendar[Calendar.DAY_OF_YEAR])
+                    val days = calendar[Calendar.DAY_OF_YEAR] - 1
+                    textNextAlarm!!.text = context.resources.getQuantityString(R.plurals.next_alarm, days, days)
                 }
             }
             textNextAlarmDate!!.text = context
@@ -103,13 +107,10 @@ class MainAlarmFragment : Fragment() {
         val context: Context? = this.activity
         val sqLiteDBHelper = sqLiteDBHelper(context!!)
         // Check which request we're responding to
-// Make sure the request was successful
+        // Make sure the request was successful
         if (requestCode == ALARM_ADDING_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             alarmsAdapter!!.changeCursor(sqLiteDBHelper!!.allAlarms)
             updateNextActiveAlarm(sqLiteDBHelper)
-            //            Snackbar.make(this.textNextAlarm,
-//                    "New alarm created", LENGTH_SHORT)
-//                    .setAction("Action", null).show();
         }
         sqLiteDBHelper!!.close()
     }
@@ -133,13 +134,13 @@ class MainAlarmFragment : Fragment() {
 
     fun setActive(id: String, active: Boolean) {
         val context: Context = this.activity!!
+        val sqLiteDBHelper = sqLiteDBHelper(context)
+        sqLiteDBHelper!!.toggleAlarmActive(id, active)
         if (active) {
             setUpNextAlarm(id, context, true)
         } else {
             AlarmUtils.turnOffAlarm(id, context)
         }
-        val sqLiteDBHelper = sqLiteDBHelper(context)
-        sqLiteDBHelper!!.toggleAlarmActive(id, active)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
         sqLiteDBHelper.close()

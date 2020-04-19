@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
+import com.mecong.tenderalarm.sleep_assistant.Media
 
 interface NoisesItemClickListener {
     fun onItemClick(view: View?, position: Int)
 }
 
-class NoisesItemViewAdapter constructor(context: Context?, private val mData: List<SleepNoise>, var selectedPosition: Int)
+class NoisesItemViewAdapter constructor(context: Context?, private val mData: List<Media>, var selectedPosition: Int)
     : RecyclerView.Adapter<NoisesItemViewAdapter.ViewHolder>() {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
@@ -27,7 +28,7 @@ class NoisesItemViewAdapter constructor(context: Context?, private val mData: Li
     // binds the data to the TextView in each row
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mData[position]
-        holder.headerText.text = item.name
+        holder.headerText.text = item.title
         holder.itemView.isSelected = selectedPosition == position
     }
 
@@ -37,7 +38,7 @@ class NoisesItemViewAdapter constructor(context: Context?, private val mData: Li
     }
 
     // convenience method for getting data at click position
-    fun getItem(id: Int): SleepNoise {
+    fun getItem(id: Int): Media {
         return mData[id]
     }
 

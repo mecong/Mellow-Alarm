@@ -58,6 +58,10 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
                 mainActivity.setActive(alarmId, false)
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 toggleButton.tag = false
+            } else if (item.itemId == R.id.turn_on_alarm) {
+                mainActivity.setActive(alarmId, true)
+                toggleButton.setImageResource(R.drawable.ic_alarm_on)
+                toggleButton.tag = true
             }
             true
         }

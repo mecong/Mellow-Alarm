@@ -57,8 +57,8 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="#999B9B"
         android:baselineAlignBottom="false"
-        android:foreground="@drawable/round_add_24"
-        android:foregroundTintMode="src_in"
+        android:background="@drawable/round_add_24"
+        android:backgroundTintMode="src_in"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent" />
 

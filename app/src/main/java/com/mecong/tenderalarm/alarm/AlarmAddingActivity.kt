@@ -197,17 +197,17 @@ class AlarmAddingActivity : AppCompatActivity() {
             alarmId = extras.getString("alarmId")
         }
 
-        txtTicks.text = this.getString(R.string.ticksLabel, seekBarTicks!!.progress)
+        txtTicks.text = this.resources.getQuantityString(R.plurals.ticks_label, seekBarTicks!!.progress, seekBarTicks!!.progress)
         seekBarTicks.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                txtTicks.text = this@AlarmAddingActivity.getString(R.string.ticksLabel, progress)
+                txtTicks.text = this@AlarmAddingActivity.resources.getQuantityString(R.plurals.ticks_label, progress, progress)
             }
         })
 
-        txtSnooze.text = this.getString(R.string.snooze, seekBarSnooze!!.progress)
+        txtSnooze.text = this.resources.getQuantityString(R.plurals.snooze, seekBarSnooze!!.progress, seekBarSnooze!!.progress)
         seekBarSnooze.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                txtSnooze!!.text = this@AlarmAddingActivity.getString(R.string.snooze, progress)
+                txtSnooze!!.text = this@AlarmAddingActivity.resources.getQuantityString(R.plurals.snooze, progress, progress)
             }
         })
 

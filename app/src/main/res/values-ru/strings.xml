@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tender Alarm</string>
+    <string name="app_name">Нежный будильник</string>
     <string name="volume">Громкость</string>
     <string name="volume_percent">%d%%</string>
-    <string name="we">CР</string>
-    <string name="upcoming_alarm_notification_title">Будильник</string>
+    <string name="upcoming_alarm_notification_title">☕ Будильник</string>
     <string name="add">Добавить</string>
-    <string name="alarm_time">%02d:%02d</string>
     <string name="all_alarms_are_off">Все будильники выключены</string>
     <string name="work_days">Рабочие дни</string>
     <string name="noises">Шумы</string>
@@ -14,24 +12,117 @@
     <string name="online">Онлайн</string>
     <string name="url_address">URL адрес радиостанции</string>
     <string name="internet_streams">Интернет потоки</string>
-    <string name="local_audio">Локальные медиа</string>
+    <string name="local_audio">Локальные медиа</string>s
     <string name="can_not_stream">Не могу воспроизвести медиа!</string>
-    <string name="alarm_complexity" translatable="false">Сложность будильника %d</string>
+    <string name="alarm_complexity">Сложность будильника: %d</string>
     <string name="alarm_sound">Мелодия будильника</string>
-    <string name="alarm_turn_off_prompt">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</string>
+    <!--    <string name="alarm_turn_off_prompt">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</string>-->
+
+    <plurals name="alarm_turn_off_prompt">
+        <item quantity="one">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</item>
+        <item quantity="few">Перетащите круги на их места или встряхните телефон <big>%d</big> раза</item>
+        <item quantity="many">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</item>
+        <item quantity="other">Перетащите круги на их места или встряхните телефон <big>%d</big> раз</item>
+    </plurals>
+
+
     <string name="alarms">Будильники</string>
     <string name="cancel">Отмена</string>
     <string name="date">Дата</string>
     <string name="default_sound">Обычный</string>
     <string name="delete">Удалить</string>
     <string name="every_day">Каждый день</string>
-    <string name="fr">ПТ</string>
+    <string name="never">Никогда</string>
+
+    <plurals name="next_alarm">
+        <item quantity="one">Будильник через %d день</item>
+        <item quantity="few">Будильник через %d дня</item>
+        <item quantity="many">Будильник через %d дней</item>
+        <item quantity="other">Будильник через %d дней</item>
+    </plurals>
+
     <string name="mo">ПН</string>
-    <string name="never" translatable="false">Никогда</string>
-    <string name="next_alarm">Будильник через %d дней</string>
-    <string name="th" translatable="false">ЧТ</string>
-    <string name="tu" translatable="false">ВТ</string>
-    <string name="su" translatable="false">ВС</string>
-    <string name="sa" translatable="false">СБ</string>
-    <string name="sleep_minutes" translatable="false">%d минут</string>
+    <string name="tu">ВТ</string>
+    <string name="we">CР</string>
+    <string name="th">ЧТ</string>
+    <string name="fr">ПТ</string>
+    <string name="sa">СБ</string>
+    <string name="su">ВС</string>
+
+    <plurals name="n_hours_plural">
+        <item quantity="one">%02d час</item>
+        <item quantity="few">%02d часа</item>
+        <item quantity="many">%02d часов</item>
+        <item quantity="other">%02d часов</item>
+    </plurals>
+
+    <plurals name="n_minutes_plural">
+        <item quantity="one">%02d минута</item>
+        <item quantity="few">%02d минуты</item>
+        <item quantity="many">%02d минут</item>
+        <item quantity="other">%02d минут</item>
+    </plurals>
+
+    <string name="upcoming_alarm_notification_channel_name">☕ Будильник</string>
+    <string name="snooze_3_min">3 мин дремать</string>
+    <string name="snooze_5_min">5 мин дремать</string>
+    <string name="snooze_2_min">2 мин дремать</string>
+    <string name="message">Текст будильника</string>
+    <string name="turn_off">Выключить</string>
+    <string name="skip_1_day">Пропустить 1</string>
+    <string name="skip_2_day">Пропустить 2</string>
+    <string name="skip_3_day">Пропустить 3</string>
+    <string name="skip_4_day">Пропустить 4</string>
+    <string name="skip_5_day">Пропустить 5</string>
+    <string name="turn_on">Включить</string>
+    <string name="next_s_cancel">Пропустить %d</string>
+    <string name="time">Время</string>
+    <!--    <string name="next_alarm_within_hour">Будильник через %d минут</string>-->
+
+    <plurals name="next_alarm_within_hour">
+        <item quantity="one">Будильник через %d минуту</item>
+        <item quantity="few">Будильник через %d минуты</item>
+        <item quantity="many">Будильник через %d минут</item>
+        <item quantity="other">Будильник через %d минут</item>
+    </plurals>
+
+    <string name="next_alarm_soon">Будильник скоро зазвонит</string>
+    <string name="back">Назад</string>
+    <string name="show_time_to_sleep_notification">Сообщать когда пора спать</string>
+    <string name="show_heads_up_notification">Предупреждать за час до будильника</string>
+    <string name="time_to_sleep_notification_message">Осталось %s %s до утреннего будильника. Нажмите чтобы открыть Дремль.</string>
+    <string name="time_to_sleep_channel_name">🛏 Пора спать</string>
+    <string name="time_to_sleep_notification_title">🛏 Пора спать</string>
+    <string name="sleep_assistant_media_channel_name">Дремль</string>
+    <string name="sleep_timer">Дремать %1$tM:%1$tS</string>
+    <!--    <string name="ticks_label">Нежный будильник за %d минут</string>-->
+
+    <plurals name="ticks_label">
+        <item quantity="one">Нежный будильник за %d минуту</item>
+        <item quantity="few">Нежный будильник за %d минуты</item>
+        <item quantity="many">Нежный будильник за %d минут</item>
+        <item quantity="other">Нежный будильник за %d минут</item>
+    </plurals>
+
+    <string name="ticks_type_label">Звук нежного будильника</string>
+
+    <!--    <string name="snooze">Дремать %d минут</string>-->
+
+    <plurals name="snooze">
+        <item quantity="one">Дремать %d минуту</item>
+        <item quantity="few">Дремать %d минуты</item>
+        <item quantity="many">Дремать %d минут</item>
+        <item quantity="other">Дремать %d минут</item>
+    </plurals>
+
+
+    <string name="next_alarm_today" comment="Будильник через %02d часов %02d минут">Будильник через %s %s</string>
+    <string name="low_sound">Низкий</string>
+    <string name="high_sound">Высокий</string>
+    <string name="upcoming_alarm_notification_message">Отменить будильник в %1$tH:%1$tM</string>
+    <string name="upcoming_alarm_canceled_toast" translatable="false">Будильник в %1$tH:%1$tM отменен</string>
+    <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
+    <string name="next_alarm_date">%1$tA, %1$td %1$tB, %1$tY</string>
+
+
 </resources>

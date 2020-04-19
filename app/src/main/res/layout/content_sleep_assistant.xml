@@ -60,7 +60,7 @@
         android:id="@+id/textViewMinutes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sleep_minutes"
+        android:text=""
         android:textColor="#E7E8E2"
         app:layout_constraintEnd_toEndOf="@+id/sliderSleepTime"
         app:layout_constraintStart_toStartOf="@+id/sliderSleepTime"

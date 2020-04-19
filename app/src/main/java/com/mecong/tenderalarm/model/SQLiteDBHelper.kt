@@ -19,7 +19,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         values.put(URI, "http://listen2.myradio24.com:9000/8226")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
 
-        values.put(TITLE, "MilanoLounge")
+        values.put(TITLE, "Milano Lounge")
         values.put(URI, "http://antares.dribb.com:5080/autodj")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
 
@@ -35,7 +35,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         values.put(URI, "http://mediaserv30.live-streams.nl:8088/live")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
 
-        values.put(TITLE, "JR.FM chill/Lounge Radio")
+        values.put(TITLE, "JR.FM Chill/Lounge Radio")
         values.put(URI, "http://149.56.157.81:5104/;stream/1")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
     }
@@ -118,8 +118,8 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         this.writableDatabase.use { writableDatabase ->
             val updateValues = ContentValues(1)
             updateValues.put("active", if (active) 1 else 0)
+            updateValues.put("canceled_next_alarms", 0)
             if (!active) {
-                updateValues.put("canceled_next_alarms", 0)
                 updateValues.put("next_time", -1)
                 updateValues.put("next_request_code", -1)
             }
@@ -330,7 +330,7 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         private const val TABLE_OFFLINE_MEDIA = "offline_media"
         private const val TABLE_PLAYLISTS = "offline_media_playlists"
         private const val TABLE_PROPERTIES = "properties"
-        private const val SELECT_NEXT_ALARM = "SELECT * FROM $TABLE_ALARMS WHERE active=1 and canceled_next_alarms=0 ORDER BY next_not_canceled_time LIMIT 1"
+        private const val SELECT_NEXT_ALARM = "SELECT * FROM $TABLE_ALARMS WHERE active=1 ORDER BY next_not_canceled_time LIMIT 1"
         private const val DATABASE_NAME = "my_alarm_database"
 
         private var sInstance: SQLiteDBHelper? = null

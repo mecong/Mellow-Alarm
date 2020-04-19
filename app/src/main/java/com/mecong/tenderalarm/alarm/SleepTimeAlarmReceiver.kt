@@ -53,7 +53,13 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT)
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-        val message = context.getString(R.string.time_to_sleep_notification_message, calendar)
+
+        val hours = calendar[Calendar.HOUR_OF_DAY]
+        val minutes = calendar[Calendar.MINUTE]
+        val hoursText = context.resources.getQuantityString(R.plurals.n_hours_plural, hours, hours)
+        val minutesText = context.resources.getQuantityString(R.plurals.n_hours_plural, minutes, minutes)
+        val message = context.getString(R.string.time_to_sleep_notification_message, hoursText, minutesText)
+
         val builder = NotificationCompat.Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)
                 .setSmallIcon(R.drawable.launcher)
                 .setContentTitle(context.getString(R.string.time_to_sleep_notification_title))

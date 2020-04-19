@@ -72,12 +72,12 @@ class SleepAssistantFragment : Fragment() {
         timeMinutes = dbHelper.getPropertyLong(PropertyName.SLEEP_TIME) ?: 39
 
         sliderSleepTime.setCurrentValue(timeMinutes)
-        textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
+        textViewMinutes.text = context.resources.getQuantityString(R.plurals.n_minutes_plural, timeMinutes.toInt(), timeMinutes.toInt())
 
         sliderSleepTime.addListener(object : SleepTimerViewValueListener {
             override fun onValueChanged(newValue: Long) {
                 dbHelper.setPropertyString(PropertyName.SLEEP_TIME, newValue.toString())
-                textViewMinutes.text = context.getString(R.string.sleep_minutes, newValue)
+                textViewMinutes.text = context.resources.getQuantityString(R.plurals.n_minutes_plural, newValue.toInt(), newValue.toInt())
                 timeMinutes = newValue
                 timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
                 volumeStep = volume * STEP_MILLIS / timeMs
@@ -105,7 +105,7 @@ class SleepAssistantFragment : Fragment() {
                     sliderSleepTime.setCurrentValue(timeMinutes)
                     timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
 
-                    textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
+                    textViewMinutes.text = context.resources.getQuantityString(R.plurals.n_minutes_plural, timeMinutes.toInt(), timeMinutes.toInt())
 
                     volume = 30f
                     sliderVolume.setCurrentValue(volume.toLong())
@@ -117,7 +117,7 @@ class SleepAssistantFragment : Fragment() {
             } else {
                 timeMinutes = TimeUnit.MILLISECONDS.toMinutes(timeMs)
                 sliderSleepTime.setCurrentValue(timeMinutes)
-                textViewMinutes.text = context.getString(R.string.sleep_minutes, timeMinutes)
+                textViewMinutes.text = context.resources.getQuantityString(R.plurals.n_minutes_plural, timeMinutes.toInt(), timeMinutes.toInt())
 
                 volume -= volumeStep
                 radioService.audioVolume = volume / 100f

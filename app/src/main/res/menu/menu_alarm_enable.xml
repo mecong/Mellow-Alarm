@@ -20,4 +20,8 @@
     <item
         android:id="@+id/turn_off_alarm"
         android:title="@string/turn_off" />
+
+    <item
+        android:id="@+id/turn_on_alarm"
+        android:title="@string/turn_on" />
 </menu>

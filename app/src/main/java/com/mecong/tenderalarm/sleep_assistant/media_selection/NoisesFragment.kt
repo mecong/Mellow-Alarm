@@ -19,6 +19,7 @@ import org.greenrobot.eventbus.EventBus
 class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener {
     private var selectedPosition = 0
     private lateinit var adapter: NoisesItemViewAdapter
+    private lateinit var noises: List<Media>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +34,7 @@ class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener
         noisesList.layoutManager = LinearLayoutManager(view.context)
 
         val sqLiteDBHelper = SQLiteDBHelper.sqLiteDBHelper(this.context!!)!!
+        noises = retrieveNoises()
 
         val savedActiveTab = sqLiteDBHelper.getPropertyInt(PropertyName.ACTIVE_TAB)
 
@@ -42,9 +44,10 @@ class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener
             initPlaylist(selectedPosition, false)
         }
 
-        adapter = NoisesItemViewAdapter(view.context, retrieveNoises(), selectedPosition)
+        adapter = NoisesItemViewAdapter(view.context, noises, selectedPosition)
         adapter.setClickListener(this)
         noisesList.adapter = adapter
+        noisesList.scrollToPosition(selectedPosition)
     }
 
     override fun onItemClick(view: View?, position: Int) {
@@ -52,12 +55,10 @@ class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener
     }
 
     private fun initPlaylist(position: Int, active: Boolean) {
-        val media = retrieveNoises().map { Media(it.url, it.name) }.toList()
-
         val newPlayList = if (active)
-            SleepAssistantPlayListActive(position, media, SleepMediaType.NOISE, -1)
+            SleepAssistantPlayListActive(position, noises, SleepMediaType.NOISE, -1)
         else
-            SleepAssistantPlayListIdle(position, media, SleepMediaType.NOISE, -1)
+            SleepAssistantPlayListIdle(position, noises, SleepMediaType.NOISE, -1)
 
         EventBus.getDefault().post(newPlayList)
     }

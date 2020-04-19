@@ -95,7 +95,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     }
 
     private fun setMode(sqLiteDBHelper: SQLiteDBHelper) {
-
+        var selectedPosition = 0
         mediaListView.adapter = when (currentPlaylistID) {
             -1L -> {
                 backButton.visibility = GONE
@@ -108,7 +108,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 val savedActiveTab = sqLiteDBHelper.getPropertyInt(ACTIVE_TAB)
                 val savedPlayListId: Long = (sqLiteDBHelper.getPropertyInt(PLAYLIST_ID) ?: -1).toLong()
 
-                var selectedPosition = 0
+
                 if (savedActiveTab == 0 && savedPlayListId == currentPlaylistID) {
                     selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_POSITION) ?: 0
                 }
@@ -118,6 +118,8 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 mediaItemViewAdapter
             }
         }
+
+        mediaListView.scrollToPosition(selectedPosition)
 
         buttonAdd.setOnClickListener {
             if (currentPlaylistID == -1L) {

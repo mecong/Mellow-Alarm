@@ -129,7 +129,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             alarm_info!!.text = entity!!.message
             val complexity = entity.complexity
             shakeCount = complexity * 2
-            taskNote!!.text = this.getString(R.string.alarm_turn_off_prompt, shakeCount)
+            taskNote!!.text = this.resources.getQuantityString(R.plurals.alarm_turn_off_prompt, shakeCount, shakeCount)
             turnOffComponent!!.complexity = complexity
             val snoozeOnClickListener = View.OnClickListener { v ->
                 val time = v.tag.toString().toInt()
@@ -226,7 +226,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                         HyperLog.d(TAG, "Alarm stopped by accelerometer")
                         turnOffAlarm()
                     }
-                    taskNote!!.text = this.getString(R.string.alarm_turn_off_prompt, shakeCount)
+                    taskNote!!.text = this.resources.getQuantityString(R.plurals.alarm_turn_off_prompt, shakeCount, shakeCount)
                 }
             }
         }

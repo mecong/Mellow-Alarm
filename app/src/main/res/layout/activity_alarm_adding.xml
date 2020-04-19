@@ -318,7 +318,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/ticksLabel" />
+                android:text="" />
 
             <SeekBar
                 android:id="@+id/seekBarTicks"
@@ -346,11 +346,10 @@
             app:layout_constraintTop_toBottomOf="@+id/ticksLayout">
 
             <TextView
-                android:id="@+id/txtTicksType"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="@string/ticksTypeLabel" />
+                android:text="@string/ticks_type_label" />
 
             <Spinner
                 android:id="@+id/spinnerTicksType"
@@ -377,7 +376,7 @@
                 android:id="@+id/txtSnooze"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/snooze"
+                android:text=""
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

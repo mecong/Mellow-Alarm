@@ -15,16 +15,18 @@ class MediaNotificationManager(private val service: RadioService) {
     private val notificationManager: NotificationManagerCompat
 
     fun startNotify(playbackStatus: String, contentText: String?) {
-        val largeIcon = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
-        var icon = R.drawable.ic_pause_white
+        val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.launcher)
         val playbackAction = Intent(service, RadioService::class.java)
         playbackAction.action = RadioService.ACTION_PAUSE
-        var action = PendingIntent.getService(service, 1, playbackAction, 0)
+
+        var icon = R.drawable.ic_pause_white
+        var pauseAction = PendingIntent.getService(service, 1, playbackAction, 0)
         if (playbackStatus == RadioService.PAUSED) {
             icon = R.drawable.ic_play_white
             playbackAction.action = RadioService.ACTION_PLAY
-            action = PendingIntent.getService(service, 2, playbackAction, 0)
+            pauseAction = PendingIntent.getService(service, 2, playbackAction, 0)
         }
+
         val stopIntent = Intent(service, RadioService::class.java)
         stopIntent.action = RadioService.ACTION_STOP
         val stopAction = PendingIntent.getService(service, 3, stopIntent, 0)
@@ -41,9 +43,8 @@ class MediaNotificationManager(private val service: RadioService) {
                 .setLargeIcon(largeIcon)
                 .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(android.R.drawable.stat_sys_headset)
-                .addAction(icon, "pause", action)
-                .addAction(R.drawable.ic_stop_white, "stop", stopAction)
+                .setSmallIcon(R.drawable.sleep_inactive)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "stop", stopAction)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
         //                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()

@@ -60,6 +60,8 @@ class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickList
         mediaItemViewAdapter = MediaItemViewAdapter(view.context, selectedPosition,
                 list, this, true)
 
+        mediaListView.scrollToPosition(selectedPosition)
+
         mediaListView.adapter = mediaItemViewAdapter
 
         val buttonAdd = view.findViewById<Button>(R.id.buttonAdd)

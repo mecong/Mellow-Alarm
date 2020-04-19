@@ -10,18 +10,11 @@
     <color name="windowBackground">#17191A</color>
     <color name="textColor2">#696767</color>
 
-    <color name="pressed_color">#e8eaed</color>
-    <color name="selected_color">#888</color>
-    <color name="focused_color">#AAA</color>
-
-    <color name="ivory">#FFFFF0</color>
     <color name="red">#FF0000</color>
     <color name="gray">#808080</color>
     <color name="dimgray">#696969</color>
     <color name="green">#008000</color>
     <color name="appGreen">#327C1F</color>
-    <color name="appDark1">#323030</color>
-    <color name="appDark2">#303230</color>
 
 
 </resources>
