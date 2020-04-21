@@ -7,12 +7,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/appGreen</item>
 
-        <item name="android:textColor">@color/textColor2</item>
-        <item name="android:editTextColor">@color/textColor2</item>
-        <item name="android:amPmTextColor">@color/textColor2</item>
+        <item name="android:textColor">@color/textColor3</item>
+        <item name="android:editTextColor">@color/textColor3</item>
+        <item name="android:amPmTextColor">@color/textColor3</item>
 
         <item name="android:checkboxStyle">@style/MyCheckBoxStyle</item>
-        <item name="android:seekBarStyle">@style/SeekBar</item>
+        <!--        <item name="android:seekBarStyle">@style/SeekBar</item>-->
+        <item name="android:spinnerDropDownItemStyle">@style/mySpinnerItemStyle</item>
         <item name="android:radioButtonStyle">@style/MyRadioButtonStyle</item>
         <item name="android:editTextStyle">@style/MyEditText</item>
 
@@ -56,26 +57,32 @@
 
 
     <style name="MyEditText" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">@color/textColor2</item>
+        <item name="android:textColor">@color/textColor3</item>
         <item name="android:textColorHint">@color/green</item>
-        <item name="buttonTint">@color/textColor2</item>
+        <item name="buttonTint">@color/textColor3</item>
     </style>
 
     <style name="MyCheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
-        <item name="android:textColor">@color/textColor2</item>
-        <item name="buttonTint">@color/textColor2</item>
+        <item name="android:textColor">@color/textColor3</item>
+        <item name="buttonTint">@color/textColor3</item>
     </style>
 
     <style name="MyRadioButtonStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
-        <item name="android:textColor">@color/textColor2</item>
-        <item name="buttonTint">@color/textColor2</item>
+        <item name="android:textColor">@color/textColor3</item>
+        <item name="buttonTint">@color/textColor3</item>
     </style>
 
-    <style name="SeekBar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:progressBackgroundTint">@color/red</item>
-        <item name="android:progressTint">@color/red</item>
-        <item name="android:colorControlActivated">@color/red</item>
-        <item name="android:colorControlNormal">@color/red</item>
+
+    <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
+
+
+    <!--    <style name="SeekBar" parent="Widget.AppCompat.SeekBar">-->
+    <!--        <item name="android:progressBackgroundTint">@color/red</item>-->
+    <!--        <item name="android:progressTint">@color/red</item>-->
+    <!--        <item name="android:colorControlActivated">@color/red</item>-->
+    <!--        <item name="android:colorControlNormal">@color/red</item>-->
+    <!--    </style>-->
 
 </resources>

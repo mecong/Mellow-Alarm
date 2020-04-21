@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.*
@@ -184,28 +185,36 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
             // Pull that URI using resultData.getData().
 
             if (resultData != null) {
-                val clipData = resultData.clipData
-                if (clipData == null) {
-                    val uri = resultData.data
-                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
-                    context!!.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    addLocalFileMediaRecord(uri.toString(), dumpFileMetaData(uri))
-                } else {
-                    for (i in 0 until clipData.itemCount) {
-                        val path = clipData.getItemAt(i)
-                        HyperLog.i(AlarmUtils.TAG, "Uri: " + path.uri.path!! + " i=$i")
-                        context!!.contentResolver.takePersistableUriPermission(path.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        addLocalFileMediaRecord(path.uri.toString(), dumpFileMetaData(path.uri))
+
+                AsyncTask.execute {
+                    val clipData = resultData.clipData
+                    if (clipData == null) {
+                        val uri = resultData.data
+                        HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
+                        context!!.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        addLocalFileMediaRecord(uri.toString(), dumpFileMetaData(uri))
+                    } else {
+                        for (i in 0 until clipData.itemCount) {
+                            val path = clipData.getItemAt(i)
+                            HyperLog.i(AlarmUtils.TAG, "Uri: " + path.uri.path!! + " i=$i")
+                            context!!.contentResolver.takePersistableUriPermission(path.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            addLocalFileMediaRecord(path.uri.toString(), dumpFileMetaData(path.uri))
+                        }
                     }
                 }
+
+
+                val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+                mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
             }
         }
+
+        EventBus.getDefault().register(this)
     }
 
     private fun addLocalFileMediaRecord(url: String, title: String?) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, url, title)
-        mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
     }
 
     private fun dumpFileMetaData(uri: Uri?): String? {
@@ -312,12 +321,11 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     override fun onStart() {
         super.onStart()
         HyperLog.i(AlarmUtils.TAG, "LocalFilesMediaFragment OnStart")
-        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
         HyperLog.i(AlarmUtils.TAG, "LocalFilesMediaFragment OnStop")
-        EventBus.getDefault().unregister(this)
+//        EventBus.getDefault().unregister(this)
     }
 }

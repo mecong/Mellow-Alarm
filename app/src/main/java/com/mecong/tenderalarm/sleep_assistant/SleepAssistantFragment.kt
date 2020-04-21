@@ -140,6 +140,9 @@ class SleepAssistantFragment : Fragment() {
                 }
             }
         }
+
+        EventBus.getDefault().register(this)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -229,13 +232,12 @@ class SleepAssistantFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         HyperLog.i(AlarmUtils.TAG, "SA OnStart")
-        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
         HyperLog.i(AlarmUtils.TAG, "SA onStop")
-        EventBus.getDefault().unregister(this)
+//        EventBus.getDefault().unregister(this)
     }
 
     override fun onPause() {

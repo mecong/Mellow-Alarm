@@ -21,7 +21,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.INFO)
+        HyperLog.setLogLevel(Log.VERBOSE)
         HyperLog.i(TAG, "Sleep time job started")
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val nextActiveAlarm = sqLiteDBHelper!!.nextActiveAlarm
@@ -57,7 +57,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         val hours = calendar[Calendar.HOUR_OF_DAY]
         val minutes = calendar[Calendar.MINUTE]
         val hoursText = context.resources.getQuantityString(R.plurals.n_hours_plural, hours, hours)
-        val minutesText = context.resources.getQuantityString(R.plurals.n_hours_plural, minutes, minutes)
+        val minutesText = context.resources.getQuantityString(R.plurals.n_minutes_plural, minutes, minutes)
         val message = context.getString(R.string.time_to_sleep_notification_message, hoursText, minutesText)
 
         val builder = NotificationCompat.Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)

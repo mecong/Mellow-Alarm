@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import com.hypertrack.hyperlog.HyperLog
+import com.mecong.tenderalarm.alarm.AlarmNotifyingService.Companion.ALARM_PLAYING
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
@@ -15,8 +16,8 @@ class TenderAlarmReceiver : BroadcastReceiver() {
     //adb shell dumpsys alarm > alarms.dump
     override fun onReceive(context: Context, intent: Intent) {
         HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.INFO)
-        val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
+        HyperLog.setLogLevel(Log.VERBOSE)
+        val alarmId = intent.getStringExtra(ALARM_ID_PARAM) ?: return
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId)
         SleepTimeAlarmReceiver.cancelNotification(context)
@@ -29,7 +30,11 @@ class TenderAlarmReceiver : BroadcastReceiver() {
             } else {
                 sqLiteDBHelper.toggleAlarmActive(alarmId, false)
             }
-            startAlarmNotification(context, alarmId)
+
+            if (ALARM_PLAYING == null || ALARM_PLAYING == alarmId.toInt()) {
+                ALARM_PLAYING = alarmId.toInt()
+                startAlarmNotification(context, alarmId)
+            }
         } else {
             if (entity.days > 0) {
                 entity.canceledNextAlarms = canceledNextAlarms - 1
@@ -40,6 +45,8 @@ class TenderAlarmReceiver : BroadcastReceiver() {
     }
 
     private fun startAlarmNotification(context: Context, alarmId: String) {
+
+
         val startAlarmIntent = Intent(context, AlarmNotifyingService::class.java)
         startAlarmIntent.putExtra(ALARM_ID_PARAM, alarmId)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

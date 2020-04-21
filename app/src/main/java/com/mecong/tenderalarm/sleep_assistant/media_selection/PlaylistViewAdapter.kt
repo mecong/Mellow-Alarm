@@ -3,10 +3,7 @@ package com.mecong.tenderalarm.sleep_assistant.media_selection
 import android.app.Dialog
 import android.content.Context
 import android.database.Cursor
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.mecong.tenderalarm.R
@@ -71,7 +68,10 @@ class PlaylistViewAdapter constructor(
 
             btnDeleteItem.setOnClickListener(View.OnClickListener {
                 if (adapterPosition == RecyclerView.NO_POSITION) return@OnClickListener
-                val popup = PopupMenu(context, btnDeleteItem)
+
+                val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
+                val popup = PopupMenu(wrapper, btnDeleteItem)
+//                val popup = PopupMenu(context, btnDeleteItem)
                 //Inflating the Popup using xml file
                 popup.menuInflater.inflate(R.menu.menu_media_element, popup.menu)
                 //registering popup with OnMenuItemClickListener

@@ -51,13 +51,12 @@ object AlarmUtils {
         setupUpcomingAlarmNotification(context, alarmEntity)
     }
 
-    @JvmStatic
-    fun snoozeAlarm(minutes: Int, alarmEntity: AlarmEntity?, context: Context) {
+    fun snoozeAlarmNotification(minutes: Int, alarmEntity: AlarmEntity?, context: Context) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context)
-        val calendarNow = Calendar.getInstance()
-        calendarNow.add(Calendar.MINUTE, minutes)
-        setTheAlarm(calendarNow.timeInMillis, alarmIntent, alarmMgr)
+        val calendarSnoozeEnd = Calendar.getInstance()
+        calendarSnoozeEnd.add(Calendar.MINUTE, minutes)
+        setTheAlarm(calendarSnoozeEnd.timeInMillis, alarmIntent, alarmMgr)
     }
 
     private fun alarmViaBroadcastReceiver(alarmEntity: AlarmEntity?, context: Context): PendingIntent {

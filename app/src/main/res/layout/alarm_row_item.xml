@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/custom_ripple"
+    android:gravity="center"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -28,49 +30,61 @@
             android:textColor="#E9DEDE"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/textRow3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="5dp"
+            android:textColor="#E9DEDE"
+            android:textSize="12sp" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewCanceled"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_weight="0"
-        android:gravity="center_horizontal|center_vertical"
-        android:text="@string/next_s_cancel"
-        android:textAlignment="center"
-        android:textColor="#E9DEDE" />
 
-
-    <ImageButton
-        android:id="@+id/toggleButton"
+    <LinearLayout
+        android:id="@+id/button"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0"
         android:adjustViewBounds="false"
         android:background="#00FFFFFF"
         android:clickable="true"
-        android:contentDescription="@string/switch_alarm_state"
         android:focusable="true"
-        android:foregroundTintMode="src_in"
-        android:src="@drawable/ic_alarm_off"
-        android:minWidth="40sp"
-        android:scaleType="center"
-        android:tint="#999B9B" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/toggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/switch_alarm_state"
+            android:foregroundTintMode="src_in"
+            android:scaleType="center"
+            android:src="@drawable/ic_alarm_off"
+            android:tint="@color/gray" />
+
+        <TextView
+            android:id="@+id/textViewSkipped"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:alpha="0.5"
+            android:background="#00FFFFFF"
+            android:gravity="top|start"
+            tools:text="1" />
+    </LinearLayout>
+
 
     <ImageButton
         android:id="@+id/btnDeleteAlarm"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:adjustViewBounds="false"
+        android:layout_height="wrap_content"
         android:background="#00FFFFFF"
         android:clickable="true"
-        android:contentDescription="@string/delete"
         android:focusable="true"
-        android:minWidth="40sp"
-        android:scaleType="center"
+        android:contentDescription="@string/delete"
+        android:scaleType="fitCenter"
         android:src="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>

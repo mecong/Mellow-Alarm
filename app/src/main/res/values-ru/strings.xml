@@ -120,9 +120,14 @@
     <string name="low_sound">Низкий</string>
     <string name="high_sound">Высокий</string>
     <string name="upcoming_alarm_notification_message">Отменить будильник в %1$tH:%1$tM</string>
-    <string name="upcoming_alarm_canceled_toast" translatable="false">Будильник в %1$tH:%1$tM отменен</string>
+    <string name="upcoming_alarm_canceled_toast">Будильник в %1$tH:%1$tM отменен</string>
     <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
     <string name="next_alarm_date">%1$tA, %1$td %1$tB, %1$tY</string>
+    <string name="if_you_have_comments_or_ideas_please_visit_my_page">Если у вас есть идеи или комментарии, пожалуйста посетите мою страницу:</string>
+    <string name="radios">Радио</string>
+    <string name="about">О программе</string>
+    <string name="all_rights_on_radio_stations_belongs_to_their_owners">Все права на радиостанции принаддежат их владельцам</string>
+    <string name="close">Закрыть</string>
 
 
 </resources>

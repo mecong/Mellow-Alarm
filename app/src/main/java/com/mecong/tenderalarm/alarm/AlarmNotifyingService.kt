@@ -5,13 +5,20 @@ import android.app.Service
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
 import android.media.AudioManager
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC
+import com.google.android.exoplayer2.C.USAGE_ALARM
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
@@ -21,7 +28,6 @@ import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import timber.log.Timber
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -30,11 +36,32 @@ class AlarmNotifyingService : Service() {
     private lateinit var runnableVolume: Runnable
     private lateinit var runnableRealAlarm: Runnable
 
-    var alarmMediaPlayer: MediaPlayer? = null
     var handlerVolume: Handler? = null
     var random = Random()
     var handlerTicks: Handler? = null
-    var ticksMediaPlayer: MediaPlayer? = null
+    private lateinit var exoPlayer: SimpleExoPlayer
+
+    private fun initExoPlayer(streamUrl: Uri, repeatMode: Int) {
+        exoPlayer = SimpleExoPlayer.Builder(applicationContext)
+                .build()
+                .apply {
+                    setWakeMode(C.WAKE_MODE_LOCAL)
+                    setHandleAudioBecomingNoisy(true)
+                }
+
+        val audioAttributesAlarm = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
+                .setContentType(CONTENT_TYPE_MUSIC)
+                .setUsage(USAGE_ALARM)
+                .build()
+
+        exoPlayer.setAudioAttributes(audioAttributesAlarm, false)
+
+        val dataSourceFactory = DefaultDataSourceFactory(this.baseContext, "Tender Alarm")
+        val mediaSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(streamUrl)
+        exoPlayer.prepare(mediaSource)
+        exoPlayer.repeatMode = repeatMode
+    }
 
     override fun onCreate() {
         EventBus.getDefault().register(this)
@@ -87,16 +114,11 @@ class AlarmNotifyingService : Service() {
         HyperLog.d(TAG, "Snooze for $minutes min")
         handlerTicks!!.removeCallbacksAndMessages(null)
         cancelVolumeIncreasing()
-        if (ticksMediaPlayer!!.isPlaying) {
-            ticksMediaPlayer!!.pause()
-            ticksMediaPlayer!!.seekTo(0)
+
+        if (exoPlayer.isPlaying) {
+            exoPlayer.stop()
+            exoPlayer.seekTo(0)
         }
-        if (alarmMediaPlayer!!.isPlaying) {
-            alarmMediaPlayer!!.pause()
-            alarmMediaPlayer!!.seekTo(0)
-        }
-        //        handlerTicks.postDelayed(runnableRealAlarm, minutes * 60 * 1000);
-//        handlerVolume.postDelayed(runnableVolume, minutes * 60 * 1000);
     }
 
     private fun cancelVolumeIncreasing() {
@@ -104,65 +126,68 @@ class AlarmNotifyingService : Service() {
     }
 
     private fun startSound(entity: AlarmEntity?) {
-        val audioAttributesAlarm = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .build()
         val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, streamMaxVolume, 0)
 
-        val tick = if (entity?.ticksType == 0) R.raw.tick else R.raw.ding1
+        val defaultVolume = 0.01f
+        val volumeIncreaseDelayMs = 2000L
+        val ticksTimeMs = entity!!.ticksTime * 60 * 1000
+        val amountIncreases = ticksTimeMs / volumeIncreaseDelayMs
+        var volumeIncreaseStep = if (amountIncreases.compareTo(0) == 0) 0.01f else (0.6f - defaultVolume) / amountIncreases
+
+        val tick = if (entity.ticksType == 0) R.raw.tick else R.raw.ding1
 
         // Create the Handler object (on the main thread by default)
         handlerTicks = Handler()
-        val volume = floatArrayOf(0.01f)
+
+        var volumeCounter = defaultVolume
         try {
-            ticksMediaPlayer = MediaPlayer()
-            ticksMediaPlayer!!.setAudioAttributes(audioAttributesAlarm)
-            ticksMediaPlayer!!.setDataSource(this, Uri.parse("android.resource://"
-                    + packageName + "/" + tick))
-            ticksMediaPlayer!!.prepare()
-            ticksMediaPlayer!!.setVolume(volume[0], volume[0])
+            initExoPlayer(RawResourceDataSource.buildRawResourceUri(tick), Player.REPEAT_MODE_OFF)
+            exoPlayer.volume = volumeCounter
         } catch (e: IOException) {
             //TODO: make correct reaction
             e.printStackTrace()
         }
-        try {
-            alarmMediaPlayer = MediaPlayer()
-            alarmMediaPlayer!!.setAudioAttributes(audioAttributesAlarm)
-            val melody = getMelody(this, entity)
-            alarmMediaPlayer!!.setDataSource(this, melody)
-            alarmMediaPlayer!!.prepare()
-            alarmMediaPlayer!!.isLooping = true
-        } catch (ex: Exception) {
-            Timber.e(ex)
-        }
-        val predAlarm: Runnable = object : Runnable {
+
+        val predAlarm = object : Runnable {
             override fun run() {
                 try {
-                    if (!ticksMediaPlayer!!.isPlaying) {
-                        ticksMediaPlayer!!.start()
+                    if (!exoPlayer.isPlaying) {
+                        exoPlayer.seekTo(0)
+                        exoPlayer.playWhenReady = true
                     }
-                    HyperLog.v(TAG, "Tick!")
+
+                    HyperLog.i(TAG, "Tick!")
                 } catch (e: Exception) {
                     HyperLog.e(TAG, "Exception: " + e.message, e)
                 }
                 // Repeat this the same runnable code block again another 20 seconds
                 // 'this' is referencing the Runnable object
-                handlerTicks!!.postDelayed(this, random.nextInt(20000).toLong())
+                val twentySeconds = 20000
+                handlerTicks!!.postDelayed(this, random.nextInt(twentySeconds).toLong())
             }
         }
+
         runnableRealAlarm = Runnable {
             try {
                 // Removes pending code execution
-                handlerTicks!!.removeCallbacks(predAlarm)
-                if (ticksMediaPlayer!!.isPlaying) {
-                    ticksMediaPlayer!!.stop()
+                handlerTicks!!.removeCallbacksAndMessages(predAlarm)
+
+                if (exoPlayer.isPlaying) {
+                    exoPlayer.stop()
+                    exoPlayer.release()
                 }
-                volume[0] = 0.01f
-                alarmMediaPlayer!!.setVolume(volume[0], volume[0])
-                alarmMediaPlayer!!.start()
+
+                initExoPlayer(getMelody(entity), Player.REPEAT_MODE_ONE)
+                volumeCounter = defaultVolume
+                exoPlayer.volume = volumeCounter
+
+                val tenMinutesMs = 10 * 60 * 1000
+                volumeIncreaseStep = (1 - defaultVolume) / (tenMinutesMs / volumeIncreaseDelayMs)
+
+                exoPlayer.playWhenReady = true
+
                 handlerVolume!!.removeCallbacks(runnableVolume)
                 handlerVolume!!.post(runnableVolume)
                 HyperLog.i(TAG, "Real alarm started!")
@@ -170,62 +195,59 @@ class AlarmNotifyingService : Service() {
                 e.printStackTrace()
             }
         }
+
+
         handlerVolume = Handler()
         runnableVolume = object : Runnable {
             override fun run() {
                 try {
-                    volume[0] += 0.001f
-                    HyperLog.v(TAG, "New alarm volume: " + volume[0])
-                    if (alarmMediaPlayer!!.isPlaying) {
-                        alarmMediaPlayer!!.setVolume(volume[0], volume[0])
+                    volumeCounter += volumeIncreaseStep
+                    HyperLog.v(TAG, "New alarm volume: $volumeCounter")
+
+                    if (exoPlayer.isPlaying) {
+                        exoPlayer.volume = volumeCounter
                     }
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                if (volume[0] < 1) handlerVolume!!.postDelayed(this, 2000)
+                if (volumeCounter < 1) handlerVolume!!.postDelayed(this, volumeIncreaseDelayMs)
             }
         }
-        if (entity!!.ticksTime > 0) {
+
+        if (ticksTimeMs > 0) {
             handlerTicks!!.post(predAlarm)
+            handlerVolume!!.post(runnableVolume)
         }
-        handlerTicks!!.postDelayed(runnableRealAlarm, entity.ticksTime * 60 * 1000.toLong())
+
+        handlerTicks!!.postDelayed(runnableRealAlarm, ticksTimeMs.toLong())
     }
 
-    private fun getMelody(context: Context, entity: AlarmEntity?): Uri {
+    private fun getMelody(entity: AlarmEntity?): Uri {
         return if (entity!!.melodyUrl != null) {
             Uri.parse(entity.melodyUrl)
         } else {
-            Uri.parse(String.format(Locale.ENGLISH, "android.resource://%s/%d",
-                    context.packageName, R.raw.default_alarm_sound))
+            RawResourceDataSource.buildRawResourceUri(R.raw.default_alarm_sound)
         }
     }
 
     private fun stopAlarmNotification() {
         HyperLog.i(TAG, "Stop Alarm notification")
         handlerTicks!!.removeCallbacksAndMessages(null)
-        stopTicksAlarm()
-        stopAlarmMediaPlayer()
+        stopAlarmSound()
         alarmEndVibration()
         cancelVolumeIncreasing()
         stopForeground(true)
         val notificationManager = NotificationManagerCompat.from(this)
         notificationManager.cancelAll()
+        ALARM_PLAYING = null
         stopSelf()
     }
 
-    private fun stopTicksAlarm() {
-        if (ticksMediaPlayer!!.isPlaying) {
-            ticksMediaPlayer!!.stop()
-            ticksMediaPlayer!!.reset()
-            ticksMediaPlayer!!.release()
-        }
-    }
-
-    private fun stopAlarmMediaPlayer() {
-        if (alarmMediaPlayer!!.isPlaying) {
-            alarmMediaPlayer!!.stop()
-            alarmMediaPlayer!!.reset()
-            alarmMediaPlayer!!.release()
+    private fun stopAlarmSound() {
+        if (exoPlayer.isPlaying) {
+            exoPlayer.stop()
+            exoPlayer.release()
         }
     }
 
@@ -251,7 +273,7 @@ class AlarmNotifyingService : Service() {
                 startAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarmNotification = NotificationCompat.Builder(context, MainActivity.ALARM_CHANNEL_ID)
                 .setSmallIcon(R.drawable.launcher)
-                .setContentTitle("Alarm")
+                .setContentTitle("Alarm Clock")
                 .setContentText(entity.message)
                 .setContentIntent(pendingIntent)
                 .setFullScreenIntent(pendingIntent, true)
@@ -269,6 +291,7 @@ class AlarmNotifyingService : Service() {
     }
 
     companion object {
+        var ALARM_PLAYING: Int? = null
         private val CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/alarms")
     }
 }

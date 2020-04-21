@@ -7,6 +7,7 @@ import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
@@ -95,13 +96,14 @@ class AlarmAddingActivity : AppCompatActivity() {
 // Instead, a URI to that document will be contained in the return intent
 // provided to this method as a parameter.
 // Pull that URI using resultData.getData().
-            val uri: Uri?
             if (resultData != null) {
-                uri = resultData.data
-                HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
-                txtMelody!!.text = dumpFileMetaData(uri)
-                melodyUrl = uri.toString()
-                this.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                AsyncTask.execute {
+                    val uri = resultData.data
+                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
+                    txtMelody!!.text = dumpFileMetaData(uri)
+                    melodyUrl = uri.toString()
+                    this.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
             }
         }
     }
@@ -317,7 +319,7 @@ class AlarmAddingActivity : AppCompatActivity() {
 
     private fun initLogsAndControls() {
         HyperLog.initialize(this)
-        HyperLog.setLogLevel(Log.INFO)
+        HyperLog.setLogLevel(Log.VERBOSE)
         HyperLog.i(AlarmUtils.TAG, "Start AlarmAddingActivity")
         setContentView(R.layout.activity_alarm_adding)
     }
@@ -352,7 +354,7 @@ class AlarmAddingActivity : AppCompatActivity() {
     private val message: String
         get() {
             val message = txtAlarmMessage!!.text.toString()
-            val defaultMessage = "Ooops... alarma"
+            val defaultMessage = "Alarm Clock"
             return if (Strings.isEmptyOrWhitespace(message)) defaultMessage else message
         }
 

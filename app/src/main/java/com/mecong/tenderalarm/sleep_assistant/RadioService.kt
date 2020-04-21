@@ -22,7 +22,6 @@ import android.text.TextUtils
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.metadata.MetadataOutput
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
@@ -49,7 +48,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     private var audioManager: AudioManager? = null
     var status = IDLE
     private var currentTrackTitle = "Tender Alarm"
-    private var streamUrl: String? = null
     private var bandwidthMeter: DefaultBandwidthMeter? = null
     private var dataSourceFactory: DataSource.Factory? = null
 
@@ -152,7 +150,15 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                         }
                         HyperLog.v(AlarmUtils.TAG, "<----metadata----")
                     })
+
+                    val mPlaybackAttributes = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
+                            .setUsage(C.USAGE_MEDIA)
+                            .setContentType(C.CONTENT_TYPE_MUSIC)
+                            .build()
+                    this.setAudioAttributes(mPlaybackAttributes, true)
                 }
+
+
         notificationManager = MediaNotificationManager(this)
 
         mediaSession = MediaSession(this, javaClass.simpleName).apply {
@@ -201,8 +207,8 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
     override fun onDestroy() {
         stop()
-        exoPlayer.release()
         exoPlayer.removeListener(this)
+        exoPlayer.release()
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
 
         mediaSession.release()
@@ -252,14 +258,14 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         exoPlayer.playWhenReady = false
         audioManager!!.abandonAudioFocus(this)
         notificationManager.cancelNotify()
-        wifiLockRelease()
+//        wifiLockRelease()
     }
 
     fun stop() {
         exoPlayer.stop()
         audioManager!!.abandonAudioFocus(this)
         notificationManager.cancelNotify()
-        wifiLockRelease()
+//        wifiLockRelease()
     }
 
     private fun acquireWifiLock() {
@@ -287,16 +293,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         exoPlayer.playWhenReady = true
     }
 
-    fun play(streamUrl: String?) {
-        this.streamUrl = streamUrl
-        acquireWifiLock()
-        val mediaSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(Uri.parse(streamUrl))
-        exoPlayer.prepare(mediaSource)
-        exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
-        exoPlayer.playWhenReady = true
-    }
-
     fun setMediaList(sleepAssistantPlayList: SleepAssistantPlayList) {
         this.sleepAssistantPlayList = sleepAssistantPlayList
         val concatenatingMediaSource = ConcatenatingMediaSource()
@@ -310,32 +306,19 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         when (this.sleepAssistantPlayList.mediaType) {
             SleepMediaType.LOCAL -> {
                 exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
+                exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
             }
             SleepMediaType.ONLINE -> {
                 exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
+                exoPlayer.setWakeMode(C.WAKE_MODE_NETWORK)
             }
             SleepMediaType.NOISE -> {
                 exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+                exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
             }
         }
-        acquireWifiLock()
+//        acquireWifiLock()
         exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
-    }
-
-    @Deprecated("")
-    fun playOrPause(url: String) {
-        if (streamUrl != null && (streamUrl == url)) {
-            if (!isPlaying) {
-                play(streamUrl)
-            } else {
-                pause()
-            }
-        } else {
-            if (isPlaying) {
-                pause()
-            }
-            play(url)
-        }
     }
 
     private val userAgent: String

@@ -19,7 +19,7 @@ import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
-import com.mecong.tenderalarm.alarm.AlarmUtils.snoozeAlarm
+import com.mecong.tenderalarm.alarm.AlarmUtils.snoozeAlarmNotification
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import kotlinx.android.synthetic.main.activity_alarm_receiver.*
 import org.greenrobot.eventbus.EventBus
@@ -103,9 +103,11 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
         try {
             super.onCreate(savedInstanceState)
             HyperLog.initialize(this)
-            HyperLog.setLogLevel(Log.INFO)
+            HyperLog.setLogLevel(Log.VERBOSE)
             EventBus.getDefault().register(this)
             turnScreenOnThroughKeyguard()
+
+            unlockScreen(this)
 
             // Close dialogs and window shade, so this is fully visible
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
@@ -118,41 +120,53 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             HyperLog.i(TAG, "Running alarm with id: $alarmId")
             val context = applicationContext
             if (alarmId == null) {
-                HyperLog.e(TAG, "Alarm id is null")
+                HyperLog.e(TAG, "Alarm id is NULL")
                 exitProcess(0)
                 //                alarmId = "1";
             }
+
             initializeShaker()
-            sleepTimer!!.visibility = View.GONE
+            sleepTimer.visibility = View.GONE
+
             val entity = sqLiteDBHelper(context)!!.getAlarmById(alarmId)
+            alarm_info.text = entity!!.message
             HyperLog.i(TAG, "Running alarm: $entity")
-            alarm_info!!.text = entity!!.message
             val complexity = entity.complexity
             shakeCount = complexity * 2
-            taskNote!!.text = this.resources.getQuantityString(R.plurals.alarm_turn_off_prompt, shakeCount, shakeCount)
-            turnOffComponent!!.complexity = complexity
+
+            taskNote.text = this.resources.getQuantityString(R.plurals.alarm_turn_off_prompt, shakeCount, shakeCount)
+
+            turnOffComponent.complexity = complexity
+
             val snoozeOnClickListener = View.OnClickListener { v ->
                 val time = v.tag.toString().toInt()
                 snoozedMinutes += time.toLong()
-                if (time == 2) {
-                    EventBus.getDefault().post(AlarmMessage.SNOOZE2M)
-                } else if (time == 3) {
-                    EventBus.getDefault().post(AlarmMessage.SNOOZE3M)
-                } else {
-                    EventBus.getDefault().post(AlarmMessage.SNOOZE5M)
+                when (time) {
+                    2 -> {
+                        EventBus.getDefault().post(AlarmMessage.SNOOZE2M)
+                    }
+                    3 -> {
+                        EventBus.getDefault().post(AlarmMessage.SNOOZE3M)
+                    }
+                    else -> {
+                        EventBus.getDefault().post(AlarmMessage.SNOOZE5M)
+                    }
                 }
-                btnSnooze2m!!.visibility = View.GONE
-                btnSnooze3m!!.visibility = View.GONE
-                btnSnooze5m!!.visibility = View.GONE
-                sleepTimer!!.visibility = View.VISIBLE
+
+                btnSnooze2m.visibility = View.GONE
+                btnSnooze3m.visibility = View.GONE
+                btnSnooze5m.visibility = View.GONE
+                sleepTimer.visibility = View.VISIBLE
+
                 val sleepText = Date(time * 60000L)
                 val handlerSleepTime = Handler()
-                sleepTimer!!.text = context.getString(R.string.sleep_timer, sleepText)
-                val runnable: Runnable = object : Runnable {
+                sleepTimer.text = context.getString(R.string.sleep_timer, sleepText)
+
+                val sleepTimeClock: Runnable = object : Runnable {
                     override fun run() {
                         val newTime = sleepText.time - 1000
                         sleepText.time = newTime
-                        sleepTimer!!.text = context.getString(R.string.sleep_timer, sleepText)
+                        sleepTimer.text = context.getString(R.string.sleep_timer, sleepText)
                         if (newTime >= 0) {
                             handlerSleepTime.postDelayed(this, 1000)
                         } else {
@@ -165,13 +179,14 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                         }
                     }
                 }
-                handlerSleepTime.post(runnable)
+                handlerSleepTime.post(sleepTimeClock)
                 HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.snoozeMaxTimes)
-                snoozeAlarm(time, entity, context)
+                snoozeAlarmNotification(time, entity, context)
             }
-            btnSnooze2m!!.setOnClickListener(snoozeOnClickListener)
-            btnSnooze3m!!.setOnClickListener(snoozeOnClickListener)
-            btnSnooze5m!!.setOnClickListener(snoozeOnClickListener)
+
+            btnSnooze2m.setOnClickListener(snoozeOnClickListener)
+            btnSnooze3m.setOnClickListener(snoozeOnClickListener)
+            btnSnooze5m.setOnClickListener(snoozeOnClickListener)
         } catch (ex: Exception) {
             HyperLog.e(TAG, "Exception in Alarm receiver: $ex")
         }
@@ -232,7 +247,9 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+        HyperLog.i(TAG, "Sensor accuracy: $accuracy")
+    }
 
     companion object {
         private const val SHAKE_THRESHOLD = 7f // m/S**2

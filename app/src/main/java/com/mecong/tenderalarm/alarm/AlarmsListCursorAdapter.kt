@@ -4,8 +4,11 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Build
 import android.text.Html
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.CursorAdapter
 import android.widget.ImageButton
@@ -26,13 +29,17 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         val alarmId = entity.id.toString()
         val time = view.findViewById<TextView>(R.id.textRow1)
         val textRow2 = view.findViewById<TextView>(R.id.textRow2)
-        val textViewCanceled = view.findViewById<TextView>(R.id.textViewCanceled)
+        val textRow3 = view.findViewById<TextView>(R.id.textRow3)
+        val textViewSkipped = view.findViewById<TextView>(R.id.textViewSkipped)
         val toggleButton = view.findViewById<ImageButton>(R.id.toggleButton)
         val btnDeleteAlarm = view.findViewById<ImageButton>(R.id.btnDeleteAlarm)
 
         view.setOnClickListener { mainActivity.editAlarm(alarmId) }
         btnDeleteAlarm.setOnClickListener { v ->
-            val menu = PopupMenu(context, v)
+
+            val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
+            val menu = PopupMenu(wrapper, v)
+
             menu.menuInflater.inflate(R.menu.menu_media_element, menu.menu)
             menu.setOnMenuItemClickListener {
                 mainActivity.deleteAlarm(alarmId)
@@ -41,18 +48,25 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
             menu.show()
         }
 
-        val popup = PopupMenu(context, toggleButton)
+        val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
+        val popup = PopupMenu(wrapper, toggleButton)
+
         popup.menuInflater.inflate(R.menu.menu_alarm_enable, popup.menu)
         popup.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.action_turn_off_1_day && entity.canceledNextAlarms != 1) {
+                toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 mainActivity.cancelNextAlarms(alarmId, 1)
             } else if (item.itemId == R.id.action_turn_off_2_days && entity.canceledNextAlarms != 2) {
+                toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 mainActivity.cancelNextAlarms(alarmId, 2)
             } else if (item.itemId == R.id.action_turn_off_3_days && entity.canceledNextAlarms != 3) {
+                toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 mainActivity.cancelNextAlarms(alarmId, 3)
             } else if (item.itemId == R.id.action_turn_off_4_days && entity.canceledNextAlarms != 4) {
+                toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 mainActivity.cancelNextAlarms(alarmId, 4)
             } else if (item.itemId == R.id.action_turn_off_5_days && entity.canceledNextAlarms != 5) {
+                toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 mainActivity.cancelNextAlarms(alarmId, 5)
             } else if (item.itemId == R.id.turn_off_alarm) {
                 mainActivity.setActive(alarmId, false)
@@ -67,7 +81,11 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         }
 
         if (entity.isActive) {
-            toggleButton.setImageResource(R.drawable.ic_alarm_on)
+            if (entity.canceledNextAlarms > 0) {
+                toggleButton.setImageResource(R.drawable.ic_alarm_off)
+            } else {
+                toggleButton.setImageResource(R.drawable.ic_alarm_on)
+            }
             toggleButton.tag = true
         } else {
             toggleButton.setImageResource(R.drawable.ic_alarm_off)
@@ -93,7 +111,11 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
                 toggleButton.tag = false
             } else {
                 mainActivity.setActive(alarmId, true)
-                toggleButton.setImageResource(R.drawable.ic_alarm_on)
+                if (entity.canceledNextAlarms > 0) {
+                    toggleButton.setImageResource(R.drawable.ic_alarm_off)
+                } else {
+                    toggleButton.setImageResource(R.drawable.ic_alarm_on)
+                }
                 toggleButton.tag = true
             }
         }
@@ -103,7 +125,14 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
 
         time.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
 
-        textViewCanceled.text = if (entity.canceledNextAlarms > 0) context.getString(R.string.next_s_cancel, entity.canceledNextAlarms) else ""
+        if (entity.canceledNextAlarms > 0) {
+            textViewSkipped.text = entity.canceledNextAlarms.toString()
+            textViewSkipped.visibility = VISIBLE
+        } else {
+            textViewSkipped.text = "0"
+            textViewSkipped.visibility = INVISIBLE
+        }
+
 
         val daysMessage = if (entity.nextTime == -1L) {
             context.getString(R.string.never)
@@ -129,6 +158,8 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         } else {
             Html.fromHtml(daysMessage)
         }
+
+        textRow3.text = entity.message
     }
 
     private fun getDaysHtml(entity: AlarmEntity, context: Context): String {

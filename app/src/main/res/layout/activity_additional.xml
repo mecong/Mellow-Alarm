@@ -26,7 +26,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="About"
+                android:text="@string/about"
                 android:textSize="24sp"
                 tools:layout_editor_absoluteY="19dp" />
 
@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lines="2"
-                android:text="If you have comments or ideas please visit my page:" />
+                android:text="@string/if_you_have_comments_or_ideas_please_visit_my_page" />
 
 
             <TextView
@@ -50,41 +50,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Radios"
+                android:text="@string/radios"
                 android:textSize="24sp"
                 tools:layout_editor_absoluteY="19dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="All rights on radio stations belongs to their owners:" />
+                android:text="@string/all_rights_on_radio_stations_belongs_to_their_owners" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="http://enigmatic.su/" />
+                android:text="@string/http_enigmatic_su" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="https://mynoise.net/" />
+                android:text="@string/https_mynoise_net" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="https://www.milanolounge.net/" />
+                android:text="@string/https_www_milanolounge_net" />
 
             <!--            Classical-->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="https://www.hionline.eu/" />
+                android:text="@string/https_www_hionline_eu" />
 
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="http://jr.fm/" />
+                android:text="@string/http_jr_fm" />
         </LinearLayout>
     </ScrollView>
 
@@ -92,7 +92,7 @@
         android:id="@+id/closeBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Close"
+        android:text="@string/close"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

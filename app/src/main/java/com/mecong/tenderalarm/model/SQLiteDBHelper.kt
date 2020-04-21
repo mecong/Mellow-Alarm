@@ -5,13 +5,15 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.widget.Toast
 import com.google.android.exoplayer2.database.DatabaseProvider
 import com.hypertrack.hyperlog.HyperLog
+import com.judemanutd.autostarter.AutoStartPermissionHelper
 import com.mecong.tenderalarm.alarm.AlarmUtils
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), DatabaseProvider {
+class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), DatabaseProvider {
     private fun setDefaultOnlineMedia(database: SQLiteDatabase) {
         val values = ContentValues(2)
 
@@ -144,8 +146,14 @@ class SQLiteDBHelper private constructor(context: Context) : SQLiteOpenHelper(co
         setDefaultOnlineMedia(sqLiteDatabase)
         initializeDefaultProperties(sqLiteDatabase)
         HyperLog.i(AlarmUtils.TAG, "Database created")
-    }
 
+        if (AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(context)) {
+            val autoStartPermission = AutoStartPermissionHelper.getInstance().getAutoStartPermission(context)
+            if (!autoStartPermission) {
+                Toast.makeText(context, "Autostart is disabled!", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldDbVersion: Int, newVersion: Int) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ALARMS")

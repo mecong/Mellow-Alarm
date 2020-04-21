@@ -70,7 +70,8 @@ class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickList
             dialog.setContentView(R.layout.url_input_dialog)
             val textUrl = dialog.findViewById<EditText>(R.id.textUrl)
             val buttonOk = dialog.findViewById<Button>(R.id.buttonOk)
-            buttonOk.setOnClickListener {
+            val buttonOkTop = dialog.findViewById<Button>(R.id.buttonOkTop)
+            val addUrlListener: (v: View) -> Unit = {
                 try {
                     URL(textUrl.text.toString())
                     addUrl(textUrl.text.toString())
@@ -79,8 +80,12 @@ class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickList
                     Toast.makeText(context, "Url is not valid", Toast.LENGTH_SHORT).show()
                 }
             }
+            buttonOk.setOnClickListener(addUrlListener)
+            buttonOkTop.setOnClickListener(addUrlListener)
             val buttonCancel = dialog.findViewById<Button>(R.id.buttonCancel)
+            val buttonCancelTop = dialog.findViewById<Button>(R.id.buttonCancelTop)
             buttonCancel.setOnClickListener { dialog.dismiss() }
+            buttonCancelTop.setOnClickListener { dialog.dismiss() }
             val lp = WindowManager.LayoutParams()
             lp.copyFrom(dialog.window!!.attributes)
             lp.width = WindowManager.LayoutParams.MATCH_PARENT

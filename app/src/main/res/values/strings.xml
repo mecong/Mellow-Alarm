@@ -127,6 +127,16 @@
     <string name="back">Back</string>
     <string name="low_sound">Low sound</string>
     <string name="high_sound">High sound</string>
+    <string name="if_you_have_comments_or_ideas_please_visit_my_page">If you have comments or ideas please visit my page:</string>
+    <string name="radios">Radios</string>
+    <string name="about">About</string>
+    <string name="all_rights_on_radio_stations_belongs_to_their_owners">All rights on radio stations belong to their owners:</string>
+    <string name="http_enigmatic_su" translatable="false">http://enigmatic.su/</string>
+    <string name="https_mynoise_net" translatable="false">https://mynoise.net/</string>
+    <string name="https_www_milanolounge_net" translatable="false">https://www.milanolounge.net/</string>
+    <string name="https_www_hionline_eu" translatable="false">https://www.hionline.eu/</string>
+    <string name="http_jr_fm" translatable="false">http://jr.fm/</string>
+    <string name="close">Close</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>
