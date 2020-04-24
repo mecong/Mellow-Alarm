@@ -53,7 +53,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     private fun getAlarmEntity(sql: String): AlarmEntity? {
         val cursor = this.readableDatabase.rawQuery(sql, null)
         var entity: AlarmEntity? = null
-        if (cursor != null) {
+        if (cursor != null && !cursor.isClosed) {
             if (cursor.moveToFirst()) {
                 entity = AlarmEntity(cursor)
             }

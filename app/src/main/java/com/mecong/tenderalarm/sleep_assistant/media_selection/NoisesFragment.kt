@@ -16,7 +16,7 @@ import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepNoise.Compani
 import kotlinx.android.synthetic.main.fragment_noises.*
 import org.greenrobot.eventbus.EventBus
 
-class NoisesFragment private constructor() : Fragment(), NoisesItemClickListener {
+class NoisesFragment : Fragment(), NoisesItemClickListener {
     private var selectedPosition = 0
     private lateinit var adapter: NoisesItemViewAdapter
     private lateinit var noises: List<Media>

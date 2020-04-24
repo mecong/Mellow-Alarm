@@ -1,7 +1,5 @@
 package com.mecong.tenderalarm.alarm
 
-import android.app.KeyguardManager
-import android.app.KeyguardManager.KeyguardDismissCallback
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -30,6 +28,7 @@ import kotlin.math.sqrt
 import kotlin.system.exitProcess
 
 class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
+    private var shareThreshold = 7f // m/S**2
 
     private var mLastShakeTime: Long = 0
     private var shakeCount = 0
@@ -104,10 +103,10 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             super.onCreate(savedInstanceState)
             HyperLog.initialize(this)
             HyperLog.setLogLevel(Log.VERBOSE)
-            EventBus.getDefault().register(this)
+//            EventBus.getDefault().register(this)
             turnScreenOnThroughKeyguard()
 
-            unlockScreen(this)
+//            unlockScreen(this)
 
             // Close dialogs and window shade, so this is fully visible
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
@@ -171,10 +170,22 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                             handlerSleepTime.postDelayed(this, 1000)
                         } else {
                             sleepTimer!!.visibility = View.GONE
-                            if (snoozedMinutes < entity.snoozeMaxTimes) {
-                                btnSnooze2m!!.visibility = View.VISIBLE
-                                btnSnooze3m!!.visibility = View.VISIBLE
-                                btnSnooze5m!!.visibility = View.VISIBLE
+
+                            btnSnooze2m!!.visibility = View.VISIBLE
+                            btnSnooze3m!!.visibility = View.VISIBLE
+                            btnSnooze5m!!.visibility = View.VISIBLE
+
+                            val snoozedMinutesLeft = entity.snoozeMaxTimes - snoozedMinutes
+                            if (snoozedMinutesLeft < 1) {
+                                btnSnooze2m!!.visibility = View.GONE
+                            }
+
+                            if (snoozedMinutesLeft < 3) {
+                                btnSnooze3m!!.visibility = View.GONE
+                            }
+
+                            if (snoozedMinutesLeft < 5) {
+                                btnSnooze5m!!.visibility = View.GONE
                             }
                         }
                     }
@@ -184,9 +195,22 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 snoozeAlarmNotification(time, entity, context)
             }
 
+            if (entity.snoozeMaxTimes < 1) {
+                btnSnooze2m!!.visibility = View.GONE
+            }
+
+            if (entity.snoozeMaxTimes < 3) {
+                btnSnooze3m!!.visibility = View.GONE
+            }
+
+            if (entity.snoozeMaxTimes < 5) {
+                btnSnooze5m!!.visibility = View.GONE
+            }
+
             btnSnooze2m.setOnClickListener(snoozeOnClickListener)
             btnSnooze3m.setOnClickListener(snoozeOnClickListener)
             btnSnooze5m.setOnClickListener(snoozeOnClickListener)
+
         } catch (ex: Exception) {
             HyperLog.e(TAG, "Exception in Alarm receiver: $ex")
         }
@@ -224,7 +248,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 val z = event.values[2]
                 val acceleration = sqrt(x * x + y * y + (z * z).toDouble()) - SensorManager.GRAVITY_EARTH
                 //                Log.d(TAG, "Acceleration is " + acceleration + "m/s^2");
-                if (acceleration > SHAKE_THRESHOLD) {
+                if (acceleration > shareThreshold) {
                     mLastShakeTime = curTime
                     HyperLog.d(TAG, "Shake, Rattle, and Roll")
                     val vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -249,10 +273,11 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
         HyperLog.i(TAG, "Sensor accuracy: $accuracy")
+        shareThreshold = 10f - accuracy
     }
 
     companion object {
-        private const val SHAKE_THRESHOLD = 7f // m/S**2
+
         private const val MIN_TIME_BETWEEN_SHAKES_MILLISECONDS = 1000
         fun unlockScreen(activity: AlarmReceiverActivity) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
@@ -264,23 +289,25 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val keyguardManager = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                keyguardManager.requestDismissKeyguard(activity, object : KeyguardDismissCallback() {
-                    override fun onDismissError() {
-                        super.onDismissError()
-                        HyperLog.i(TAG, "Keyguard Dismiss Error")
-                    }
+//                val keyguardManager = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+//                keyguardManager.requestDismissKeyguard(activity, object : KeyguardDismissCallback() {
+//                    override fun onDismissError() {
+//                        super.onDismissError()
+//                        HyperLog.i(TAG, "Keyguard Dismiss Error")
+//                    }
+//
+//                    override fun onDismissSucceeded() {
+//                        super.onDismissSucceeded()
+//                        HyperLog.i(TAG, "Keyguard Dismiss Success")
+//                    }
+//
+//                    override fun onDismissCancelled() {
+//                        super.onDismissCancelled()
+//                        HyperLog.i(TAG, "Keyguard Dismiss Cancelled")
+//                    }
+//                })
+                activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
 
-                    override fun onDismissSucceeded() {
-                        super.onDismissSucceeded()
-                        HyperLog.i(TAG, "Keyguard Dismiss Success")
-                    }
-
-                    override fun onDismissCancelled() {
-                        super.onDismissCancelled()
-                        HyperLog.i(TAG, "Keyguard Dismiss Cancelled")
-                    }
-                })
             } else {
                 activity.window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
             }

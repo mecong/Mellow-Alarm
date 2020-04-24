@@ -70,24 +70,34 @@ class MainActivity : AppCompatActivity() {
             ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_inactive)
             fragmentTransaction.commit()
         }
+
+
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         //        fragmentTransaction.addToBackStack("Init");
-        val sleepFragment: Fragment = SleepAssistantFragment()
-        val alarmFragment: Fragment = MainAlarmFragment()
-        fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
-        fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
+        var sleepFragment: Fragment? = null
+        var alarmFragment: Fragment? = null
+        if (savedInstanceState == null) {
+            sleepFragment = SleepAssistantFragment()
+            alarmFragment = MainAlarmFragment()
+            fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
+            fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
+        } else {
+            sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
+            alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
+
+        }
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
 
         if (ASSISTANT_FRAGMENT == desiredFragment) {
-            fragmentTransaction.hide(alarmFragment)
+            fragmentTransaction.hide(alarmFragment!!)
             HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
-            fragmentTransaction.show(sleepFragment)
+            fragmentTransaction.show(sleepFragment!!)
             HyperLog.i(TAG, "sleepFragment show $sleepFragment")
             ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_active)
         } else {
-            fragmentTransaction.hide(sleepFragment)
+            fragmentTransaction.hide(sleepFragment!!)
             HyperLog.i(TAG, "sleepFragment hide $sleepFragment")
-            fragmentTransaction.show(alarmFragment)
+            fragmentTransaction.show(alarmFragment!!)
             HyperLog.i(TAG, "alarmFragment show $sleepFragment")
             ibOpenAlarm!!.setImageResource(R.drawable.alarm_active)
         }

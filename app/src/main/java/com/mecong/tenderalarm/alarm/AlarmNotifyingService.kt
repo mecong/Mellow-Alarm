@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
@@ -23,6 +24,7 @@ import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
+import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM_SAME_ID
 import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -73,12 +75,18 @@ class AlarmNotifyingService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
+        val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
         val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
         HyperLog.i(TAG, "Running alarm: $entity")
         usePowerManagerWakeup()
         stopForeground(true)
         startAlarmNotification(this, entity)
-        startSound(entity)
+
+        if (sameId)
+            startSnoozedSound(entity)
+        else
+            startSound(entity)
+
         return START_NOT_STICKY
     }
 
@@ -123,6 +131,10 @@ class AlarmNotifyingService : Service() {
 
     private fun cancelVolumeIncreasing() {
         handlerVolume!!.removeCallbacks(runnableVolume)
+    }
+
+    private fun startSnoozedSound(entity: AlarmEntity?) {
+        handlerTicks!!.post(runnableRealAlarm)
     }
 
     private fun startSound(entity: AlarmEntity?) {
@@ -183,8 +195,8 @@ class AlarmNotifyingService : Service() {
                 volumeCounter = defaultVolume
                 exoPlayer.volume = volumeCounter
 
-                val tenMinutesMs = 10 * 60 * 1000
-                volumeIncreaseStep = (1 - defaultVolume) / (tenMinutesMs / volumeIncreaseDelayMs)
+                val twoMinutes = 2 * 60000
+                volumeIncreaseStep = (1 - defaultVolume) / (twoMinutes / volumeIncreaseDelayMs)
 
                 exoPlayer.playWhenReady = true
 
@@ -235,13 +247,15 @@ class AlarmNotifyingService : Service() {
         HyperLog.i(TAG, "Stop Alarm notification")
         handlerTicks!!.removeCallbacksAndMessages(null)
         stopAlarmSound()
-        alarmEndVibration()
         cancelVolumeIncreasing()
+        alarmEndVibration()
         stopForeground(true)
         val notificationManager = NotificationManagerCompat.from(this)
         notificationManager.cancelAll()
         ALARM_PLAYING = null
         stopSelf()
+        android.os.Process.killProcess(android.os.Process.myPid())
+        EventBus.getDefault().unregister(this)
     }
 
     private fun stopAlarmSound() {
@@ -265,18 +279,23 @@ class AlarmNotifyingService : Service() {
 
     private fun startAlarmNotification(context: Context, entity: AlarmEntity?) {
         val alarmId = entity!!.id.toString()
+
         val startAlarmIntent = Intent(context, AlarmReceiverActivity::class.java)
                 .setData(ContentUris.withAppendedId(CONTENT_URI, alarmId.toLong()))
         startAlarmIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startAlarmIntent.putExtra(ALARM_ID_PARAM, alarmId)
+
         val pendingIntent = PendingIntent.getActivity(context, 42,
                 startAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
         val alarmNotification = NotificationCompat.Builder(context, MainActivity.ALARM_CHANNEL_ID)
                 .setSmallIcon(R.drawable.launcher)
-                .setContentTitle("Alarm Clock")
+                .setContentTitle(context.getString(R.string.alarm_ringing))
                 .setContentText(entity.message)
                 .setContentIntent(pendingIntent)
                 .setFullScreenIntent(pendingIntent, true)
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.launcher))
+                .setSmallIcon(R.drawable.alarm_active)
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setWhen(0)
@@ -285,9 +304,11 @@ class AlarmNotifyingService : Service() {
                 .setLocalOnly(false)
                 .setDefaults(NotificationCompat.FLAG_SHOW_LIGHTS or NotificationCompat.FLAG_ONGOING_EVENT or NotificationCompat.FLAG_NO_CLEAR)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancelAll()
-        startForeground(42, alarmNotification.build())
+
+        startForeground(43, alarmNotification.build())
     }
 
     companion object {

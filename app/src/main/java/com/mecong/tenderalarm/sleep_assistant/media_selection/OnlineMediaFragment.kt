@@ -23,7 +23,7 @@ import org.greenrobot.eventbus.EventBus
 import java.net.MalformedURLException
 import java.net.URL
 
-class OnlineMediaFragment internal constructor() : Fragment(), FileItemClickListener {
+class OnlineMediaFragment : Fragment(), FileItemClickListener {
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

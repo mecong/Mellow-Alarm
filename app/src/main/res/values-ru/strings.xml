@@ -63,6 +63,13 @@
         <item quantity="other">%02d минут</item>
     </plurals>
 
+    <plurals name="n_minutes_plural_2">
+        <item quantity="one">%02d минуту</item>
+        <item quantity="few">%02d минуты</item>
+        <item quantity="many">%02d минут</item>
+        <item quantity="other">%02d минут</item>
+    </plurals>
+
     <string name="upcoming_alarm_notification_channel_name">☕ Будильник</string>
     <string name="snooze_3_min">3 мин дремать</string>
     <string name="snooze_5_min">5 мин дремать</string>
@@ -109,10 +116,10 @@
     <!--    <string name="snooze">Дремать %d минут</string>-->
 
     <plurals name="snooze">
-        <item quantity="one">Дремать %d минуту</item>
-        <item quantity="few">Дремать %d минуты</item>
-        <item quantity="many">Дремать %d минут</item>
-        <item quantity="other">Дремать %d минут</item>
+        <item quantity="one">Дремать максимум %d минуту</item>
+        <item quantity="few">Дремать максимум %d минуты</item>
+        <item quantity="many">Дремать максимум %d минут</item>
+        <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
 
 
@@ -128,6 +135,8 @@
     <string name="about">О программе</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Все права на радиостанции принаддежат их владельцам</string>
     <string name="close">Закрыть</string>
+    <string name="empty_playlist_name_warning">Название плейлиста не должно быть пустым</string>
+    <string name="alarm_ringing">⏰ Будильник звонит</string>
 
 
 </resources>

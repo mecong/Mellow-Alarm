@@ -25,6 +25,7 @@ val DAY = TimeUnit.DAYS.toMillis(1)
 object AlarmUtils {
     const val TAG = "A.L.A.R.M.A"
     const val ALARM_ID_PARAM = BuildConfig.APPLICATION_ID + ".alarm_id"
+    const val ALARM_ID_PARAM_SAME_ID = BuildConfig.APPLICATION_ID + ".alarm_id.same_id"
 
 
     fun setUpNextAlarm(alarmId: String, context: Context, manually: Boolean) {

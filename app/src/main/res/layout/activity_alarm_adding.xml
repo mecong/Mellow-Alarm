@@ -25,13 +25,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+
             <Button
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:onClick="buttonCancelClick"
-                android:text="@string/cancel" />
+                android:text="@string/cancel">
+
+                <requestFocus />
+            </Button>
 
             <Button
                 style="?android:attr/buttonBarButtonStyle"

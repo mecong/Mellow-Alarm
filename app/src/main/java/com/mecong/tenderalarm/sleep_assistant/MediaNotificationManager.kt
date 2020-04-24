@@ -15,7 +15,6 @@ class MediaNotificationManager(private val service: RadioService) {
     private val notificationManager: NotificationManagerCompat
 
     fun startNotify(playbackStatus: String, contentText: String?) {
-        val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.launcher)
         val playbackAction = Intent(service, RadioService::class.java)
         playbackAction.action = RadioService.ACTION_PAUSE
 
@@ -35,18 +34,18 @@ class MediaNotificationManager(private val service: RadioService) {
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         intent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT)
         val pendingIntent = PendingIntent.getActivity(service, 0, intent, 0)
-        notificationManager.cancel(NOTIFICATION_ID)
         val builder = NotificationCompat.Builder(service, MainActivity.SLEEP_ASSISTANT_MEDIA_CHANNEL_ID)
                 .setAutoCancel(false)
                 .setContentTitle(strAppName)
                 .setContentText(contentText)
-                .setLargeIcon(largeIcon)
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.launcher))
+                .setSmallIcon(R.drawable.sleep_inactive)
                 .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.drawable.sleep_inactive)
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, "stop", stopAction)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
+        notificationManager.cancel(NOTIFICATION_ID)
         //                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
 //                        .setMediaSession(service.getMediaSession().getSessionToken())
 //                        .setShowActionsInCompactView(0, 1)

@@ -133,7 +133,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                     addListener(this@RadioService)
 
                     addMetadataOutput(MetadataOutput { metadata ->
-                        //                ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
+                        //ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
                         HyperLog.v(AlarmUtils.TAG, "----metadata---->")
                         for (i in 0 until metadata.length()) {
                             val message = metadata[i].toString()
@@ -145,7 +145,9 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                                     val playingMedia = Media("", currentTrackTitle)
                                     EventBus.getDefault().postSticky(playingMedia)
                                 }
-                                notificationManager.startNotify(status, currentTrackTitle)
+                                if (this.playWhenReady) {
+                                    notificationManager.startNotify(status, currentTrackTitle)
+                                }
                             }
                         }
                         HyperLog.v(AlarmUtils.TAG, "<----metadata----")
@@ -231,13 +233,16 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) { //        if (!status.equals(IDLE))
-//            notificationManager.startNotify(status);
         status = when (playbackState) {
             Player.STATE_BUFFERING -> LOADING
             Player.STATE_ENDED -> STOPPED
             Player.STATE_READY -> {
-                notificationManager.startNotify(status, currentTrackTitle)
-                if (playWhenReady) PLAYING else PAUSED
+                if (playWhenReady) {
+                    notificationManager.startNotify(status, currentTrackTitle)
+                    PLAYING
+                } else {
+                    PAUSED
+                }
             }
             Player.STATE_IDLE -> IDLE
             else -> IDLE

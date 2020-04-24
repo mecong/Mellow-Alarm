@@ -8,6 +8,7 @@ import android.util.Log
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.alarm.AlarmNotifyingService.Companion.ALARM_PLAYING
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
+import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM_SAME_ID
 import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -23,7 +24,7 @@ class TenderAlarmReceiver : BroadcastReceiver() {
         SleepTimeAlarmReceiver.cancelNotification(context)
         UpcomingAlarmNotificationReceiver.cancelNotification(context)
         val canceledNextAlarms = entity!!.canceledNextAlarms
-        HyperLog.i(TAG, "TenderAlarmReceiver received alarm: $entity")
+        HyperLog.i(TAG, "TenderAlarmReceiver received alarm: $entity, ALARM_PLAYING: $ALARM_PLAYING")
         if (canceledNextAlarms == 0) {
             if (entity.days > 0) {
                 setUpNextAlarm(entity, context, false)
@@ -31,9 +32,11 @@ class TenderAlarmReceiver : BroadcastReceiver() {
                 sqLiteDBHelper.toggleAlarmActive(alarmId, false)
             }
 
-            if (ALARM_PLAYING == null || ALARM_PLAYING == alarmId.toInt()) {
+            if (ALARM_PLAYING == null) {
                 ALARM_PLAYING = alarmId.toInt()
                 startAlarmNotification(context, alarmId)
+            } else if (ALARM_PLAYING == alarmId.toInt()) {
+                startAlarmNotification(context, alarmId, true)
             }
         } else {
             if (entity.days > 0) {
@@ -44,11 +47,10 @@ class TenderAlarmReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun startAlarmNotification(context: Context, alarmId: String) {
-
-
+    private fun startAlarmNotification(context: Context, alarmId: String, sameId: Boolean = false) {
         val startAlarmIntent = Intent(context, AlarmNotifyingService::class.java)
         startAlarmIntent.putExtra(ALARM_ID_PARAM, alarmId)
+        startAlarmIntent.putExtra(ALARM_ID_PARAM_SAME_ID, sameId)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(startAlarmIntent)
         } else {

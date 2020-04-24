@@ -85,7 +85,7 @@ class MainAlarmFragment : Fragment() {
                     val hours = calendar[Calendar.HOUR_OF_DAY]
                     val minutes = calendar[Calendar.MINUTE]
                     val nHours = context.resources.getQuantityString(R.plurals.n_hours_plural, hours, hours)
-                    val nMinutes = context.resources.getQuantityString(R.plurals.n_minutes_plural, minutes, minutes)
+                    val nMinutes = context.resources.getQuantityString(R.plurals.n_minutes_plural_2, minutes, minutes)
 
                     textNextAlarm!!.text = context.getString(R.string.next_alarm_today, nHours, nMinutes)
                 }

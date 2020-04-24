@@ -45,8 +45,8 @@
     <string name="ticks_type_label">Ticks sound type</string>
 
     <plurals name="snooze">
-        <item quantity="one">Snooze %d minute</item>
-        <item quantity="other">Snooze %d minutes</item>
+        <item quantity="one">Maximum snooze time: %d minute</item>
+        <item quantity="other">Maximum snooze time: %d minutes</item>
     </plurals>
 
     <string name="alarm_complexity">Alarm complexity: %d</string>
@@ -81,6 +81,11 @@
     </plurals>
 
     <plurals name="n_minutes_plural">
+        <item quantity="one">%02d minute</item>
+        <item quantity="other">%02d minutes</item>
+    </plurals>
+
+    <plurals name="n_minutes_plural_2">
         <item quantity="one">%02d minute</item>
         <item quantity="other">%02d minutes</item>
     </plurals>
@@ -137,6 +142,8 @@
     <string name="https_www_hionline_eu" translatable="false">https://www.hionline.eu/</string>
     <string name="http_jr_fm" translatable="false">http://jr.fm/</string>
     <string name="close">Close</string>
+    <string name="empty_playlist_name_warning">Playlist name should not be empty</string>
+    <string name="alarm_ringing">⏰ Alarm Ringing</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>

@@ -8,6 +8,8 @@ import android.view.View
 import com.mecong.tenderalarm.alarm.AlarmMessage
 import org.greenrobot.eventbus.EventBus
 import java.util.*
+import kotlin.math.min
+import kotlin.math.sqrt
 
 class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     var complexity = 0
@@ -20,33 +22,46 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
     private var draggableCirclePaints: Array<Paint?> = arrayOfNulls(50)
     private var spiritPaints: Array<Paint?> = arrayOfNulls(10)
     private lateinit var positions: MutableList<Point>
+    private var minCircleRadius = 90
+    private var circleStep = 20
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
         if (oldw != 0 || oldh != 0) {
-            figures = arrayOfNulls(complexity)
             val viewPortBounds = Rect(paddingLeft, paddingTop,
                     this.right - paddingRight, this.height - paddingBottom)
             viewPortBoundsForEvent = Rect(paddingLeft, paddingTop,
                     this.width - paddingRight, this.height - paddingBottom)
             viewPortBoundsForEvent!!.inset(50, 50)
+
+
+//            val maxRadius = minCircleRadius + circleStep * (MAX_COMPLEXITY - 1)
+//            var maxDiameter = maxRadius * 2
+            val square = viewPortBounds.width() * viewPortBounds.height()
+//            square/(maxDiameter*maxDiameter)= MAX_COMPLEXITY*2
+            val maxDiameter = sqrt(square / (MAX_COMPLEXITY * 2.0))
+            minCircleRadius = ((maxDiameter / 2 - circleStep * (MAX_COMPLEXITY - 1)) * 0.9).toInt()
+
+
             positions = calculatePositions(viewPortBounds)
+            figures = arrayOfNulls(min(positions.size / 2, complexity))
 
             for (i in figures!!.indices.reversed()) {
-                figures!![i] = DraggableCircle(positions, 90 + 20 * (MAX_COMPLEXITY - 1 - i))
+                figures!![i] = DraggableCircle(positions, minCircleRadius + circleStep * (MAX_COMPLEXITY - 1 - i))
             }
         }
     }
 
     private fun calculatePositions(viewPortBounds: Rect): MutableList<Point> {
-        val maxRadius = 90 + 20 * (MAX_COMPLEXITY - 1)
-        positions = ArrayList()
+        val maxRadius = minCircleRadius + circleStep * (MAX_COMPLEXITY - 1)
         val diameter = maxRadius * 2
         val maxVertical = viewPortBounds.height() / diameter
         val maxHorizontal = viewPortBounds.width() / diameter
         val spaceHorizontal = (viewPortBounds.width() - maxHorizontal * diameter) / maxHorizontal
         val spaceVertical = (viewPortBounds.height() - maxVertical * diameter) / maxVertical
+        positions = ArrayList()
+
         for (i in 1..maxHorizontal) {
             for (j in 1..maxVertical) {
                 val point = Point(i * (diameter + spaceHorizontal) - maxRadius,
@@ -54,6 +69,7 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
                 positions.add(point)
             }
         }
+
         positions.shuffle()
         return positions
     }

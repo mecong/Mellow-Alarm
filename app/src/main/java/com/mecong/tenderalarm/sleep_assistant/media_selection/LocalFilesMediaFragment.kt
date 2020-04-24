@@ -41,6 +41,10 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     private var currentPlaylistID: Long = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
         return inflater.inflate(R.layout.fragment_local_media, container, false)
     }
 
@@ -151,7 +155,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 dialog.dismiss()
                 playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
             } else {
-                Toast.makeText(context, "Playlist name should not be empty", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context!!.getString(R.string.empty_playlist_name_warning), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -184,37 +188,36 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
             // provided to this method as a parameter.
             // Pull that URI using resultData.getData().
 
+            val uriList = mutableListOf<Uri?>()
+            val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
             if (resultData != null) {
 
-                AsyncTask.execute {
-                    val clipData = resultData.clipData
-                    if (clipData == null) {
-                        val uri = resultData.data
-                        HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
-                        context!!.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        addLocalFileMediaRecord(uri.toString(), dumpFileMetaData(uri))
-                    } else {
-                        for (i in 0 until clipData.itemCount) {
-                            val path = clipData.getItemAt(i)
-                            HyperLog.i(AlarmUtils.TAG, "Uri: " + path.uri.path!! + " i=$i")
-                            context!!.contentResolver.takePersistableUriPermission(path.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            addLocalFileMediaRecord(path.uri.toString(), dumpFileMetaData(path.uri))
-                        }
+                val clipData = resultData.clipData
+                if (clipData == null) {
+                    val uri = resultData.data
+                    uriList.add(uri)
+                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
+                    sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), dumpFileMetaData(uri))
+                } else {
+                    for (i in 0 until clipData.itemCount) {
+                        val uri = clipData.getItemAt(i).uri
+                        uriList.add(uri)
+                        HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.path!! + " i=$i")
+                        sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), dumpFileMetaData(uri))
                     }
                 }
 
+                AsyncTask.execute {
+                    uriList.filterNotNull().forEach {
+                        context!!.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                    }
+                }
 
-                val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-                mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
+                val cursor = sqLiteDBHelper.getLocalMedia(currentPlaylistID)
+                mediaItemViewAdapter?.updateDataSet(cursor)
             }
         }
 
-        EventBus.getDefault().register(this)
-    }
-
-    private fun addLocalFileMediaRecord(url: String, title: String?) {
-        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-        sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, url, title)
     }
 
     private fun dumpFileMetaData(uri: Uri?): String? {
