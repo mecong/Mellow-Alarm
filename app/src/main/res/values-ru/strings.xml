@@ -124,8 +124,8 @@
 
 
     <string name="next_alarm_today" comment="Будильник через %02d часов %02d минут">Будильник через %s %s</string>
-    <string name="low_sound">Низкий</string>
-    <string name="high_sound">Высокий</string>
+    <string name="low_sound">Стук</string>
+    <string name="high_sound">Звон</string>
     <string name="upcoming_alarm_notification_message">Отменить будильник в %1$tH:%1$tM</string>
     <string name="upcoming_alarm_canceled_toast">Будильник в %1$tH:%1$tM отменен</string>
     <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
@@ -137,6 +137,8 @@
     <string name="close">Закрыть</string>
     <string name="empty_playlist_name_warning">Название плейлиста не должно быть пустым</string>
     <string name="alarm_ringing">⏰ Будильник звонит</string>
+    <string name="playlist_def_name">Плейлист %d</string>
+    <string name="switch_alarm_state" translatable="false">Переключить состояние будильника</string>
 
 
 </resources>

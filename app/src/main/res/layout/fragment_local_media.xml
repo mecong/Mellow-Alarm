@@ -26,9 +26,9 @@
 
 
         android:layout_marginStart="8dp"
-        android:gravity="center_vertical"
+        android:gravity="fill_vertical"
         android:text="@string/local_audio"
-        android:textAlignment="viewStart"
+        android:textAlignment="textStart"
         android:textColor="#E7E8E2"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/mediaListView"

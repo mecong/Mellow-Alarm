@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
+import android.os.Process.killProcess
+import android.os.Process.myPid
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.android.exoplayer2.C
@@ -254,7 +256,7 @@ class AlarmNotifyingService : Service() {
         notificationManager.cancelAll()
         ALARM_PLAYING = null
         stopSelf()
-        android.os.Process.killProcess(android.os.Process.myPid())
+        killProcess(myPid())
         EventBus.getDefault().unregister(this)
     }
 

@@ -98,11 +98,11 @@ class AlarmAddingActivity : AppCompatActivity() {
 // provided to this method as a parameter.
 // Pull that URI using resultData.getData().
             if (resultData != null) {
+                val uri = resultData.data
+                HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
+                txtMelody!!.text = dumpFileMetaData(uri)
+                melodyUrl = uri.toString()
                 AsyncTask.execute {
-                    val uri = resultData.data
-                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
-                    txtMelody!!.text = dumpFileMetaData(uri)
-                    melodyUrl = uri.toString()
                     this.contentResolver.takePersistableUriPermission(uri!!, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
             }

@@ -3,11 +3,7 @@ package com.mecong.tenderalarm.alarm
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -133,27 +129,6 @@ class MainActivity : AppCompatActivity() {
         const val SLEEP_FRAGMENT = "SLEEP_FRAGMENT"
         const val ALARM_FRAGMENT = "ALARM_FRAGMENT"
 
-        fun askXaiomiUserToTurnOnAutostart(context: Context) {
-            try {
-                val intent = Intent()
-                val manufacturer = Build.MANUFACTURER
-                if ("xiaomi".equals(manufacturer, ignoreCase = true)) {
-                    intent.component = ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
-                } else if ("oppo".equals(manufacturer, ignoreCase = true)) {
-                    intent.component = ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")
-                } else if ("vivo".equals(manufacturer, ignoreCase = true)) {
-                    intent.component = ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")
-                }
-                val list: List<ResolveInfo> = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-                if (list.isNotEmpty()) {
-                    context.startActivity(intent)
-                }
-            } catch (e: Exception) {
-                HyperLog.i(TAG, e.message)
-//                Crashlytics.logException(e)
-            }
-
-        }
 
         fun createNotificationChannels(context: Context) {
             // Create the NotificationChannel, but only on API 26+ because

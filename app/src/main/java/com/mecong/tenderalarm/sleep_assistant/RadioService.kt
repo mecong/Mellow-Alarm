@@ -11,8 +11,6 @@ import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSession
 import android.net.Uri
-import android.net.wifi.WifiManager
-import android.net.wifi.WifiManager.WifiLock
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
@@ -20,7 +18,6 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.metadata.MetadataOutput
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
@@ -44,7 +41,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     private lateinit var transportControls: MediaController.TransportControls
     var onGoingCall = false
     private var telephonyManager: TelephonyManager? = null
-    private var wifiLock: WifiLock? = null
     private var audioManager: AudioManager? = null
     var status = IDLE
     private var currentTrackTitle = "Tender Alarm"
@@ -117,12 +113,12 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
     override fun onCreate() {
         super.onCreate()
-        val loadControl: LoadControl = CustomLoadControl.Builder()
-                .setBufferDurationsMs(1000 * 30,
-                        1000 * 60 * 5,
-                        1000 * 10,
-                        DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS)
-                .createDefaultLoadControl()
+//        val loadControl: LoadControl = CustomLoadControl.Builder()
+//                .setBufferDurationsMs(1000 * 30,
+//                        1000 * 60 * 5,
+//                        1000 * 10,
+//                        DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS)
+//                .createDefaultLoadControl()
 
         exoPlayer = SimpleExoPlayer.Builder(applicationContext)
 //                .setLoadControl(loadControl)
@@ -132,7 +128,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                     setHandleAudioBecomingNoisy(true)
                     addListener(this@RadioService)
 
-                    addMetadataOutput(MetadataOutput { metadata ->
+                    addMetadataOutput { metadata ->
                         //ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
                         HyperLog.v(AlarmUtils.TAG, "----metadata---->")
                         for (i in 0 until metadata.length()) {
@@ -141,7 +137,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                             if (message.startsWith("ICY: ")) {
                                 val titleNotParsed = message.split(",").toTypedArray()[0].split("=").toTypedArray()[1]
                                 currentTrackTitle = titleNotParsed.replace("\"".toRegex(), " ").trim { it <= ' ' }
-                                if (!currentTrackTitle.isEmpty()) {
+                                if (currentTrackTitle.isNotEmpty()) {
                                     val playingMedia = Media("", currentTrackTitle)
                                     EventBus.getDefault().postSticky(playingMedia)
                                 }
@@ -151,7 +147,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                             }
                         }
                         HyperLog.v(AlarmUtils.TAG, "<----metadata----")
-                    })
+                    }
 
                     val mPlaybackAttributes = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
                             .setUsage(C.USAGE_MEDIA)
@@ -263,35 +259,12 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         exoPlayer.playWhenReady = false
         audioManager!!.abandonAudioFocus(this)
         notificationManager.cancelNotify()
-//        wifiLockRelease()
     }
 
     fun stop() {
         exoPlayer.stop()
         audioManager!!.abandonAudioFocus(this)
         notificationManager.cancelNotify()
-//        wifiLockRelease()
-    }
-
-    private fun acquireWifiLock() {
-        if (wifiLock == null) {
-            val wifiManager: WifiManager? = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            if (wifiManager != null) {
-                wifiLock = wifiManager.createWifiLock(
-                        WifiManager.WIFI_MODE_FULL_HIGH_PERF, "mcScPAmpLock")
-            }
-        }
-        if (!wifiLock!!.isHeld && sleepAssistantPlayList.mediaType === SleepMediaType.ONLINE) {
-            wifiLock!!.acquire()
-            HyperLog.v(AlarmUtils.TAG, "WiFi lock acquired")
-        }
-    }
-
-    private fun wifiLockRelease() {
-        if (wifiLock != null && wifiLock!!.isHeld) {
-            wifiLock!!.release()
-            HyperLog.v(AlarmUtils.TAG, "WiFi lock released")
-        }
     }
 
     fun play() {

@@ -7,7 +7,7 @@ import java.util.*
 
 internal class AlarmUtilsTest {
     @Test
-    fun Test_getNextAlarmDate() {
+    fun test_getNextAlarmDate() {
         val entity = AlarmEntity()
         entity.hour = 17
         entity.minute = 54

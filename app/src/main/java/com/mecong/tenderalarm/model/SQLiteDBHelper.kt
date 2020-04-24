@@ -214,7 +214,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         return getPropertyString(propertyName)?.toLong()
     }
 
-    fun getPropertyString(propertyName: PropertyName): String? {
+    private fun getPropertyString(propertyName: PropertyName): String? {
         val sql = "SELECT property_value FROM  $TABLE_PROPERTIES WHERE property_name=?"
         val cursor = this.readableDatabase.rawQuery(sql, arrayOf(propertyName.toString()))
         return if (cursor.count > 0) {

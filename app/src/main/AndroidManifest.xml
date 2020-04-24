@@ -32,7 +32,7 @@
         <service
             android:name=".alarm.AlarmNotifyingService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service
             android:name=".sleep_assistant.RadioService"

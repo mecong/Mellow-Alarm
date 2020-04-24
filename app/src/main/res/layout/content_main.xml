@@ -46,13 +46,13 @@
         android:backgroundTint="#999B9B"
         android:foregroundTintMode="src_in"
         app:layout_constraintBottom_toTopOf="@+id/alarms_list"
+        android:contentDescription="@string/about"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/ibtnAddAlarm"
         android:layout_width="45dp"
         android:layout_height="45dp"
-
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="#999B9B"
@@ -60,6 +60,7 @@
         android:background="@drawable/round_add_24"
         android:backgroundTintMode="src_in"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        android:contentDescription="@string/add"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
