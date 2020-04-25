@@ -37,7 +37,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         HyperLog.v(TAG, "Device is used: $isScreenOn")
         if (isScreenOn) {
             val timeToBed = timeToGoToBed(nextActiveAlarm)
-            if (alarmInTheMorning(nextActiveAlarm) && timeToBed != null) {
+            if (timeToBed != null && alarmInTheMorning(nextActiveAlarm)) {
                 showNotification(timeToBed, context)
             }
         }

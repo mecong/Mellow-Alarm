@@ -76,19 +76,25 @@ class AlarmNotifyingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
-        val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
-        val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
-        HyperLog.i(TAG, "Running alarm: $entity")
-        usePowerManagerWakeup()
-        stopForeground(true)
-        startAlarmNotification(this, entity)
+        val action = intent.action
+        if (action.equals(ACTION_STOP)) {
+            stopAlarmNotification()
+        } else {
 
-        if (sameId)
-            startSnoozedSound(entity)
-        else
-            startSound(entity)
+            val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
+            val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
+            val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
+            HyperLog.i(TAG, "Running alarm: $entity")
+            usePowerManagerWakeup()
+            stopForeground(true)
+            startAlarmNotification(this, entity)
 
+            if (sameId)
+                startSnoozedSound(entity)
+            else
+                startSound(entity)
+
+        }
         return START_NOT_STICKY
     }
 
@@ -282,6 +288,11 @@ class AlarmNotifyingService : Service() {
     private fun startAlarmNotification(context: Context, entity: AlarmEntity?) {
         val alarmId = entity!!.id.toString()
 
+        val stopIntent = Intent(context, AlarmNotifyingService::class.java)
+        stopIntent.action = ACTION_STOP
+        val stopAction = PendingIntent.getService(context, 3, stopIntent, 0)
+
+
         val startAlarmIntent = Intent(context, AlarmReceiverActivity::class.java)
                 .setData(ContentUris.withAppendedId(CONTENT_URI, alarmId.toLong()))
         startAlarmIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -301,6 +312,7 @@ class AlarmNotifyingService : Service() {
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setWhen(0)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, context.getString(R.string.stop), stopAction)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setLocalOnly(false)
@@ -314,6 +326,7 @@ class AlarmNotifyingService : Service() {
     }
 
     companion object {
+        const val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"
         var ALARM_PLAYING: Int? = null
         private val CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/alarms")
     }

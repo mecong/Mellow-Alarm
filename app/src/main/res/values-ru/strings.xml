@@ -139,6 +139,7 @@
     <string name="alarm_ringing">⏰ Будильник звонит</string>
     <string name="playlist_def_name">Плейлист %d</string>
     <string name="switch_alarm_state" translatable="false">Переключить состояние будильника</string>
+    <string name="stop">СТОП</string>
 
 
 </resources>

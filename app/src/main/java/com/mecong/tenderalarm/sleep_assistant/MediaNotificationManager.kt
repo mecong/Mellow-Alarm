@@ -29,23 +29,26 @@ class MediaNotificationManager(private val service: RadioService) {
         val stopIntent = Intent(service, RadioService::class.java)
         stopIntent.action = RadioService.ACTION_STOP
         val stopAction = PendingIntent.getService(service, 3, stopIntent, 0)
-        val intent = Intent(service, MainActivity::class.java)
-        intent.action = Intent.ACTION_MAIN
-        intent.addCategory(Intent.CATEGORY_LAUNCHER)
-        intent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT)
-        val pendingIntent = PendingIntent.getActivity(service, 0, intent, 0)
+
+        val contentIntent = Intent(service, MainActivity::class.java)
+//        contentIntent.action = Intent.ACTION_MAIN
+//        contentIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        contentIntent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT)
+
+        val pendingIntent = PendingIntent.getActivity(service, 0, contentIntent, 0)
+
         val builder = NotificationCompat.Builder(service, MainActivity.SLEEP_ASSISTANT_MEDIA_CHANNEL_ID)
                 .setAutoCancel(false)
                 .setContentTitle(strAppName)
                 .setContentText(contentText)
                 .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.launcher))
-                .setSmallIcon(R.drawable.sleep_inactive)
+                .setSmallIcon(R.drawable.sleep_active)
                 .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "stop", stopAction)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, service.getString(R.string.stop), stopAction)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setWhen(System.currentTimeMillis())
-        notificationManager.cancel(NOTIFICATION_ID)
+//        notificationManager.cancel(NOTIFICATION_ID)
         //                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
 //                        .setMediaSession(service.getMediaSession().getSessionToken())
 //                        .setShowActionsInCompactView(0, 1)

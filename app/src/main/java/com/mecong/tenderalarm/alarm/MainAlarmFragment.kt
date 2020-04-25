@@ -40,6 +40,8 @@ class MainAlarmFragment : Fragment() {
             this@MainAlarmFragment.startActivity(additionalIntent)
         }
 
+        AlarmUtils.resetupAllAlarms(context)
+
         val sqLiteDBHelper = sqLiteDBHelper(context)
         alarmsAdapter = AlarmsListCursorAdapter(this, sqLiteDBHelper!!.allAlarms)
 

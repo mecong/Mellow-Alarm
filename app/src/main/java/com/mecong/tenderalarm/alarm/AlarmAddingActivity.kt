@@ -207,6 +207,7 @@ class AlarmAddingActivity : AppCompatActivity() {
         seekBarTicks.setOnSeekBarChangeListener(object : OnSeekBarChangeAdapter() {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 txtTicks.text = this@AlarmAddingActivity.resources.getQuantityString(R.plurals.ticks_label, progress, progress)
+                ticksTypeLayout.visibility = if (progress > 0) View.VISIBLE else View.GONE
             }
         })
 
