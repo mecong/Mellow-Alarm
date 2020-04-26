@@ -23,12 +23,9 @@
         android:id="@+id/fragmentTitle"
         android:layout_width="0dp"
         android:layout_height="0dp"
-
-
         android:layout_marginStart="8dp"
-        android:gravity="fill_vertical"
+        android:gravity="fill"
         android:text="@string/local_audio"
-        android:textAlignment="textStart"
         android:textColor="#E7E8E2"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/mediaListView"

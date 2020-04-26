@@ -32,7 +32,7 @@ class PlaylistViewAdapter constructor(
     override fun onBindViewHolder(viewHolder: PlaylistViewHolder, position: Int) {
         val myListItem = list[position]
 
-        viewHolder.title.text = "[${myListItem.title}]"
+        viewHolder.title.text = context.getString(R.string.playlist_title, myListItem.title)
         viewHolder.title.tag = myListItem.title
         viewHolder.id = myListItem.id
     }

@@ -21,6 +21,7 @@
     <application
         android:name=".TenderAlarmApp"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/my_backup_rules"
         android:icon="@drawable/uihere"
         android:label="@string/app_name"
         android:roundIcon="@drawable/uihere"

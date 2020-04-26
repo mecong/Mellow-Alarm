@@ -138,7 +138,7 @@
     <string name="empty_playlist_name_warning">Название плейлиста не должно быть пустым</string>
     <string name="alarm_ringing">⏰ Будильник звонит</string>
     <string name="playlist_def_name">Плейлист %d</string>
-    <string name="switch_alarm_state" translatable="false">Переключить состояние будильника</string>
+    <string name="switch_alarm_state">Переключить состояние будильника</string>
     <string name="stop">СТОП</string>
 
 
