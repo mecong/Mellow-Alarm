@@ -38,12 +38,8 @@ class MainActivity : AppCompatActivity() {
             val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
 
             fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-            HyperLog.i(TAG, "Found sleep fragment: $sleepFragment")
-            HyperLog.i(TAG, "Found alarm fragment: $alarmFragment")
             fragmentTransaction.hide(alarmFragment!!)
-            HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
             fragmentTransaction.show(sleepFragment!!)
-            HyperLog.i(TAG, "sleepFragment show $sleepFragment")
 
             ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_active)
             ibOpenAlarm!!.setImageResource(R.drawable.alarm_inactive)
@@ -56,22 +52,24 @@ class MainActivity : AppCompatActivity() {
             val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
             //                fragmentTransaction.addToBackStack("Back to Sleep assistant");
             fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-            HyperLog.i(TAG, "Found sleep fragment: $sleepFragment")
-            HyperLog.i(TAG, "Found alarm fragment: $alarmFragment")
             fragmentTransaction.hide(sleepFragment!!)
-            HyperLog.i(TAG, "sleepFragment hide $sleepFragment")
             fragmentTransaction.show(alarmFragment!!)
             HyperLog.i(TAG, "alarmFragment show $sleepFragment")
             ibOpenAlarm!!.setImageResource(R.drawable.alarm_active)
+//
+//            ibOpenAlarm!!.setImageResource(R.drawable.alarm_add)
+//            ibOpenAlarm!!.setColorFilter(ContextCompat.getColor(this, R.color.appGreen), android.graphics.PorterDuff.Mode.MULTIPLY);
+
             ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_inactive)
             fragmentTransaction.commit()
+
         }
 
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         //        fragmentTransaction.addToBackStack("Init");
-        var sleepFragment: Fragment? = null
-        var alarmFragment: Fragment? = null
+        val sleepFragment: Fragment?
+        val alarmFragment: Fragment?
         if (savedInstanceState == null) {
             sleepFragment = SleepAssistantFragment()
             alarmFragment = MainAlarmFragment()
@@ -80,8 +78,8 @@ class MainActivity : AppCompatActivity() {
         } else {
             sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
             alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
-
         }
+
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
 
         if (ASSISTANT_FRAGMENT == desiredFragment) {

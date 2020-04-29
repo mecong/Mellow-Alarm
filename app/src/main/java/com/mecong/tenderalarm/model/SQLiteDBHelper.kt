@@ -22,7 +22,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         database.insert(TABLE_ONLINE_MEDIA, null, values)
 
         values.put(TITLE, "Milano Lounge")
-        values.put(URI, "http://antares.dribb.com:5080/autodj")
+        values.put(URI, "https://securestreams.autopo.st:1180/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
 
         values.put(TITLE, "Zen noise")
@@ -123,7 +123,6 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
             updateValues.put("canceled_next_alarms", 0)
             if (!active) {
                 updateValues.put("next_time", -1)
-                updateValues.put("next_request_code", -1)
             }
             writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", arrayOf(id))
             HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] toggled to: $active")
@@ -332,7 +331,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 30
+        private const val DATABASE_VERSION = 31
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"

@@ -32,6 +32,15 @@ import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import org.greenrobot.eventbus.EventBus
 
+enum class RadioServiceStatus {
+    IDLE,
+    LOADING,
+    PLAYING,
+    PAUSED,
+    STOPPED,
+    ERROR
+}
+
 class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener {
     private val iBinder: IBinder = LocalBinder()
     private lateinit var sleepAssistantPlayList: SleepAssistantPlayList
@@ -42,7 +51,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     var onGoingCall = false
     private var telephonyManager: TelephonyManager? = null
     private var audioManager: AudioManager? = null
-    var status = IDLE
+    var status = RadioServiceStatus.IDLE
     private var currentTrackTitle = "Tender Alarm"
     private var bandwidthMeter: DefaultBandwidthMeter? = null
     private var dataSourceFactory: DataSource.Factory? = null
@@ -199,7 +208,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     override fun onUnbind(intent: Intent): Boolean {
-        if ((status == IDLE)) stopSelf()
+        if ((status == RadioServiceStatus.IDLE)) stopSelf()
         return super.onUnbind(intent)
     }
 
@@ -230,25 +239,25 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) { //        if (!status.equals(IDLE))
         status = when (playbackState) {
-            Player.STATE_BUFFERING -> LOADING
-            Player.STATE_ENDED -> STOPPED
+            Player.STATE_BUFFERING -> RadioServiceStatus.LOADING
+            Player.STATE_ENDED -> RadioServiceStatus.STOPPED
             Player.STATE_READY -> {
                 if (playWhenReady) {
                     notificationManager.startNotify(status, currentTrackTitle)
-                    PLAYING
+                    RadioServiceStatus.PLAYING
                 } else {
-                    PAUSED
+                    RadioServiceStatus.PAUSED
                 }
             }
-            Player.STATE_IDLE -> IDLE
-            else -> IDLE
+            Player.STATE_IDLE -> RadioServiceStatus.IDLE
+            else -> RadioServiceStatus.IDLE
         }
         EventBus.getDefault().postSticky(status)
     }
 
     override fun onPlayerError(error: ExoPlaybackException) {
         HyperLog.e(AlarmUtils.TAG, "Can't play: $error")
-        EventBus.getDefault().postSticky(ERROR)
+        EventBus.getDefault().postSticky(RadioServiceStatus.ERROR)
     }
 
     fun resume() {
@@ -307,7 +316,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     val isPlaying: Boolean
-        get() = (status == PLAYING)
+        get() = (status == RadioServiceStatus.PLAYING)
 
     /*
     2019-08-18 21:18:05.102 I/A.L.A.R.M.A: >>>>>>onTracksChanged>>>>>>
@@ -394,12 +403,5 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         const val ACTION_PLAY = "com.mecong.myalarm.ACTION_PLAY"
         const val ACTION_PAUSE = "com.mecong.myalarm.ACTION_PAUSE"
         const val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"
-
-        const val IDLE = "PlaybackStatus_IDLE"
-        const val LOADING = "PlaybackStatus_LOADING"
-        const val PLAYING = "PlaybackStatus_PLAYING"
-        const val PAUSED = "PlaybackStatus_PAUSED"
-        const val STOPPED = "PlaybackStatus_STOPPED"
-        const val ERROR = "PlaybackStatus_ERROR"
     }
 }

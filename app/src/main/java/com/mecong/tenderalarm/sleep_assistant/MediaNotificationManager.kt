@@ -14,13 +14,13 @@ class MediaNotificationManager(private val service: RadioService) {
     private val resources: Resources = service.resources
     private val notificationManager: NotificationManagerCompat
 
-    fun startNotify(playbackStatus: String, contentText: String?) {
+    fun startNotify(playbackStatus: RadioServiceStatus, contentText: String?) {
         val playbackAction = Intent(service, RadioService::class.java)
         playbackAction.action = RadioService.ACTION_PAUSE
 
         var icon = R.drawable.ic_pause_white
         var pauseAction = PendingIntent.getService(service, 1, playbackAction, 0)
-        if (playbackStatus == RadioService.PAUSED) {
+        if (playbackStatus == RadioServiceStatus.PAUSED) {
             icon = R.drawable.ic_play_white
             playbackAction.action = RadioService.ACTION_PLAY
             pauseAction = PendingIntent.getService(service, 2, playbackAction, 0)

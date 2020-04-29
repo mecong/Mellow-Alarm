@@ -199,21 +199,21 @@ class SleepAssistantFragment : Fragment() {
     }
 
     @Subscribe(sticky = true)
-    fun onEvent(status: String?) {
+    fun onEvent(status: RadioServiceStatus) {
         playButton.isEnabled = true
         when (status) {
-            RadioService.LOADING -> {
+            RadioServiceStatus.LOADING -> {
                 playButton.setImageResource(R.drawable.pause_btn)
                 playButton.setColorFilter(0)
                 handler.removeCallbacks(runnable)
             }
-            RadioService.ERROR -> {
+            RadioServiceStatus.ERROR -> {
                 nowPlayingText.text = getString(R.string.can_not_stream)
                 Toast.makeText(this.context, getString(R.string.can_not_stream), Toast.LENGTH_SHORT).show()
                 playButton.setImageResource(R.drawable.play_btn)
                 playListModel.playing.setValue(false)
             }
-            RadioService.PLAYING -> {
+            RadioServiceStatus.PLAYING -> {
                 playButton.setImageResource(R.drawable.pause_btn)
                 //                pp_button.setPaddingRelative(10,10,10,10);
                 playButton.imageTintMode = PorterDuff.Mode.ADD
