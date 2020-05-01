@@ -61,9 +61,9 @@
             android:background="#00FFFFFF"
             android:contentDescription="@string/switch_alarm_state"
             android:foregroundTintMode="src_in"
+            android:tint="@color/gray"
             android:scaleType="center"
-            android:src="@drawable/ic_alarm_off"
-            android:tint="@color/gray" />
+            android:src="@drawable/ic_alarm_off" />
 
         <TextView
             android:id="@+id/textViewSkipped"
@@ -85,6 +85,8 @@
         android:focusable="true"
         android:contentDescription="@string/delete"
         android:scaleType="fitCenter"
+        android:foregroundTintMode="src_in"
+        android:tint="@color/gray"
         android:src="@android:drawable/ic_menu_delete" />
 
 </LinearLayout>

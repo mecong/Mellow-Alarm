@@ -71,7 +71,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
         currentPlaylistID = (sqLiteDBHelper.getPropertyInt(PLAYLIST_ID) ?: -1).toLong()
 
-        var selectedPosition = 0
+        val selectedPosition: Int
         if (savedActiveTab == 0) {
             selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_POSITION) ?: 0
             initPlaylist(selectedPosition, false)

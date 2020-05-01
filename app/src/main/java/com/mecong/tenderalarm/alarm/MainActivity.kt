@@ -7,7 +7,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
@@ -16,12 +18,65 @@ import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
+import com.mecong.tenderalarm.sleep_assistant.RadioServiceStatus
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.util.*
 
+enum class MainActivityMessages {
+    ADD_ALARM,
+    SWITCH_PLAYBACK
+}
+
+private var currentFragment = MainActivity.ALARM_FRAGMENT
+private var isSleepAssistantPlaying = false
 
 class MainActivity : AppCompatActivity() {
+
+
+    private val sleepAssistantFragmentOpenListener: (v: View) -> Unit = {
+        HyperLog.i(TAG, "Open Sleep Assistant button clicked")
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
+        val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
+
+        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+        fragmentTransaction.hide(alarmFragment!!)
+        fragmentTransaction.show(sleepFragment!!)
+
+        currentFragment = SLEEP_FRAGMENT
+
+        setButtons()
+
+        fragmentTransaction.commit()
+    }
+
+    private val alarmFragmentOpenListener: (v: View) -> Unit = {
+        HyperLog.i(TAG, "Open Alarm button clicked")
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
+        val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
+
+        fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+        fragmentTransaction.hide(sleepFragment!!)
+        fragmentTransaction.show(alarmFragment!!)
+
+        currentFragment = ALARM_FRAGMENT
+
+        setButtons()
+
+        fragmentTransaction.commit()
+    }
+
+    private val addAlarmListener: (v: View) -> Unit = {
+        EventBus.getDefault().post(MainActivityMessages.ADD_ALARM)
+    }
+
+    private val switchPlayStateListener: (v: View) -> Unit = {
+        EventBus.getDefault().post(MainActivityMessages.SWITCH_PLAYBACK)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,74 +84,102 @@ class MainActivity : AppCompatActivity() {
         HyperLog.setLogLevel(Log.VERBOSE)
         setContentView(R.layout.activity_main)
         createNotificationChannels(this)
+
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this)
+
         val supportFragmentManager = this@MainActivity.supportFragmentManager
-
-        ibOpenSleepAssistant!!.setOnClickListener {
-            HyperLog.i(TAG, "Open Sleep Assistant button clicked")
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-            val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
-
-            fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-            fragmentTransaction.hide(alarmFragment!!)
-            fragmentTransaction.show(sleepFragment!!)
-
-            ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_active)
-            ibOpenAlarm!!.setImageResource(R.drawable.alarm_inactive)
-            fragmentTransaction.commit()
-        }
-        ibOpenAlarm!!.setOnClickListener {
-            HyperLog.i(TAG, "Open Alarm button clicked")
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-            val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
-            //                fragmentTransaction.addToBackStack("Back to Sleep assistant");
-            fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-            fragmentTransaction.hide(sleepFragment!!)
-            fragmentTransaction.show(alarmFragment!!)
-            HyperLog.i(TAG, "alarmFragment show $sleepFragment")
-            ibOpenAlarm!!.setImageResource(R.drawable.alarm_active)
-//
-//            ibOpenAlarm!!.setImageResource(R.drawable.alarm_add)
-//            ibOpenAlarm!!.setColorFilter(ContextCompat.getColor(this, R.color.appGreen), android.graphics.PorterDuff.Mode.MULTIPLY);
-
-            ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_inactive)
-            fragmentTransaction.commit()
-
-        }
 
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         //        fragmentTransaction.addToBackStack("Init");
-        val sleepFragment: Fragment?
-        val alarmFragment: Fragment?
-        if (savedInstanceState == null) {
+
+        var sleepFragment: Fragment? = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
+        if (sleepFragment == null) {
             sleepFragment = SleepAssistantFragment()
-            alarmFragment = MainAlarmFragment()
             fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
-            fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
-        } else {
-            sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-            alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
         }
+
+
+        var alarmFragment: Fragment? = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
+        if (alarmFragment == null) {
+            alarmFragment = MainAlarmFragment()
+            fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
+        }
+
+//        if (savedInstanceState == null) {
+//            sleepFragment = SleepAssistantFragment()
+//            fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
+//
+//            alarmFragment = MainAlarmFragment()
+//            fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
+//        } else {
+//            sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
+//            alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
+//        }
 
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
 
-        if (ASSISTANT_FRAGMENT == desiredFragment) {
-            fragmentTransaction.hide(alarmFragment!!)
+        currentFragment = if (ASSISTANT_FRAGMENT == desiredFragment) {
+            fragmentTransaction.hide(alarmFragment)
             HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
-            fragmentTransaction.show(sleepFragment!!)
+            fragmentTransaction.show(sleepFragment)
             HyperLog.i(TAG, "sleepFragment show $sleepFragment")
-            ibOpenSleepAssistant!!.setImageResource(R.drawable.sleep_active)
+            SLEEP_FRAGMENT
         } else {
-            fragmentTransaction.hide(sleepFragment!!)
+            fragmentTransaction.hide(sleepFragment)
             HyperLog.i(TAG, "sleepFragment hide $sleepFragment")
-            fragmentTransaction.show(alarmFragment!!)
+            fragmentTransaction.show(alarmFragment)
             HyperLog.i(TAG, "alarmFragment show $sleepFragment")
-            ibOpenAlarm!!.setImageResource(R.drawable.alarm_active)
+            ALARM_FRAGMENT
         }
+
         fragmentTransaction.commit()
-        //        createDebugAlarm();
+        setButtons()
+    }
+
+    @Subscribe
+    fun onEvent(status: RadioServiceStatus) {
+        isSleepAssistantPlaying = when (status) {
+            RadioServiceStatus.LOADING -> {
+                true
+            }
+            RadioServiceStatus.ERROR -> {
+                false
+            }
+            RadioServiceStatus.PLAYING -> {
+                true
+            }
+            else -> {
+                false
+            }
+        }
+
+        setButtons()
+    }
+
+    private fun setButtons() {
+        if (currentFragment == SLEEP_FRAGMENT) {
+            if (isSleepAssistantPlaying) {
+                ibOpenSleepAssistant.setImageResource(R.drawable.pause_btn)
+            } else {
+                ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
+            }
+            ibOpenSleepAssistant.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            ibOpenAlarm.setOnClickListener(alarmFragmentOpenListener)
+            ibOpenSleepAssistant.setOnClickListener(switchPlayStateListener)
+
+            ibOpenAlarm.setImageResource(R.drawable.alarm_inactive)
+            ibOpenAlarm.clearColorFilter()
+        } else {
+            ibOpenAlarm.setImageResource(R.drawable.alarm_add)
+            ibOpenAlarm.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            ibOpenAlarm.setOnClickListener(addAlarmListener)
+            ibOpenSleepAssistant.setOnClickListener(sleepAssistantFragmentOpenListener)
+
+            ibOpenSleepAssistant.setImageResource(R.drawable.sleep_inactive)
+            ibOpenSleepAssistant.clearColorFilter()
+        }
     }
 
     private fun createDebugAlarm() {
@@ -112,7 +195,6 @@ class MainActivity : AppCompatActivity() {
                     val instance = sqLiteDBHelper(this@MainActivity)
                     val newId = instance!!.addOrUpdateAlarm(this)
                     id = newId
-
                 }
         setUpNextAlarm(alarmEntity, this, true)
     }

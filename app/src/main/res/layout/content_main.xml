@@ -50,6 +50,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
+        android:visibility="gone"
         android:id="@+id/ibtnAddAlarm"
         android:layout_width="45dp"
         android:layout_height="45dp"

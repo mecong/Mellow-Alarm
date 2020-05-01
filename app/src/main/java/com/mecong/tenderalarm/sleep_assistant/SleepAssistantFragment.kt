@@ -21,6 +21,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils
+import com.mecong.tenderalarm.alarm.MainActivityMessages
 import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import com.mecong.tenderalarm.sleep_assistant.RadioService.LocalBinder
@@ -141,7 +142,9 @@ class SleepAssistantFragment : Fragment() {
             }
         }
 
-        EventBus.getDefault().register(this)
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
 
     }
 
@@ -192,13 +195,27 @@ class SleepAssistantFragment : Fragment() {
         tabs.getTabAt(activeTab % tabs.tabCount)!!.select()
     }
 
+    @Subscribe
+    fun onPlayButtonClicked(message: MainActivityMessages) {
+        if (message == MainActivityMessages.SWITCH_PLAYBACK) {
+            if (radioService.isPlaying) {
+                radioService.pause()
+            } else {
+                if (radioService.hasPlayList()) {
+                    radioService.resume()
+                } else {
+                    radioService.setMediaList(playListModel.playlist.value!!)
+                }
+            }
+        }
+    }
 
-    @Subscribe(sticky = true)
+    @Subscribe
     fun onPlayFileChanged(media: Media) {
         nowPlayingText.text = media.title
     }
 
-    @Subscribe(sticky = true)
+    @Subscribe
     fun onEvent(status: RadioServiceStatus) {
         playButton.isEnabled = true
         when (status) {
@@ -272,7 +289,7 @@ class SleepAssistantFragment : Fragment() {
                 volumeCoefficient = 0.32f
                 audioManager.setStreamVolume(
                         AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
-                Toast.makeText(this.activity!!, "System volume set to 30%", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
             }
 
             volume = 105 - 100 * volumeCoefficient

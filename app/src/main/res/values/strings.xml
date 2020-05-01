@@ -147,6 +147,7 @@
     <string name="playlist_def_name">Playlist %d</string>
     <string name="stop">STOP</string>
     <string name="playlist_title" translatable="false">[%s]</string>
+    <string name="system_volume_toast" translatable="false">System volume set to 30%</string>
 
 
     <string-array name="ticks_type_array">

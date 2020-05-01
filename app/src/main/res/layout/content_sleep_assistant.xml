@@ -102,6 +102,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <ImageButton
+        android:visibility="invisible"
         android:id="@+id/playButton"
         android:layout_width="50dp"
         android:layout_height="50dp"

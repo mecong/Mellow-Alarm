@@ -31,8 +31,8 @@ class MediaNotificationManager(private val service: RadioService) {
         val stopAction = PendingIntent.getService(service, 3, stopIntent, 0)
 
         val contentIntent = Intent(service, MainActivity::class.java)
-//        contentIntent.action = Intent.ACTION_MAIN
-//        contentIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        contentIntent.action = Intent.ACTION_MAIN
+        contentIntent.addCategory(Intent.CATEGORY_LAUNCHER)
         contentIntent.putExtra(MainActivity.FRAGMENT_NAME_PARAM, MainActivity.ASSISTANT_FRAGMENT)
 
         val pendingIntent = PendingIntent.getActivity(service, 0, contentIntent, 0)

@@ -19,6 +19,8 @@ import com.mecong.tenderalarm.logs.LogsActivity
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import kotlinx.android.synthetic.main.content_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import java.util.*
 
 class MainAlarmFragment : Fragment() {
@@ -56,8 +58,20 @@ class MainAlarmFragment : Fragment() {
         sqLiteDBHelper.close()
     }
 
+    @Subscribe
+    fun onAddAlarmMessageHandler(message: MainActivityMessages) {
+        if (message == MainActivityMessages.ADD_ALARM) {
+            val addAlarmIntent = Intent(context, AlarmAddingActivity::class.java)
+            this@MainAlarmFragment.startActivityForResult(addAlarmIntent, ALARM_ADDING_REQUEST_CODE)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
+
         return inflater.inflate(
                 R.layout.content_main, container, false) as ViewGroup
     }
