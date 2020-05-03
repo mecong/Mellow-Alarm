@@ -14,7 +14,7 @@
     <string name="su">Su</string>
 
     <string name="upcoming_alarm_notification_channel_name">☕ Upcoming alarm</string>
-    <string name="upcoming_alarm_channel_description" translatable="false">😼 Kindly reminder about upcoming alarm</string>
+    <string name="upcoming_alarm_channel_description">😼 Kindly reminder about upcoming alarm</string>
     <string name="upcoming_alarm_notification_title">☕️ Upcoming alarm</string>
     <string name="upcoming_alarm_notification_message">Cancel upcoming alarm at %1$tH:%1$tM</string>
     <string name="upcoming_alarm_canceled_toast">Upcoming alarm at %1$tH:%1$tM canceled</string>
@@ -146,7 +146,7 @@
     <string name="playlist_def_name">Playlist %d</string>
     <string name="stop">STOP</string>
     <string name="playlist_title" translatable="false">[%s]</string>
-    <string name="system_volume_toast" translatable="false">System volume set to 30%</string>
+    <string name="system_volume_toast">System volume set to 30%</string>
 
     <string name="Ocean_noise">Ocean noise</string>
     <string name="Campfire_noise">Campfire noise</string>
@@ -167,6 +167,11 @@
     <string name="Pink_noise">Pink noise</string>
     <string name="Brown_noise">Brown noise</string>
     <string name="Red_noise">Red noise</string>
+
+    <string name="dialog_autostart">Power optimization of your phone could prevent the App from firing alarms.\n\nPlease turn on AutoStart option for \"%s\" </string>
+    <string name="open_autostart">Open AutoStart Dialog</string>
+    <string name="cant_open_autostart">Can\'t open AutoStart. Please turn on manually.</string>
+
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>

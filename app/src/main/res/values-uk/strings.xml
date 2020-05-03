@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Делікатний будильник</string>
+    <string name="cancel">Відміна</string>
+    <string name="delete">Видалити</string>
+    <string name="mo">Пн</string>
+    <string name="tu">Вт</string>
+    <string name="we">Ср</string>
+    <string name="th">Чт</string>
+    <string name="fr">Пт</string>
+    <string name="sa">Сб</string>
+    <string name="su">Нд</string>
+    <string name="upcoming_alarm_notification_channel_name">☕ Будильник</string>
+    <string name="upcoming_alarm_channel_description">Нагадування про скорий дзвінок будильника</string>
+    <string name="upcoming_alarm_notification_title">☕ Будильник</string>
+    <string name="upcoming_alarm_notification_message">Відмінити будильник о %1$tH:%1$tM</string>
+    <string name="upcoming_alarm_canceled_toast">Будильник о %1$tH:%1$tM відмінено</string>
+    <string name="time_to_sleep_channel_name">🛏 Пора спати</string>
+    <string name="time_to_sleep_notification_title">🛏 Пора спати</string>
+    <string name="time_to_sleep_notification_message">Залишилося %s %s до ранкового будильника. Натиснить щоб відкрити Дрьому.</string>
+    <string name="sleep_assistant_media_channel_name">Дрьома</string>
+    <string name="sleep_timer">Дрімати %1$tM:%1$tS</string>
+    <string name="work_days">Робочі дні</string>
+    <string name="every_day">Кожен день</string>
+    <string name="never">Ніколи</string>
+    <string name="ticks_type_label">Звук делікатного будильнику</string>
+    <string name="alarm_complexity">Складність будильнику: %d</string>
+    <string name="all_alarms_are_off">Усі будильники вимкнено</string>
+    <string name="next_alarm_soon">Будильник скоро задзвонить</string>
+    <string name="next_alarm_today">Будильник через %s %s</string>
+    <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
+    <string name="next_alarm_date">%1$tA, %1$td %1$tB, %1$tY</string>
+    <string name="add">Додати</string>
+    <string name="time">Час</string>
+    <string name="volume">Гучність</string>
+    <string name="volume_percent">%d%%</string>
+    <string name="next_s_cancel">Пропустити %d</string>
+    <string name="offline">Офлайн</string>
+    <string name="online">Онлайн</string>
+    <string name="noises">Шуми</string>
+    <string name="url_address">URL адреса радіостанції</string>
+    <string name="local_audio">Локальні медіа</string>
+    <string name="internet_streams">Інтернет радіо</string>
+    <string name="can_not_stream">Не можу відтворити медіа!</string>
+    <string name="alarms">Будильники</string>
+    <string name="skip_1_day">Пропустити 1</string>
+    <string name="skip_2_day">Пропустити 2</string>
+    <string name="skip_3_day">Пропустити 3</string>
+    <string name="skip_4_day">Пропустити 4</string>
+    <string name="skip_5_day">Пропустити 5</string>
+    <string name="turn_off">Вимкнути</string>
+    <string name="turn_on">Увімкнути</string>
+    <string name="snooze_3_min">3 хв. дрімати</string>
+    <string name="snooze_5_min">5 хв. дрімати</string>
+    <string name="snooze_2_min">2 хв. дрімати</string>
+    <string name="date">Дата</string>
+    <string name="message">Назва будильнику</string>
+    <string name="alarm_sound">Мелодія будильнику</string>
+    <string name="default_sound">Звичайний</string>
+    <string name="switch_alarm_state">Перемкнути стан будильнику</string>
+    <string name="show_heads_up_notification">Попереджати за годину до будильнику</string>
+    <string name="show_time_to_sleep_notification">Повідомляти коли пора спати</string>
+    <string name="back">Назад</string>
+    <string name="low_sound">Стук</string>
+    <string name="high_sound">Дзвін</string>
+    <string name="if_you_have_comments_or_ideas_please_visit_my_page">Якщо у вас є ідеї або коментарі, будь ласка відвідайте мою сторінку:</string>
+    <string name="radios">Радіо</string>
+    <string name="about">Про програму</string>
+    <string name="all_rights_on_radio_stations_belongs_to_their_owners">Всі права на радіостанції належать їх власникам</string>
+    <string name="close">Закрити</string>
+    <string name="empty_playlist_name_warning">Назва плейлиста не повинна бути порожньою</string>
+    <string name="alarm_ringing">⏰ Будильник дзвонить</string>
+    <string name="playlist_def_name">Плейлист %d</string>
+    <string name="stop">СТОП</string>
+    <string name="system_volume_toast">Системна гучність встановлена на 30%</string>
+    <string name="Ocean_noise">Шум моря</string>
+    <string name="Campfire_noise">Звук похідного багаття</string>
+    <string name="Fireplace_noise">Тріск каміна</string>
+    <string name="Birds_noise">Спів птахів</string>
+    <string name="River_noise">Шум річки</string>
+    <string name="Rain_noise">Шум дощу</string>
+    <string name="Garden_noise">У саду</string>
+    <string name="Clock_noise">Цокання настінного годинника</string>
+    <string name="Thunder_noise_1">Гроза 1</string>
+    <string name="Thunder_noise_2">Гроза 2</string>
+    <string name="Thunder_noise_3">Гроза 3</string>
+    <string name="Crickets_noise">Цвіркуни цвірчать</string>
+    <string name="Frogs_noise">Квакання жаб</string>
+    <string name="Insects_noise">Концерт комах</string>
+    <string name="Space_noise">У відкритому космосі</string>
+    <string name="White_noise">Білий шум</string>
+    <string name="Pink_noise">Рожевий шум</string>
+    <string name="Brown_noise">Коричневый шум</string>
+    <string name="Red_noise">Червоний шум</string>
+    <string name="dialog_autostart">Оптимізація вашого телефону може заблокувати дзвінки будильників. Будь ласка додайте \"%s\" в Автозапуск</string>
+    <string name="open_autostart">Відкрити Автостарт</string>
+    <string name="cant_open_autostart">Не можу відкрити автостарт. Будь ласка, включить вручну</string>
+
+
+    <plurals name="alarm_turn_off_prompt">
+        <item quantity="one">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
+        <item quantity="few">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> рази</item>
+        <item quantity="many">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
+        <item quantity="other">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
+    </plurals>
+
+    <plurals name="next_alarm">
+        <item quantity="one">Будильник через %d день</item>
+        <item quantity="few">Будильник через %d дні</item>
+        <item quantity="many">Будильник через %d днів</item>
+        <item quantity="other">Будильник через %d днів</item>
+    </plurals>
+
+    <plurals name="n_hours_plural">
+        <item quantity="one">%02d годину</item>
+        <item quantity="few">%02d години</item>
+        <item quantity="many">%02d годин</item>
+        <item quantity="other">%02d годин</item>
+    </plurals>
+
+    <plurals name="n_minutes_plural">
+        <item quantity="one">%02d хвилина</item>
+        <item quantity="few">%02d хвилини</item>
+        <item quantity="many">%02d хвилин</item>
+        <item quantity="other">%02d хвилин</item>
+    </plurals>
+
+    <plurals name="n_minutes_plural_2">
+        <item quantity="one">%02d хвилину</item>
+        <item quantity="few">%02d хвилини</item>
+        <item quantity="many">%02d хвилин</item>
+        <item quantity="other">%02d хвилин</item>
+    </plurals>
+
+    <plurals name="next_alarm_within_hour">
+        <item quantity="one">Будильник через %d хвилину</item>
+        <item quantity="few">Будильник через %d хвилини</item>
+        <item quantity="many">Будильник через %d хвилин</item>
+        <item quantity="other">Будильник через %d хвилин</item>
+    </plurals>
+
+    <plurals name="ticks_label">
+        <item quantity="one">Делікатний будильник за %d хвилину</item>
+        <item quantity="few">Делікатний будильник за %d хвилини</item>
+        <item quantity="many">Делікатний будильник за %d хвилин</item>
+        <item quantity="other">Делікатний будильник за %d хвилин</item>
+    </plurals>
+
+
+    <plurals name="snooze">
+        <item quantity="one">Дрімати щонайбільше %d хвилину</item>
+        <item quantity="few">Дрімати щонайбільше %d хвилини</item>
+        <item quantity="many">Дрімати щонайбільше %d хвилин</item>
+        <item quantity="other">Дрімати щонайбільше %d хвилин</item>
+    </plurals>
+</resources>

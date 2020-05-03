@@ -87,9 +87,8 @@ class MainActivity : AppCompatActivity() {
         if (!EventBus.getDefault().isRegistered(this))
             EventBus.getDefault().register(this)
 
+
         val supportFragmentManager = this@MainActivity.supportFragmentManager
-
-
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         //        fragmentTransaction.addToBackStack("Init");
 
@@ -137,6 +136,7 @@ class MainActivity : AppCompatActivity() {
         setButtons()
     }
 
+
     @Subscribe
     fun onEvent(status: RadioServiceStatus) {
         isSleepAssistantPlaying = when (status) {
@@ -167,8 +167,6 @@ class MainActivity : AppCompatActivity() {
             val paddingInDp = 10 // 10 dps
             val scale = resources.displayMetrics.density
             val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
-//            ibOpenAlarm.minimumWidth=padding_in_px
-//            ibOpenAlarm.minimumHeight=padding_in_px
             ibOpenAlarm.setPadding(0, paddingInPx, 0, paddingInPx)
 
 
@@ -183,8 +181,6 @@ class MainActivity : AppCompatActivity() {
             val paddingInDp = 8 // 7 dps
             val scale = resources.displayMetrics.density
             val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
-//            ibOpenAlarm.minimumWidth=padding_in_px
-//            ibOpenAlarm.minimumHeight=padding_in_px
             ibOpenAlarm.setPadding(0, paddingInPx, 0, paddingInPx)
 //            ibOpenAlarm.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             ibOpenAlarm.setOnClickListener(addAlarmListener)

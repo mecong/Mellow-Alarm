@@ -203,8 +203,8 @@ class AlarmNotifyingService : Service() {
                 volumeCounter = defaultVolume
                 exoPlayer.volume = volumeCounter
 
-                val twoMinutes = 2 * 60000
-                volumeIncreaseStep = (1 - defaultVolume) / (twoMinutes / volumeIncreaseDelayMs)
+                val fiveMinutes = 5 * 60000
+                volumeIncreaseStep = (1 - defaultVolume) / (fiveMinutes / volumeIncreaseDelayMs)
 
                 exoPlayer.playWhenReady = true
 
@@ -247,7 +247,7 @@ class AlarmNotifyingService : Service() {
         return if (entity!!.melodyUrl != null) {
             Uri.parse(entity.melodyUrl)
         } else {
-            RawResourceDataSource.buildRawResourceUri(R.raw.default_alarm_sound)
+            RawResourceDataSource.buildRawResourceUri(R.raw.cave_mountain_alarm)
         }
     }
 

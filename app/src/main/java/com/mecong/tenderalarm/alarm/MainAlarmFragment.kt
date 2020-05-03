@@ -1,6 +1,7 @@
 package com.mecong.tenderalarm.alarm
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,14 +9,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.hypertrack.hyperlog.HyperLog
+import com.judemanutd.autostarter.AutoStartPermissionHelper
 import com.mecong.tenderalarm.AdditionalActivity
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setBootReceiverActive
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
 import com.mecong.tenderalarm.logs.LogsActivity
+import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import kotlinx.android.synthetic.main.content_main.*
@@ -129,6 +136,45 @@ class MainAlarmFragment : Fragment() {
             updateNextActiveAlarm(sqLiteDBHelper)
         }
         sqLiteDBHelper!!.close()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+        val autoStartTurnedOn = sqLiteDBHelper.getPropertyInt(PropertyName.AUTOSTART_TURNED_ON)
+        if (autoStartTurnedOn == 0
+                && AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this.context!!)
+        ) {
+            runAutostart()
+        }
+    }
+
+    fun runAutostart() {
+        val dialog = Dialog(this.context!!, R.style.UrlDialogCustom)
+        dialog.setContentView(R.layout.autostart_dialog)
+
+        val textView = dialog.findViewById<TextView>(R.id.textView)
+        val buttonOk = dialog.findViewById<Button>(R.id.buttonOk)
+
+        val appName = this.getString(R.string.app_name)
+        textView.text = this.getString(R.string.dialog_autostart, appName)
+
+        buttonOk.setOnClickListener {
+            val autoStartPermission = AutoStartPermissionHelper.getInstance().getAutoStartPermission(this.context!!)
+            if (!autoStartPermission) {
+                Toast.makeText(this.context!!, this.getString(R.string.cant_open_autostart), Toast.LENGTH_LONG).show()
+            }
+            dialog.dismiss()
+            val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+            sqLiteDBHelper.setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "1")
+        }
+
+        val lp = WindowManager.LayoutParams()
+        lp.copyFrom(dialog.window!!.attributes)
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
+        dialog.show()
+        dialog.window!!.attributes = lp
     }
 
     override fun onResume() {

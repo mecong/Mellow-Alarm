@@ -29,7 +29,7 @@
                 android:angle="90"
                 android:centerColor="@android:color/transparent"
                 android:centerX="0.3"
-                android:startColor="#bb327C1F" />
+                android:startColor="#33327C1F" />
         </shape>
     </item>
 

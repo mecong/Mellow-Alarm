@@ -42,6 +42,13 @@ class AlarmAddingActivity : AppCompatActivity() {
                 OnTimeSetListener { _, hourOfDay, minute ->
                     selectedHour = hourOfDay
                     selectedMinute = minute
+                    if (exactDate > 0) {
+                        val c = Calendar.getInstance()
+                        c.timeInMillis = exactDate
+                        c.set(Calendar.HOUR_OF_DAY, selectedHour)
+                        c.set(Calendar.MINUTE, selectedMinute)
+                        exactDate = c.timeInMillis
+                    }
                     updateTimeTextView()
                 }, selectedHour, selectedMinute, true)
         timePickerDialog.show()

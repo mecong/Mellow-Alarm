@@ -44,6 +44,7 @@
             android:name=".alarm.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
             android:showOnLockScreen="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

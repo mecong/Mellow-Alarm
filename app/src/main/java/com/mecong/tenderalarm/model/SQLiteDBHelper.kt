@@ -5,10 +5,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.widget.Toast
 import com.google.android.exoplayer2.database.DatabaseProvider
 import com.hypertrack.hyperlog.HyperLog
-import com.judemanutd.autostarter.AutoStartPermissionHelper
 import com.mecong.tenderalarm.alarm.AlarmUtils
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -45,6 +43,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     private fun initializeDefaultProperties(database: SQLiteDatabase) {
         setPropertyString(PropertyName.ACTIVE_TAB, "2", database)
         setPropertyString(PropertyName.TRACK_POSITION, "0", database)
+        setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "0", database)
     }
 
     val allAlarms: Cursor
@@ -145,13 +144,6 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         setDefaultOnlineMedia(sqLiteDatabase)
         initializeDefaultProperties(sqLiteDatabase)
         HyperLog.i(AlarmUtils.TAG, "Database created")
-
-        if (AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(context)) {
-            val autoStartPermission = AutoStartPermissionHelper.getInstance().getAutoStartPermission(context)
-            if (!autoStartPermission) {
-                Toast.makeText(context, "Autostart is disabled!", Toast.LENGTH_LONG).show()
-            }
-        }
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldDbVersion: Int, newVersion: Int) {
@@ -331,7 +323,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 31
+        private const val DATABASE_VERSION = 51
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"
