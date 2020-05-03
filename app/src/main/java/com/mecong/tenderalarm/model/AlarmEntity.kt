@@ -129,13 +129,13 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
     val daysAsMap: Map<Int, Boolean>
         get() {
             val daysMap: MutableMap<Int, Boolean> = LinkedHashMap()
-            daysMap[R.string.su] = days and SU_BINARY == SU_BINARY
             daysMap[R.string.mo] = days and MO_BINARY == MO_BINARY
             daysMap[R.string.tu] = days and TU_BINARY == TU_BINARY
             daysMap[R.string.we] = days and WE_BINARY == WE_BINARY
             daysMap[R.string.th] = days and TH_BINARY == TH_BINARY
             daysMap[R.string.fr] = days and FR_BINARY == FR_BINARY
             daysMap[R.string.sa] = days and SA_BINARY == SA_BINARY
+            daysMap[R.string.su] = days and SU_BINARY == SU_BINARY
             return daysMap
         }
 

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/custom_border_media"
     android:longClickable="true"
-    android:background="@drawable/custom_ripple"
     tools:context=".sleep_assistant.media_selection.NoisesFragment">
 
 
@@ -14,7 +14,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:ellipsize="end"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:ellipsize="middle"
         android:gravity="center|start"
         android:maxLines="1"
         android:scrollHorizontally="true"
@@ -32,6 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
         android:ellipsize="end"
         android:gravity="center|start"
         android:maxLines="1"
@@ -54,7 +57,7 @@
         android:background="#00FFFFFF"
         android:clickable="true"
         android:contentDescription="@string/delete"
-
+        android:tint="#E9DEDE"
         android:focusable="true"
         android:minWidth="40sp"
         android:scaleType="center"

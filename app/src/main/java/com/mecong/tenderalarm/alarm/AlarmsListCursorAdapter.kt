@@ -10,13 +10,9 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.CursorAdapter
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
-import java.util.*
 
 class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFragment, c: Cursor?) : CursorAdapter(mainActivity.activity, c, 0) {
     override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
@@ -28,10 +24,13 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         val entity = AlarmEntity(cursor)
         val alarmId = entity.id.toString()
         val time = view.findViewById<TextView>(R.id.textRow1)
+        val time2 = view.findViewById<TextView>(R.id.textRow11)
         val textRow2 = view.findViewById<TextView>(R.id.textRow2)
-        val textRow3 = view.findViewById<TextView>(R.id.textRow3)
+        val textRow3 = view.findViewById<TextView>(R.id.textRow4)
         val textViewSkipped = view.findViewById<TextView>(R.id.textViewSkipped)
         val toggleButton = view.findViewById<ImageButton>(R.id.toggleButton)
+        val alarmOnOff = view.findViewById<LinearLayout>(R.id.alarmOnOff)
+
         val btnDeleteAlarm = view.findViewById<ImageButton>(R.id.btnDeleteAlarm)
 
         view.setOnClickListener { mainActivity.editAlarm(alarmId) }
@@ -120,10 +119,18 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
             }
         }
 
+        alarmOnOff.setOnClickListener(
+                if (entity.days > 0) recurrentAlarmSwitch else oneTimeAlarmSwitch)
+
         toggleButton.setOnClickListener(
                 if (entity.days > 0) recurrentAlarmSwitch else oneTimeAlarmSwitch)
 
-        time.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
+        if (time2 == null) {
+            time.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
+        } else {
+            time.text = context.getString(R.string.alarm_time_chunk, entity.hour)
+            time2.text = context.getString(R.string.alarm_time_chunk, entity.minute)
+        }
 
         if (entity.canceledNextAlarms > 0) {
             textViewSkipped.text = entity.canceledNextAlarms.toString()
@@ -166,12 +173,13 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         val builder = StringBuilder()
         for ((key, value) in entity.daysAsMap) {
             if (java.lang.Boolean.TRUE == value) {
-                builder.append("<font color='#DDDDDD'>")
-                        .append(context.getString(key).toUpperCase(Locale.getDefault()))
+                builder.append("<font color='#E9DEDE'>")
+//                        .append(context.getString(key).toUpperCase(Locale.getDefault()))
+                        .append(context.getString(key))
                         .append("</font>")
             } else {
                 builder.append("<font color='#555555'>")
-                        .append(context.getString(key).toUpperCase(Locale.getDefault()))
+                        .append(context.getString(key))
                         .append("</font>")
             }
             builder.append(" ")

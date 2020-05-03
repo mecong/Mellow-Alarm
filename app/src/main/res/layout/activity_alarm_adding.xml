@@ -264,7 +264,7 @@
                 android:hint="@string/message"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
-                android:maxLength="20" />
+                android:maxLength="50" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -322,7 +322,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="" />
+                android:text=""
+                tools:text="@string/ticks_label" />
 
             <SeekBar
                 android:id="@+id/seekBarTicks"
@@ -330,7 +331,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                android:max="10"
+                android:max="20"
                 android:progress="10" />
         </LinearLayout>
 

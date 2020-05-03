@@ -60,6 +60,7 @@ class AlarmAddingActivity : AppCompatActivity() {
                     uncheckDaysCheckboxes()
                     updateDateTextView()
                 }, selectedYear, selectedMonth, getSelectedDayOfMonth)
+        datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
         datePickerDialog.show()
     }
 

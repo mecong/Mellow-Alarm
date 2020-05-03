@@ -141,5 +141,24 @@
     <string name="switch_alarm_state">Переключить состояние будильника</string>
     <string name="stop">СТОП</string>
 
+    <string name="Ocean_noise">Шум моря</string>
+    <string name="Campfire_noise">Звук походного костра</string>
+    <string name="Fireplace_noise">Треск камина</string>
+    <string name="Birds_noise">Пенье птиц</string>
+    <string name="River_noise">Шум реки</string>
+    <string name="Rain_noise">Шум дождя</string>
+    <string name="Garden_noise">В саду</string>
+    <string name="Clock_noise">Тиканье натенных часов</string>
+    <string name="Thunder_noise_1">Гроза 1</string>
+    <string name="Thunder_noise_2">Гроза 2</string>
+    <string name="Thunder_noise_3">Гроза 3</string>
+    <string name="Crickets_noise">Сверчки сверчат</string>
+    <string name="Frogs_noise">Кваканье лягушек</string>
+    <string name="Insects_noise">Концерт насекомых</string>
+    <string name="Space_noise">В открытом космосе</string>
+    <string name="White_noise">Белый шум</string>
+    <string name="Pink_noise">Розовый шум</string>
+    <string name="Brown_noise">Кориченевый шум</string>
+    <string name="Red_noise">Красный шум</string>
 
 </resources>

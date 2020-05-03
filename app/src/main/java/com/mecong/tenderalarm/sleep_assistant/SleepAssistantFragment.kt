@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.graphics.PorterDuff
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
@@ -130,20 +129,14 @@ class SleepAssistantFragment : Fragment() {
             }
         }
 
-        playButton.setOnClickListener {
-            if (radioService.isPlaying) {
-                radioService.pause()
-            } else {
-                if (radioService.hasPlayList()) {
-                    radioService.resume()
-                } else {
-                    radioService.setMediaList(playListModel.playlist.value!!)
-                }
-            }
-        }
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this)
+        }
+
+        nowPlayingText.setOnClickListener {
+            val currentTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
+            tabs.getTabAt(currentTab % tabs.tabCount)!!.select()
         }
 
     }
@@ -217,29 +210,21 @@ class SleepAssistantFragment : Fragment() {
 
     @Subscribe
     fun onEvent(status: RadioServiceStatus) {
-        playButton.isEnabled = true
         when (status) {
             RadioServiceStatus.LOADING -> {
-                playButton.setImageResource(R.drawable.pause_btn)
-                playButton.setColorFilter(0)
                 handler.removeCallbacks(runnable)
             }
             RadioServiceStatus.ERROR -> {
                 nowPlayingText.text = getString(R.string.can_not_stream)
                 Toast.makeText(this.context, getString(R.string.can_not_stream), Toast.LENGTH_SHORT).show()
-                playButton.setImageResource(R.drawable.play_btn)
                 playListModel.playing.setValue(false)
             }
             RadioServiceStatus.PLAYING -> {
-                playButton.setImageResource(R.drawable.pause_btn)
-                //                pp_button.setPaddingRelative(10,10,10,10);
-                playButton.imageTintMode = PorterDuff.Mode.ADD
                 playListModel.playing.value = true
                 handler.removeCallbacks(runnable)
                 handler.postDelayed(runnable, STEP_MILLIS)
             }
             else -> {
-                playButton.setImageResource(R.drawable.play_btn)
                 playListModel.playing.value = false
                 handler.removeCallbacks(runnable)
             }
@@ -289,7 +274,7 @@ class SleepAssistantFragment : Fragment() {
                 volumeCoefficient = 0.32f
                 audioManager.setStreamVolume(
                         AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
-                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
             }
 
             volume = 105 - 100 * volumeCoefficient

@@ -34,11 +34,11 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
         noisesList.layoutManager = LinearLayoutManager(view.context)
 
         val sqLiteDBHelper = SQLiteDBHelper.sqLiteDBHelper(this.context!!)!!
-        noises = retrieveNoises()
+        noises = retrieveNoises(this.context!!)
 
         val savedActiveTab = sqLiteDBHelper.getPropertyInt(PropertyName.ACTIVE_TAB)
 
-        selectedPosition = 0
+        selectedPosition = -1
         if (savedActiveTab == 2) {
             selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_POSITION) ?: 0
             initPlaylist(selectedPosition, false)

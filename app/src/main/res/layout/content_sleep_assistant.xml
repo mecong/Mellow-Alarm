@@ -84,46 +84,22 @@
         app:layout_constraintStart_toStartOf="@+id/sliderVolume"
         app:layout_constraintTop_toBottomOf="@+id/sliderVolume" />
 
-
     <TextView
         android:id="@+id/nowPlayingText"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="#1A1B1D"
+        android:background="@drawable/custom_ripple"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="2"
         android:paddingStart="8dp"
+        android:clickable="true"
         android:paddingEnd="8dp"
         android:textColor="#E7E8E2"
-        app:layout_constraintEnd_toStartOf="@+id/playButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
-
-    <ImageButton
-        android:visibility="invisible"
-        android:id="@+id/playButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:adjustViewBounds="true"
-        android:background="#1A1B1D"
-        android:contentDescription="@string/play"
-        android:cropToPadding="true"
-        android:paddingStart="0dp"
-        android:paddingTop="0dp"
-        android:paddingEnd="0dp"
-        android:paddingBottom="0dp"
-        android:scaleType="fitCenter"
-        android:tint="#00AF3B3B"
-        android:tintMode="src_over"
-        app:layout_constraintBottom_toBottomOf="@+id/nowPlayingText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/nowPlayingText"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        app:layout_constraintVertical_bias="0.491"
-        app:srcCompat="@drawable/play_btn" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
@@ -135,7 +111,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewPager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playButton"
+        app:layout_constraintTop_toBottomOf="@+id/nowPlayingText"
         app:tabGravity="fill"
         app:tabMode="fixed"
         app:tabPaddingEnd="4dp"

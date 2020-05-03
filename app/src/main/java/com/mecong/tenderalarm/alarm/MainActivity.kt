@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
@@ -165,20 +164,34 @@ class MainActivity : AppCompatActivity() {
             } else {
                 ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
             }
-            ibOpenSleepAssistant.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            val paddingInDp = 10 // 10 dps
+            val scale = resources.displayMetrics.density
+            val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
+//            ibOpenAlarm.minimumWidth=padding_in_px
+//            ibOpenAlarm.minimumHeight=padding_in_px
+            ibOpenAlarm.setPadding(0, paddingInPx, 0, paddingInPx)
+
+
+//            ibOpenSleepAssistant.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             ibOpenAlarm.setOnClickListener(alarmFragmentOpenListener)
             ibOpenSleepAssistant.setOnClickListener(switchPlayStateListener)
 
-            ibOpenAlarm.setImageResource(R.drawable.alarm_inactive)
-            ibOpenAlarm.clearColorFilter()
+            ibOpenAlarm.setImageResource(R.drawable.alarm_active)
+//            ibOpenAlarm.clearColorFilter()
         } else {
             ibOpenAlarm.setImageResource(R.drawable.alarm_add)
-            ibOpenAlarm.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            val paddingInDp = 8 // 7 dps
+            val scale = resources.displayMetrics.density
+            val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
+//            ibOpenAlarm.minimumWidth=padding_in_px
+//            ibOpenAlarm.minimumHeight=padding_in_px
+            ibOpenAlarm.setPadding(0, paddingInPx, 0, paddingInPx)
+//            ibOpenAlarm.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
             ibOpenAlarm.setOnClickListener(addAlarmListener)
             ibOpenSleepAssistant.setOnClickListener(sleepAssistantFragmentOpenListener)
 
-            ibOpenSleepAssistant.setImageResource(R.drawable.sleep_inactive)
-            ibOpenSleepAssistant.clearColorFilter()
+            ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active)
+//            ibOpenSleepAssistant.clearColorFilter()
         }
     }
 

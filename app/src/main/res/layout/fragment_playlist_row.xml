@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="@drawable/custom_ripple"
+    android:background="@drawable/custom_border_media"
     android:longClickable="true"
     tools:context=".sleep_assistant.media_selection.NoisesFragment">
 
@@ -37,6 +37,7 @@
         android:contentDescription="@string/delete"
 
         android:focusable="true"
+        android:tint="#E9DEDE"
         android:minWidth="40sp"
         android:scaleType="center"
         android:src="@android:drawable/ic_menu_delete"
@@ -52,6 +53,7 @@
         android:background="@drawable/custom_ripple"
 
         android:clickable="true"
+        android:tint="#E9DEDE"
         android:contentDescription="@string/delete"
         android:focusable="true"
         android:minWidth="40sp"

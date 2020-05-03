@@ -5,13 +5,13 @@
     <string name="ok" translatable="false">OK</string>
 
     <string name="delete">Delete</string>
-    <string name="mo">MO</string>
-    <string name="tu">TU</string>
-    <string name="we">WE</string>
-    <string name="th">TH</string>
-    <string name="fr">FR</string>
-    <string name="sa">SA</string>
-    <string name="su">SU</string>
+    <string name="mo">Mo</string>
+    <string name="tu">Tu</string>
+    <string name="we">We</string>
+    <string name="th">Th</string>
+    <string name="fr">Fr</string>
+    <string name="sa">Sa</string>
+    <string name="su">Su</string>
 
     <string name="upcoming_alarm_notification_channel_name">☕ Upcoming alarm</string>
     <string name="upcoming_alarm_channel_description" translatable="false">😼 Kindly reminder about upcoming alarm</string>
@@ -31,6 +31,7 @@
     <string name="sleep_assistant_media_channel_description" translatable="false">Display media information when sleep assistant is active</string>
 
     <string name="alarm_time" translatable="false">%1$02d:%2$02d</string>
+    <string name="alarm_time_chunk" translatable="false">%1$02d</string>
     <string name="sleep_timer">Snooze %1$tM:%1$tS</string>
     <string name="work_days">Work days</string>
     <string name="every_day">Every day</string>
@@ -42,7 +43,7 @@
         <item quantity="other">Tender alarm %d minutes before</item>
     </plurals>
 
-    <string name="ticks_type_label">Ticks sound type</string>
+    <string name="ticks_type_label">Tender alarm sound type</string>
 
     <plurals name="snooze">
         <item quantity="one">Maximum snooze time: %d minute</item>
@@ -60,12 +61,11 @@
 
 
     <string name="next_alarm_soon">Alarm will go off soon</string>
-    <string name="next_alarm_today" comment="Alarm in %02d hours %02d minutes">Alarm in %s %s</string>
-    <!--    <string name="next_alarm_within_hour">Alarm in %d minutes</string>-->
+    <string name="next_alarm_today" comment="Alarm in %d h %d m">Alarm in %s %s</string>
 
     <plurals name="next_alarm_within_hour">
-        <item quantity="one">Alarm in %d minute</item>
-        <item quantity="other">Alarm in %d minutes</item>
+        <item quantity="one">Alarm in %d m</item>
+        <item quantity="other">Alarm in %d m</item>
     </plurals>
 
     <string name="next_alarm_date_time">%1$tA, %1$tB %1$td, %1$tY, %1$tR</string>
@@ -76,21 +76,20 @@
     <string name="time">Time</string>
 
     <plurals name="n_hours_plural">
-        <item quantity="one">%02d hour</item>
-        <item quantity="other">%02d hours</item>
+        <item quantity="one">%d h</item>
+        <item quantity="other">%d h</item>
     </plurals>
 
     <plurals name="n_minutes_plural">
-        <item quantity="one">%02d minute</item>
-        <item quantity="other">%02d minutes</item>
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
     </plurals>
 
     <plurals name="n_minutes_plural_2">
-        <item quantity="one">%02d minute</item>
-        <item quantity="other">%02d minutes</item>
+        <item quantity="one">%d m</item>
+        <item quantity="other">%d m</item>
     </plurals>
 
-    <!--    <string name="sleep_minutes">%d minutes</string>-->
     <string name="volume">Volume</string>
     <string name="volume_percent">%d%%</string>
     <string name="next_s_cancel">Skip next %d</string>
@@ -149,6 +148,25 @@
     <string name="playlist_title" translatable="false">[%s]</string>
     <string name="system_volume_toast" translatable="false">System volume set to 30%</string>
 
+    <string name="Ocean_noise">Ocean noise</string>
+    <string name="Campfire_noise">Campfire noise</string>
+    <string name="Fireplace_noise">Fireplace noise</string>
+    <string name="Birds_noise">Birds noise</string>
+    <string name="River_noise">River noise</string>
+    <string name="Rain_noise">Rain noise</string>
+    <string name="Garden_noise">Garden noise</string>
+    <string name="Clock_noise">Clock noise</string>
+    <string name="Thunder_noise_1">Thunder noise 1</string>
+    <string name="Thunder_noise_2">Thunder noise 2</string>
+    <string name="Thunder_noise_3">Thunder noise 3</string>
+    <string name="Crickets_noise">Crickets noise</string>
+    <string name="Frogs_noise">Frogs noise</string>
+    <string name="Insects_noise">Insects noise</string>
+    <string name="Space_noise">Space noise</string>
+    <string name="White_noise">White noise</string>
+    <string name="Pink_noise">Pink noise</string>
+    <string name="Brown_noise">Brown noise</string>
+    <string name="Red_noise">Red noise</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>

@@ -16,6 +16,7 @@
     <color name="dimgray">#696969</color>
     <color name="green">#008000</color>
     <color name="appGreen">#327C1F</color>
+    <color name="appGreenOpaque">#22327C1F</color>
 
 
 </resources>

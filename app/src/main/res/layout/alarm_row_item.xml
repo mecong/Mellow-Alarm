@@ -1,74 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/alarm_row_constraint"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/custom_ripple"
+    android:background="@drawable/custom_border7"
     android:gravity="center"
     android:orientation="horizontal">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/textRow4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="#E9DEDE"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Alarm Text" />
+
+    <TextView
+        android:id="@+id/textRow3"
+        android:layout_width="300dp"
+        android:layout_height="5dp"
+        android:background="@drawable/custom_border_line"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="#E9DEDE"
+        android:textSize="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textRow4" />
+
+
+    <TextView
+        android:id="@+id/textRow1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:gravity="top"
+        android:includeFontPadding="false"
+        android:lineSpacingExtra="12sp"
+        android:padding="0dp"
+        android:textColor="#E9DEDE"
+        android:textSize="60sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textRow3"
+        tools:text="18" />
 
-        <TextView
-            android:id="@+id/textRow1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:textColor="#E9DEDE"
-            android:textSize="18sp" />
+    <TextView
+        android:id="@+id/textRow11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="3dp"
+        android:textColor="#E9DEDE"
+        android:textSize="30sp"
+        app:layout_constraintStart_toEndOf="@+id/textRow1"
+        app:layout_constraintTop_toBottomOf="@+id/textRow3"
+        tools:text="31" />
 
-        <TextView
-            android:id="@+id/textRow2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:textColor="#E9DEDE"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/textRow3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:paddingBottom="5dp"
-            android:textColor="#E9DEDE"
-            android:textSize="12sp" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/textRow2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:textColor="#E9DEDE"
+        android:textSize="14sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textRow1"
+        app:layout_constraintEnd_toStartOf="@+id/alarmOnOff"
+        app:layout_constraintStart_toEndOf="@+id/textRow1"
+        tools:text="21.02.2019" />
 
 
     <LinearLayout
-        android:id="@+id/button"
+        android:id="@+id/alarmOnOff"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_weight="0"
         android:adjustViewBounds="false"
         android:background="#00FFFFFF"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnDeleteAlarm"
+        app:layout_constraintStart_toEndOf="@+id/textRow2"
+        app:layout_constraintTop_toBottomOf="@+id/textRow3">
 
         <ImageButton
             android:id="@+id/toggleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_width="28dp"
+            android:layout_height="match_parent"
             android:background="#00FFFFFF"
             android:contentDescription="@string/switch_alarm_state"
             android:foregroundTintMode="src_in"
-            android:tint="@color/gray"
-            android:scaleType="center"
-            android:src="@drawable/ic_alarm_off" />
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_alarm_off"
+            android:tint="#E9DEDE" />
 
         <TextView
             android:id="@+id/textViewSkipped"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="40dp"
             android:alpha="0.5"
             android:background="#00FFFFFF"
             android:gravity="top|start"
@@ -78,15 +120,18 @@
 
     <ImageButton
         android:id="@+id/btnDeleteAlarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="#00FFFFFF"
         android:clickable="true"
-        android:focusable="true"
         android:contentDescription="@string/delete"
-        android:scaleType="fitCenter"
+        android:focusable="true"
         android:foregroundTintMode="src_in"
-        android:tint="@color/gray"
-        android:src="@android:drawable/ic_menu_delete" />
+        android:scaleType="center"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="#E9DEDE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textRow3" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
