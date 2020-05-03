@@ -22,12 +22,10 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM_SAME_ID
-import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import org.greenrobot.eventbus.EventBus
@@ -84,7 +82,7 @@ class AlarmNotifyingService : Service() {
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
             val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
             val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
-            HyperLog.i(TAG, "Running alarm: $entity")
+            //HyperLog.i(TAG, "Running alarm: $entity")
             usePowerManagerWakeup()
             stopForeground(true)
             startAlarmNotification(this, entity)
@@ -99,7 +97,7 @@ class AlarmNotifyingService : Service() {
     }
 
     private fun usePowerManagerWakeup() {
-        HyperLog.v(TAG, "Alarm Notifying service usePowerManagerWakeup")
+        //HyperLog.v(TAG, "Alarm Notifying service usePowerManagerWakeup")
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.javaClass.canonicalName)
         wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
@@ -127,7 +125,7 @@ class AlarmNotifyingService : Service() {
     }
 
     private fun snooze(minutes: Int) {
-        HyperLog.d(TAG, "Snooze for $minutes min")
+        //HyperLog.d(TAG, "Snooze for $minutes min")
         handlerTicks!!.removeCallbacksAndMessages(null)
         cancelVolumeIncreasing()
 
@@ -178,9 +176,9 @@ class AlarmNotifyingService : Service() {
                         exoPlayer.playWhenReady = true
                     }
 
-                    HyperLog.i(TAG, "Tick!")
+                    //HyperLog.i(TAG, "Tick!")
                 } catch (e: Exception) {
-                    HyperLog.e(TAG, "Exception: " + e.message, e)
+                    //HyperLog.e(TAG, "Exception: " + e.message, e)
                 }
                 // Repeat this the same runnable code block again another 20 seconds
                 // 'this' is referencing the Runnable object
@@ -210,7 +208,7 @@ class AlarmNotifyingService : Service() {
 
                 handlerVolume!!.removeCallbacks(runnableVolume)
                 handlerVolume!!.post(runnableVolume)
-                HyperLog.i(TAG, "Real alarm started!")
+                //HyperLog.i(TAG, "Real alarm started!")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -222,7 +220,7 @@ class AlarmNotifyingService : Service() {
             override fun run() {
                 try {
                     volumeCounter += volumeIncreaseStep
-                    HyperLog.v(TAG, "New alarm volume: $volumeCounter")
+                    //HyperLog.v(TAG, "New alarm volume: $volumeCounter")
 
                     if (exoPlayer.isPlaying) {
                         exoPlayer.volume = volumeCounter
@@ -252,7 +250,7 @@ class AlarmNotifyingService : Service() {
     }
 
     private fun stopAlarmNotification() {
-        HyperLog.i(TAG, "Stop Alarm notification")
+        //HyperLog.i(TAG, "Stop Alarm notification")
         handlerTicks!!.removeCallbacksAndMessages(null)
         stopAlarmSound()
         cancelVolumeIncreasing()
@@ -302,12 +300,12 @@ class AlarmNotifyingService : Service() {
                 startAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val alarmNotification = NotificationCompat.Builder(context, MainActivity.ALARM_CHANNEL_ID)
-                .setSmallIcon(R.drawable.launcher)
+                .setSmallIcon(R.mipmap.launcher)
                 .setContentTitle(context.getString(R.string.alarm_ringing))
                 .setContentText(entity.message)
                 .setContentIntent(pendingIntent)
                 .setFullScreenIntent(pendingIntent, true)
-                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.launcher))
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.launcher))
                 .setSmallIcon(R.drawable.alarm_active)
                 .setAutoCancel(false)
                 .setOngoing(true)

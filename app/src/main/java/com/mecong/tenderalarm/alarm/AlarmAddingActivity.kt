@@ -107,7 +107,7 @@ class AlarmAddingActivity : AppCompatActivity() {
 // Pull that URI using resultData.getData().
             if (resultData != null) {
                 val uri = resultData.data
-                HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
+                //HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.toString())
                 txtMelody!!.text = dumpFileMetaData(uri)
                 melodyUrl = uri.toString()
                 AsyncTask.execute {
@@ -128,7 +128,7 @@ class AlarmAddingActivity : AppCompatActivity() {
 // provider-specific, and might not necessarily be the file name.
                         val displayName = cursor.getString(
                                 cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                        HyperLog.i(AlarmUtils.TAG, "Display Name: $displayName")
+                        //HyperLog.i(AlarmUtils.TAG, "Display Name: $displayName")
                         val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
                         // If the size is unknown, the value stored is null.  But since an
 // int can't be null in Java, the behavior is implementation-specific,
@@ -143,7 +143,7 @@ class AlarmAddingActivity : AppCompatActivity() {
                         } else {
                             "Unknown"
                         }
-                        HyperLog.i(AlarmUtils.TAG, "Size: $size")
+                        //HyperLog.i(AlarmUtils.TAG, "Size: $size")
                         return displayName
                     }
                 }
@@ -332,8 +332,8 @@ class AlarmAddingActivity : AppCompatActivity() {
 
     private fun initLogsAndControls() {
         HyperLog.initialize(this)
-        HyperLog.setLogLevel(Log.VERBOSE)
-        HyperLog.i(AlarmUtils.TAG, "Start AlarmAddingActivity")
+        HyperLog.setLogLevel(Log.ERROR)
+        //HyperLog.i(AlarmUtils.TAG, "Start AlarmAddingActivity")
         setContentView(R.layout.activity_alarm_adding)
     }
 

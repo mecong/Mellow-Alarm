@@ -15,9 +15,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.model.PlaylistEntity
 import com.mecong.tenderalarm.model.PropertyName.*
 import com.mecong.tenderalarm.model.SQLiteDBHelper
@@ -90,7 +88,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
     @Subscribe
     fun onPlayFileChanged(playList: SleepAssistantPlayList) {
-        HyperLog.i(AlarmUtils.TAG, "Sleep assistant message received ")
+        //HyperLog.i(AlarmUtils.TAG, "Sleep assistant message received ")
 
         if (currentPlaylistID == playList.playListId) {
             mediaListView.scrollToPosition(playList.index)
@@ -195,13 +193,13 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 if (clipData == null) {
                     val uri = resultData.data
                     uriList.add(uri)
-                    HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
+                    //HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
                     sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), dumpFileMetaData(uri))
                 } else {
                     for (i in 0 until clipData.itemCount) {
                         val uri = clipData.getItemAt(i).uri
                         uriList.add(uri)
-                        HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.path!! + " i=$i")
+                        //HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.path!! + " i=$i")
                         sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), dumpFileMetaData(uri))
                     }
                 }
@@ -246,7 +244,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                         } else {
                             "Unknown"
                         }
-                        HyperLog.i(AlarmUtils.TAG, "Size: $size")
+                        //HyperLog.i(AlarmUtils.TAG, "Size: $size")
                         return displayName
                     }
                 }
@@ -320,14 +318,4 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
     }
 
-    override fun onStart() {
-        super.onStart()
-        HyperLog.i(AlarmUtils.TAG, "LocalFilesMediaFragment OnStart")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        HyperLog.i(AlarmUtils.TAG, "LocalFilesMediaFragment OnStop")
-//        EventBus.getDefault().unregister(this)
-    }
 }

@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val sleepAssistantFragmentOpenListener: (v: View) -> Unit = {
-        HyperLog.i(TAG, "Open Sleep Assistant button clicked")
+        //HyperLog.i(TAG, "Open Sleep Assistant button clicked")
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
         val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val alarmFragmentOpenListener: (v: View) -> Unit = {
-        HyperLog.i(TAG, "Open Alarm button clicked")
+        //HyperLog.i(TAG, "Open Alarm button clicked")
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
         val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
@@ -80,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         HyperLog.initialize(this)
-        HyperLog.setLogLevel(Log.VERBOSE)
+        HyperLog.setLogLevel(Log.ERROR)
         setContentView(R.layout.activity_main)
         createNotificationChannels(this)
 
@@ -101,7 +100,7 @@ class MainActivity : AppCompatActivity() {
 
         var alarmFragment: Fragment? = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
         if (alarmFragment == null) {
-            alarmFragment = MainAlarmFragment()
+            alarmFragment = AlarmFragment()
             fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
         }
 
@@ -120,15 +119,15 @@ class MainActivity : AppCompatActivity() {
 
         currentFragment = if (ASSISTANT_FRAGMENT == desiredFragment) {
             fragmentTransaction.hide(alarmFragment)
-            HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
+            //HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
             fragmentTransaction.show(sleepFragment)
-            HyperLog.i(TAG, "sleepFragment show $sleepFragment")
+            //HyperLog.i(TAG, "sleepFragment show $sleepFragment")
             SLEEP_FRAGMENT
         } else {
             fragmentTransaction.hide(sleepFragment)
-            HyperLog.i(TAG, "sleepFragment hide $sleepFragment")
+            //HyperLog.i(TAG, "sleepFragment hide $sleepFragment")
             fragmentTransaction.show(alarmFragment)
-            HyperLog.i(TAG, "alarmFragment show $sleepFragment")
+            //HyperLog.i(TAG, "alarmFragment show $sleepFragment")
             ALARM_FRAGMENT
         }
 

@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -21,8 +20,8 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.VERBOSE)
-        HyperLog.i(TAG, "Sleep time job started")
+        HyperLog.setLogLevel(Log.ERROR)
+        //HyperLog.i(TAG, "Sleep time job started")
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val nextActiveAlarm = sqLiteDBHelper!!.nextActiveAlarm
 
@@ -34,7 +33,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
         val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val isScreenOn = pm.isInteractive
-        HyperLog.v(TAG, "Device is used: $isScreenOn")
+        //HyperLog.v(TAG, "Device is used: $isScreenOn")
         if (isScreenOn) {
             val timeToBed = timeToGoToBed(nextActiveAlarm)
             if (timeToBed != null && alarmInTheMorning(nextActiveAlarm)) {
@@ -61,7 +60,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         val message = context.getString(R.string.time_to_sleep_notification_message, hoursText, minutesText)
 
         val builder = NotificationCompat.Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)
-                .setSmallIcon(R.drawable.launcher)
+                .setSmallIcon(R.mipmap.launcher)
                 .setContentTitle(context.getString(R.string.time_to_sleep_notification_title))
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(message))

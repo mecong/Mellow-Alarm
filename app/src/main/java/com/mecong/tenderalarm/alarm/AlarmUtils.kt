@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.SystemClock
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
@@ -40,11 +39,11 @@ object AlarmUtils {
         val alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context)
         setTheAlarm(alarmEntity.nextTime, alarmIntent, alarmMgr)
         sqLiteDBHelper(context)!!.addOrUpdateAlarm(alarmEntity)
-        HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.id + "] set to: "
+        //HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.id + "] set to: "
                 + context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks))
         val nextAlarmClock = alarmMgr.nextAlarmClock
         if (nextAlarmClock != null) {
-            HyperLog.d(TAG, "Next alarm MgrTime: " + nextAlarmClock.triggerTime + " (" +
+            //HyperLog.d(TAG, "Next alarm MgrTime: " + nextAlarmClock.triggerTime + " (" +
                     context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks) + ") intent: "
                     + nextAlarmClock.showIntent)
         }
@@ -74,7 +73,7 @@ object AlarmUtils {
             alarmMgr.setAlarmClock(alarmClockInfo, alarmIntent)
         } else {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
-            HyperLog.v(TAG, "set Exact alarm:$time")
+            //HyperLog.v(TAG, "set Exact alarm:$time")
         }
     }
 
@@ -91,7 +90,7 @@ object AlarmUtils {
         var at = (SystemClock.elapsedRealtime() + alarmEntity.nextTime) - HOUR - Calendar.getInstance().timeInMillis
         at = max(0, at)
 
-        HyperLog.i(TAG, "Upcoming alarm notification will start in " + (at - SystemClock.elapsedRealtime()) + " ms")
+        //HyperLog.i(TAG, "Upcoming alarm notification will start in " + (at - SystemClock.elapsedRealtime()) + " ms")
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmMgr.set(AlarmManager.ELAPSED_REALTIME, at, alarmIntent)
     }
@@ -114,11 +113,11 @@ object AlarmUtils {
             triggerAfter = max(0, triggerAfter)
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     AlarmManager.INTERVAL_FIFTEEN_MINUTES, operation)
-            HyperLog.d(TAG, "Sleep time will start in " +
+            //HyperLog.d(TAG, "Sleep time will start in " +
                     TimeUnit.MILLISECONDS.toMinutes(triggerAfter - SystemClock.elapsedRealtime()) + " min")
         } else {
             alarmMgr.cancel(operation)
-            HyperLog.d(TAG, "Sleep time alarm removed")
+            //HyperLog.d(TAG, "Sleep time alarm removed")
         }
     }
 
@@ -138,7 +137,7 @@ object AlarmUtils {
         alarmIntent = PendingIntent.getBroadcast(context,
                 entity.nextRequestCode + 1, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmMgr.cancel(alarmIntent)
-        HyperLog.i(TAG, "Next alarm with[id=" + entity.id + "] canceled")
+        //HyperLog.i(TAG, "Next alarm with[id=" + entity.id + "] canceled")
     }
 
     @JvmStatic

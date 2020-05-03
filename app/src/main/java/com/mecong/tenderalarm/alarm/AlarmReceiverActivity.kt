@@ -16,7 +16,6 @@ import androidx.fragment.app.FragmentActivity
 import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
-import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.snoozeAlarmNotification
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import kotlinx.android.synthetic.main.activity_alarm_receiver.*
@@ -51,17 +50,17 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     private fun useActivityScreenMethods() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             try {
-                HyperLog.i(TAG, "useActivityScreenMethods")
+                //HyperLog.i(TAG, "useActivityScreenMethods")
                 setTurnScreenOn(true)
                 setShowWhenLocked(true)
             } catch (e: NoSuchMethodError) {
-                HyperLog.e(TAG, "Enable setTurnScreenOn and setShowWhenLocked is not present on device!", e)
+                //HyperLog.e(TAG, "Enable setTurnScreenOn and setShowWhenLocked is not present on device!", e)
             }
         }
     }
 
     private fun usePowerManagerWakeup() {
-        HyperLog.i(TAG, "alarm receiver PowerManagerWakeup")
+        //HyperLog.i(TAG, "alarm receiver PowerManagerWakeup")
         val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.localClassName)
         wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
@@ -92,7 +91,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
     @Subscribe
     fun messageReceived(message: AlarmMessage) {
-        HyperLog.i(TAG, "Stop Activity with message: $message")
+        //HyperLog.i(TAG, "Stop Activity with message: $message")
         if (message === AlarmMessage.STOP_ALARM) {
             finish()
         }
@@ -102,7 +101,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
         try {
             super.onCreate(savedInstanceState)
             HyperLog.initialize(this)
-            HyperLog.setLogLevel(Log.VERBOSE)
+            HyperLog.setLogLevel(Log.ERROR)
 //            EventBus.getDefault().register(this)
             turnScreenOnThroughKeyguard()
 
@@ -115,11 +114,11 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
             setContentView(R.layout.activity_alarm_receiver)
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
-            HyperLog.i(TAG, "Running alarm with extras: " + intent.extras)
-            HyperLog.i(TAG, "Running alarm with id: $alarmId")
+            //HyperLog.i(TAG, "Running alarm with extras: " + intent.extras)
+            //HyperLog.i(TAG, "Running alarm with id: $alarmId")
             val context = applicationContext
             if (alarmId == null) {
-                HyperLog.e(TAG, "Alarm id is NULL")
+                //HyperLog.e(TAG, "Alarm id is NULL")
                 exitProcess(0)
                 //                alarmId = "1";
             }
@@ -129,7 +128,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
             val entity = sqLiteDBHelper(context)!!.getAlarmById(alarmId)
             alarm_info.text = entity!!.message
-            HyperLog.i(TAG, "Running alarm: $entity")
+            //HyperLog.i(TAG, "Running alarm: $entity")
             val complexity = entity.complexity
             shakeCount = complexity * 2
 
@@ -191,7 +190,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                     }
                 }
                 handlerSleepTime.post(sleepTimeClock)
-                HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.snoozeMaxTimes)
+                //HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.snoozeMaxTimes)
                 snoozeAlarmNotification(time, entity, context)
             }
 
@@ -212,7 +211,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             btnSnooze5m.setOnClickListener(snoozeOnClickListener)
 
         } catch (ex: Exception) {
-            HyperLog.e(TAG, "Exception in Alarm receiver: $ex")
+            //HyperLog.e(TAG, "Exception in Alarm receiver: $ex")
         }
     }
 
@@ -250,7 +249,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 //                Log.d(TAG, "Acceleration is " + acceleration + "m/s^2");
                 if (acceleration > shareThreshold) {
                     mLastShakeTime = curTime
-                    HyperLog.d(TAG, "Shake, Rattle, and Roll")
+                    //HyperLog.d(TAG, "Shake, Rattle, and Roll")
                     val vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -262,7 +261,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
                     cancelVolumeIncreasing()
                     if (--shakeCount <= 0) {
-                        HyperLog.d(TAG, "Alarm stopped by accelerometer")
+                        //HyperLog.d(TAG, "Alarm stopped by accelerometer")
                         turnOffAlarm()
                     }
                     taskNote!!.text = this.resources.getQuantityString(R.plurals.alarm_turn_off_prompt, shakeCount, shakeCount)
@@ -272,7 +271,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-        HyperLog.i(TAG, "Sensor accuracy: $accuracy")
+        //HyperLog.i(TAG, "Sensor accuracy: $accuracy")
         shareThreshold = 10f - accuracy
     }
 
@@ -293,17 +292,17 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 //                keyguardManager.requestDismissKeyguard(activity, object : KeyguardDismissCallback() {
 //                    override fun onDismissError() {
 //                        super.onDismissError()
-//                        HyperLog.i(TAG, "Keyguard Dismiss Error")
+//                        //HyperLog.i(TAG, "Keyguard Dismiss Error")
 //                    }
 //
 //                    override fun onDismissSucceeded() {
 //                        super.onDismissSucceeded()
-//                        HyperLog.i(TAG, "Keyguard Dismiss Success")
+//                        //HyperLog.i(TAG, "Keyguard Dismiss Success")
 //                    }
 //
 //                    override fun onDismissCancelled() {
 //                        super.onDismissCancelled()
-//                        HyperLog.i(TAG, "Keyguard Dismiss Cancelled")
+//                        //HyperLog.i(TAG, "Keyguard Dismiss Cancelled")
 //                    }
 //                })
                 activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)

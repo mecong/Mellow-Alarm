@@ -100,8 +100,8 @@
     <plurals name="alarm_turn_off_prompt">
         <item quantity="one">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
         <item quantity="few">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> рази</item>
-        <item quantity="many">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
-        <item quantity="other">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
+        <item quantity="many">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
+        <item quantity="other">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
     </plurals>
 
     <plurals name="next_alarm">

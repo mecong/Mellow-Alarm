@@ -7,10 +7,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
-import com.mecong.tenderalarm.alarm.AlarmUtils.TAG
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -25,7 +23,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId)
         if (actionCancelAlarm == intent.action) {
-            HyperLog.i(TAG, "Canceling alarm: $entity")
+            ////HyperLog.i(TAG, "Canceling alarm: $entity")
             entity!!.canceledNextAlarms = 1
             sqLiteDBHelper.addOrUpdateAlarm(entity)
             setUpNextAlarm(entity, context, false)
@@ -33,7 +31,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
                     entity.nextTimeWithTicks), Toast.LENGTH_LONG).show()
         } else {
             if (entity!!.canceledNextAlarms == 0) {
-                HyperLog.i(TAG, "Before alarm notification: $entity")
+                ////HyperLog.i(TAG, "Before alarm notification: $entity")
                 showNotification(entity, context)
             }
         }
@@ -47,7 +45,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         val message = context.getString(R.string.upcoming_alarm_notification_message,
                 entity.nextTime + entity.ticksTime * MINUTE)
         val builder = NotificationCompat.Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)
-                .setSmallIcon(R.drawable.launcher)
+                .setSmallIcon(R.mipmap.launcher)
                 .setContentTitle(context.getString(R.string.upcoming_alarm_notification_title))
                 .setContentText(message)
                 .setContentIntent(pendingIntent)

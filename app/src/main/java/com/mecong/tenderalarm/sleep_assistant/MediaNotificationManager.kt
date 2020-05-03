@@ -41,7 +41,7 @@ class MediaNotificationManager(private val service: RadioService) {
                 .setAutoCancel(false)
                 .setContentTitle(strAppName)
                 .setContentText(contentText)
-                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.launcher))
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.mipmap.launcher))
                 .setSmallIcon(R.drawable.sleep_active)
                 .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

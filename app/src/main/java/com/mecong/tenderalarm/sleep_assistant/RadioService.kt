@@ -26,9 +26,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import org.greenrobot.eventbus.EventBus
 
@@ -139,10 +137,10 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
                     addMetadataOutput { metadata ->
                         //ICY: title="Oleg Byonic & Natalia Shapovalova - Breath of Eternity", url="null"
-                        HyperLog.v(AlarmUtils.TAG, "----metadata---->")
+                        //HyperLog.v(AlarmUtils.TAG, "----metadata---->")
                         for (i in 0 until metadata.length()) {
                             val message = metadata[i].toString()
-                            HyperLog.v(AlarmUtils.TAG, message)
+                            //HyperLog.v(AlarmUtils.TAG, message)
                             if (message.startsWith("ICY: ")) {
                                 val titleNotParsed = message.split(",").toTypedArray()[0].split("=").toTypedArray()[1]
                                 currentTrackTitle = titleNotParsed.replace("\"".toRegex(), " ").trim { it <= ' ' }
@@ -155,7 +153,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                                 }
                             }
                         }
-                        HyperLog.v(AlarmUtils.TAG, "<----metadata----")
+                        //HyperLog.v(AlarmUtils.TAG, "<----metadata----")
                     }
 
                     val mPlaybackAttributes = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
@@ -224,7 +222,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     override fun onAudioFocusChange(focusChange: Int) {
-        HyperLog.v(AlarmUtils.TAG, "Focus changed: $focusChange")
+        //HyperLog.v(AlarmUtils.TAG, "Focus changed: $focusChange")
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
             resume()
             exoPlayer.volume = audioVolume
@@ -256,7 +254,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     }
 
     override fun onPlayerError(error: ExoPlaybackException) {
-        HyperLog.e(AlarmUtils.TAG, "Can't play: $error")
+        //HyperLog.e(AlarmUtils.TAG, "Can't play: $error")
         EventBus.getDefault().postSticky(RadioServiceStatus.ERROR)
     }
 
@@ -356,7 +354,7 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
      */
     override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
-        HyperLog.v(AlarmUtils.TAG, ">>>>>>onTracksChanged>>>>>>")
+        //HyperLog.v(AlarmUtils.TAG, ">>>>>>onTracksChanged>>>>>>")
         //        IcyHeaders: name="Enigmatic robot", genre="music", bitrate=256000, metadataInterval=16000
         for (i in 0 until trackGroups.length) {
             val trackGroup = trackGroups[i]
@@ -364,10 +362,10 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                 val trackMetadata = trackGroup.getFormat(j).metadata
                 if (trackMetadata != null) {
                     for (k in 0 until trackMetadata.length()) {
-                        HyperLog.v(AlarmUtils.TAG, trackMetadata[k].toString())
+                        //HyperLog.v(AlarmUtils.TAG, trackMetadata[k].toString())
                     }
                 } else {
-                    HyperLog.v(AlarmUtils.TAG, "|||Metadata not found|||")
+                    //HyperLog.v(AlarmUtils.TAG, "|||Metadata not found|||")
                 }
             }
         }
@@ -379,10 +377,10 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     DISCONTINUITY_REASON_AD_INSERTION or DISCONTINUITY_REASON_INTERNAL.
      */
     override fun onPositionDiscontinuity(reason: Int) {
-        HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
+        //HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
         if (hasPlayList()) {
             sleepAssistantPlayList.index = exoPlayer.currentWindowIndex
-            HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
+            //HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
             val playingMedia = sleepAssistantPlayList.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
             EventBus.getDefault().post(

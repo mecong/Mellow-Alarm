@@ -17,9 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils
 import com.mecong.tenderalarm.alarm.MainActivityMessages
 import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -59,7 +57,7 @@ class SleepAssistantFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        HyperLog.i(AlarmUtils.TAG, "Sleep assistant fragment create view")
+        //HyperLog.i(AlarmUtils.TAG, "Sleep assistant fragment create view")
 
         playListModel = ViewModelProvider(this).get(SleepAssistantPlayListModel::class.java)
 
@@ -231,22 +229,6 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        HyperLog.i(AlarmUtils.TAG, "SA OnStart")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        HyperLog.i(AlarmUtils.TAG, "SA onStop")
-//        EventBus.getDefault().unregister(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        HyperLog.i(AlarmUtils.TAG, "SA onPause")
-    }
-
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
         handler.removeCallbacks(runnable)
@@ -263,7 +245,7 @@ class SleepAssistantFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        HyperLog.i(AlarmUtils.TAG, "SA onResume")
+        //HyperLog.i(AlarmUtils.TAG, "SA onResume")
 
         if (!::radioService.isInitialized || !radioService.isPlaying) {
             val audioManager = this.activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager

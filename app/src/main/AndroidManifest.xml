@@ -18,13 +18,19 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
+    <!--    Brown Bat: 19.9 hours per day.-->
+    <!--    Giant Armadillo: 18.1 hours per day.-->
+    <!--    North American Opossum: 18 hours per day.-->
+    <!--    Python: 18 hours per day.-->
+    <!--    Owl Monkey: 17 hours per day.-->
+
     <application
         android:name=".TenderAlarmApp"
         android:allowBackup="true"
         android:fullBackupContent="@xml/my_backup_rules"
-        android:icon="@drawable/uihere"
+        android:icon="@mipmap/launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/uihere"
+        android:roundIcon="@mipmap/launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
@@ -43,8 +49,8 @@
         <activity
             android:name=".alarm.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
             android:showOnLockScreen="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

@@ -14,7 +14,7 @@ import android.widget.*
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
 
-class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFragment, c: Cursor?) : CursorAdapter(mainActivity.activity, c, 0) {
+class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c: Cursor?) : CursorAdapter(activity.activity, c, 0) {
     override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
         return LayoutInflater.from(context)
                 .inflate(R.layout.alarm_row_item, parent, false)
@@ -33,7 +33,7 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
 
         val btnDeleteAlarm = view.findViewById<ImageButton>(R.id.btnDeleteAlarm)
 
-        view.setOnClickListener { mainActivity.editAlarm(alarmId) }
+        view.setOnClickListener { activity.editAlarm(alarmId) }
         btnDeleteAlarm.setOnClickListener { v ->
 
             val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
@@ -41,7 +41,7 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
 
             menu.menuInflater.inflate(R.menu.menu_media_element, menu.menu)
             menu.setOnMenuItemClickListener {
-                mainActivity.deleteAlarm(alarmId)
+                activity.deleteAlarm(alarmId)
                 true
             }
             menu.show()
@@ -54,25 +54,25 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         popup.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.action_turn_off_1_day && entity.canceledNextAlarms != 1) {
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
-                mainActivity.cancelNextAlarms(alarmId, 1)
+                activity.cancelNextAlarms(alarmId, 1)
             } else if (item.itemId == R.id.action_turn_off_2_days && entity.canceledNextAlarms != 2) {
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
-                mainActivity.cancelNextAlarms(alarmId, 2)
+                activity.cancelNextAlarms(alarmId, 2)
             } else if (item.itemId == R.id.action_turn_off_3_days && entity.canceledNextAlarms != 3) {
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
-                mainActivity.cancelNextAlarms(alarmId, 3)
+                activity.cancelNextAlarms(alarmId, 3)
             } else if (item.itemId == R.id.action_turn_off_4_days && entity.canceledNextAlarms != 4) {
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
-                mainActivity.cancelNextAlarms(alarmId, 4)
+                activity.cancelNextAlarms(alarmId, 4)
             } else if (item.itemId == R.id.action_turn_off_5_days && entity.canceledNextAlarms != 5) {
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
-                mainActivity.cancelNextAlarms(alarmId, 5)
+                activity.cancelNextAlarms(alarmId, 5)
             } else if (item.itemId == R.id.turn_off_alarm) {
-                mainActivity.setActive(alarmId, false)
+                activity.setActive(alarmId, false)
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 toggleButton.tag = false
             } else if (item.itemId == R.id.turn_on_alarm) {
-                mainActivity.setActive(alarmId, true)
+                activity.setActive(alarmId, true)
                 toggleButton.setImageResource(R.drawable.ic_alarm_on)
                 toggleButton.tag = true
             }
@@ -96,7 +96,7 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
             if (checked) {
                 popup.show()
             } else {
-                mainActivity.setActive(alarmId, true)
+                activity.setActive(alarmId, true)
                 toggleButton.setImageResource(R.drawable.ic_alarm_on)
                 toggleButton.tag = true
             }
@@ -105,11 +105,11 @@ class AlarmsListCursorAdapter constructor(private val mainActivity: MainAlarmFra
         val oneTimeAlarmSwitch = View.OnClickListener {
             val checked = toggleButton.tag as Boolean
             if (checked) {
-                mainActivity.setActive(alarmId, false)
+                activity.setActive(alarmId, false)
                 toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 toggleButton.tag = false
             } else {
-                mainActivity.setActive(alarmId, true)
+                activity.setActive(alarmId, true)
                 if (entity.canceledNextAlarms > 0) {
                     toggleButton.setImageResource(R.drawable.ic_alarm_off)
                 } else {

@@ -6,8 +6,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.android.exoplayer2.database.DatabaseProvider
-import com.hypertrack.hyperlog.HyperLog
-import com.mecong.tenderalarm.alarm.AlarmUtils
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -105,11 +103,11 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
             }
 
             return if (entity.id == 0L) {
-                HyperLog.d(AlarmUtils.TAG, "Alarm added :: $entity")
+                //HyperLog.d(AlarmUtils.TAG, "Alarm added :: $entity")
                 database.insert(TABLE_ALARMS, null, values)
             } else {
                 database.update(TABLE_ALARMS, values, "_id=${entity.id}", null)
-                HyperLog.d(AlarmUtils.TAG, "Alarm updated :: $entity")
+                //HyperLog.d(AlarmUtils.TAG, "Alarm updated :: $entity")
                 entity.id
             }
         }
@@ -124,14 +122,14 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 updateValues.put("next_time", -1)
             }
             writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", arrayOf(id))
-            HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] toggled to: $active")
+            //HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] toggled to: $active")
         }
     }
 
     fun deleteAlarm(id: String) {
         this.writableDatabase.use { writableDatabase ->
             writableDatabase.delete(TABLE_ALARMS, "_id=$id", null)
-            HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] deleted")
+            //HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] deleted")
         }
     }
 
@@ -143,7 +141,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         sqLiteDatabase.execSQL(createPropertiesTable())
         setDefaultOnlineMedia(sqLiteDatabase)
         initializeDefaultProperties(sqLiteDatabase)
-        HyperLog.i(AlarmUtils.TAG, "Database created")
+        //HyperLog.i(AlarmUtils.TAG, "Database created")
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldDbVersion: Int, newVersion: Int) {
@@ -230,11 +228,11 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         updateValues.put("property_name", propertyName)
         updateValues.put("property_value", propertyValue)
         if (id == -1) {
-            HyperLog.v(AlarmUtils.TAG, "Property added -> $propertyName: $propertyValue")
+            //HyperLog.v(AlarmUtils.TAG, "Property added -> $propertyName: $propertyValue")
             database.insert(TABLE_PROPERTIES, null, updateValues)
         } else {
             database.update(TABLE_PROPERTIES, updateValues, "_id=$id", null)
-            HyperLog.v(AlarmUtils.TAG, "Property updated -> $propertyName: $propertyValue")
+            //HyperLog.v(AlarmUtils.TAG, "Property updated -> $propertyName: $propertyValue")
         }
     }
 
@@ -249,7 +247,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         this.writableDatabase.use { database ->
             val values = ContentValues()
             values.put(URI, url)
-            HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url")
+            //HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url")
             database.insert(TABLE_ONLINE_MEDIA, null, values)
         }
     }
@@ -257,7 +255,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     fun deleteOnlineMedia(id: String) {
         this.writableDatabase.use { writableDatabase ->
             writableDatabase.delete(TABLE_ONLINE_MEDIA, "_id=?", arrayOf(id))
-            HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
+            //HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
         }
     }
 
@@ -273,7 +271,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
             values.put(URI, url)
             values.put(PLAYLIST_ID, playlistId)
             values.put(TITLE, title)
-            HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url to playlist $playlistId")
+            //HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url to playlist $playlistId")
             database.insert(TABLE_OFFLINE_MEDIA, null, values)
         }
     }
@@ -282,7 +280,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     fun deleteLocalMedia(id: String) {
         this.writableDatabase.use { writableDatabase ->
             writableDatabase.delete(TABLE_OFFLINE_MEDIA, "_id=$id", null)
-            HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
+            //HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
         }
     }
     //-----------------------------------------
@@ -295,7 +293,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         this.writableDatabase.use { database ->
             val values = ContentValues()
             values.put(TITLE, title)
-            HyperLog.v(AlarmUtils.TAG, "Add playlist :: $title")
+            //HyperLog.v(AlarmUtils.TAG, "Add playlist :: $title")
             return@addPlaylist database.insert(TABLE_PLAYLISTS, null, values)
         }
     }
@@ -311,10 +309,10 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     fun deletePlaylist(id: Long) {
         this.writableDatabase.use { writableDatabase ->
             val deleted = writableDatabase.delete(TABLE_OFFLINE_MEDIA, "playlist_id=$id", null)
-            HyperLog.v(AlarmUtils.TAG, "Online Media with [playlist_id=$id] deleted $deleted row")
+            //HyperLog.v(AlarmUtils.TAG, "Online Media with [playlist_id=$id] deleted $deleted row")
 
             writableDatabase.delete(TABLE_PLAYLISTS, "_id=$id", null)
-            HyperLog.v(AlarmUtils.TAG, "Playlist [id=$id] deleted")
+            //HyperLog.v(AlarmUtils.TAG, "Playlist [id=$id] deleted")
         }
     }
 
