@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -45,7 +46,8 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         val message = context.getString(R.string.upcoming_alarm_notification_message,
                 entity.nextTime + entity.ticksTime * MINUTE)
         val builder = NotificationCompat.Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)
-                .setSmallIcon(R.mipmap.launcher)
+                .setSmallIcon(R.drawable.cat_purr)
+                .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.cat_purr))
                 .setContentTitle(context.getString(R.string.upcoming_alarm_notification_title))
                 .setContentText(message)
                 .setContentIntent(pendingIntent)

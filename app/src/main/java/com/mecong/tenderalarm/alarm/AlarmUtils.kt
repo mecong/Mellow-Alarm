@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.SystemClock
 import com.mecong.tenderalarm.BuildConfig
-import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import java.util.*
@@ -39,14 +38,11 @@ object AlarmUtils {
         val alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context)
         setTheAlarm(alarmEntity.nextTime, alarmIntent, alarmMgr)
         sqLiteDBHelper(context)!!.addOrUpdateAlarm(alarmEntity)
-        //HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.id + "] set to: "
-                + context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks))
-        val nextAlarmClock = alarmMgr.nextAlarmClock
-        if (nextAlarmClock != null) {
-            //HyperLog.d(TAG, "Next alarm MgrTime: " + nextAlarmClock.triggerTime + " (" +
-                    context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks) + ") intent: "
-                    + nextAlarmClock.showIntent)
-        }
+        //HyperLog.i(TAG, "Next alarm with[id=" + alarmEntity.id + "] set to:" + context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks))
+//        val nextAlarmClock = alarmMgr.nextAlarmClock
+//        if (nextAlarmClock != null) {
+        //HyperLog.d(TAG, "Next alarm MgrTime: " + nextAlarmClock.triggerTime + " (" +context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks) + ") intent: "+ nextAlarmClock.showIntent)
+//        }
         setUpNextSleepTimeNotification(context)
         setupUpcomingAlarmNotification(context, alarmEntity)
     }
@@ -113,8 +109,7 @@ object AlarmUtils {
             triggerAfter = max(0, triggerAfter)
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     AlarmManager.INTERVAL_FIFTEEN_MINUTES, operation)
-            //HyperLog.d(TAG, "Sleep time will start in " +
-                    TimeUnit.MILLISECONDS.toMinutes(triggerAfter - SystemClock.elapsedRealtime()) + " min")
+            //HyperLog.d(TAG, "Sleep time will start in " + TimeUnit.MILLISECONDS.toMinutes(triggerAfter - SystemClock.elapsedRealtime()) + " min")
         } else {
             alarmMgr.cancel(operation)
             //HyperLog.d(TAG, "Sleep time alarm removed")

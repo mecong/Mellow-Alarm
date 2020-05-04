@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity() {
 //            ibOpenAlarm.clearColorFilter()
         } else {
             ibOpenAlarm.setImageResource(R.drawable.alarm_add)
-            val paddingInDp = 8 // 7 dps
+            val paddingInDp = 9 // 7 dps
             val scale = resources.displayMetrics.density
             val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
             ibOpenAlarm.setPadding(0, paddingInPx, 0, paddingInPx)

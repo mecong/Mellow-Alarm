@@ -56,11 +56,6 @@ class AlarmFragment : Fragment() {
         alarms_list.adapter = alarmsAdapter
         updateNextActiveAlarm(sqLiteDBHelper)
 
-        ibtnAddAlarm.setOnClickListener {
-            val addAlarmIntent = Intent(context, AlarmAddingActivity::class.java)
-            this@AlarmFragment.startActivityForResult(addAlarmIntent, ALARM_ADDING_REQUEST_CODE)
-        }
-
         sqLiteDBHelper.close()
     }
 

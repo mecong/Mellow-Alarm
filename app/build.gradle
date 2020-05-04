@@ -8,7 +8,7 @@ android {
         applicationId "com.mecong.tenderalarm"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
+        versionCode 3
         versionName "Owl Monkey"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

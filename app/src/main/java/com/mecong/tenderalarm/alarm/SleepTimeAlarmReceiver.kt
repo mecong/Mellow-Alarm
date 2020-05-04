@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.PowerManager
 import android.util.Log
 import android.widget.Toast
@@ -60,7 +61,8 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         val message = context.getString(R.string.time_to_sleep_notification_message, hoursText, minutesText)
 
         val builder = NotificationCompat.Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)
-                .setSmallIcon(R.mipmap.launcher)
+                .setSmallIcon(R.drawable.ic_cat_sleep)
+                .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_cat_sleep))
                 .setContentTitle(context.getString(R.string.time_to_sleep_notification_title))
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(message))
