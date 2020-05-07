@@ -8,7 +8,7 @@ android {
         applicationId "com.mecong.tenderalarm"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 4
+        versionCode 2
         versionName "Owl Monkey"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,7 +43,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'com.github.judemanutd:autostarter:1.0.8'
 
     implementation 'com.google.android.exoplayer:exoplayer-core:2.11.4'
 

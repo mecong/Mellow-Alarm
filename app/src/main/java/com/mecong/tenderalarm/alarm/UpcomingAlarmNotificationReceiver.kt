@@ -44,7 +44,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         intent.putExtra(ALARM_ID_PARAM, entity!!.id.toString())
         val pendingIntent = PendingIntent.getBroadcast(context, entity.nextRequestCode + 1, intent, 0)
         val message = context.getString(R.string.upcoming_alarm_notification_message,
-                entity.nextTime + entity.ticksTime * MINUTE)
+                entity.nextTimeWithTicks)
         val builder = NotificationCompat.Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)
                 .setSmallIcon(R.drawable.cat_purr)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.cat_purr))

@@ -2,10 +2,12 @@ package com.mecong.tenderalarm.alarm
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +16,6 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.hypertrack.hyperlog.HyperLog
-import com.judemanutd.autostarter.AutoStartPermissionHelper
 import com.mecong.tenderalarm.AdditionalActivity
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setBootReceiverActive
@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.*
 
+
 class AlarmFragment : Fragment() {
     private var alarmsAdapter: AlarmsListCursorAdapter? = null
 
@@ -36,8 +37,8 @@ class AlarmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val context = this.activity!!
-        HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.ERROR)
+//        HyperLog.initialize(context)
+//        HyperLog.setLogLevel(Log.ERROR)
 //        textNextAlarm.setOnClickListener {
 //            val addAlarmIntent = Intent(context, LogsActivity::class.java)
 //            startActivity(addAlarmIntent)
@@ -132,18 +133,40 @@ class AlarmFragment : Fragment() {
         sqLiteDBHelper!!.close()
     }
 
+    private val autoStartIntents = arrayOf(
+            Intent().setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+            Intent("miui.intent.action.OP_AUTO_START").addCategory(Intent.CATEGORY_DEFAULT),
+            Intent().setComponent(ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
+            Intent().setComponent(ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity")),
+            Intent().setComponent(ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity")),
+            Intent().setComponent(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")),
+            Intent().setComponent(ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity")),
+            Intent().setComponent(ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity")),
+            Intent().setComponent(ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")),
+            Intent().setComponent(ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager")),
+            Intent().setComponent(ComponentName("com.evenwell.powersaving.g3", "com.evenwell.powersaving.g3.exception.PowerSaverExceptionActivity")),
+            Intent().setComponent(ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")),
+            Intent().setComponent(ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity")).setData(Uri.parse("mobilemanager://function/entry/AutoStart"))
+    )
+
     override fun onStart() {
         super.onStart()
+
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
         val autoStartTurnedOn = sqLiteDBHelper.getPropertyInt(PropertyName.AUTOSTART_TURNED_ON)
-        if (autoStartTurnedOn == 0
-                && AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this.context!!)
-        ) {
-            runAutostart()
+        if (autoStartTurnedOn == 0) {
+            for (intent in autoStartIntents) {
+                if (context!!.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+                    runAutostart(intent)
+                    break
+                }
+            }
+
+            sqLiteDBHelper.setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "1")
         }
     }
 
-    fun runAutostart() {
+    fun runAutostart(intent: Intent) {
         val dialog = Dialog(this.context!!, R.style.UrlDialogCustom)
         dialog.setContentView(R.layout.autostart_dialog)
 
@@ -154,13 +177,13 @@ class AlarmFragment : Fragment() {
         textView.text = this.getString(R.string.dialog_autostart, appName)
 
         buttonOk.setOnClickListener {
-            val autoStartPermission = AutoStartPermissionHelper.getInstance().getAutoStartPermission(this.context!!)
-            if (!autoStartPermission) {
+            try {
+                startActivity(intent)
+            } catch (e: Exception) {
                 Toast.makeText(this.context!!, this.getString(R.string.cant_open_autostart), Toast.LENGTH_LONG).show()
             }
+
             dialog.dismiss()
-            val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-            sqLiteDBHelper.setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "1")
         }
 
         val lp = WindowManager.LayoutParams()

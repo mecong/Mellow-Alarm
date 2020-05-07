@@ -4,8 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.alarm.AlarmNotifyingService.Companion.ALARM_PLAYING
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM_SAME_ID
@@ -15,8 +13,8 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 class TenderAlarmReceiver : BroadcastReceiver() {
     //adb shell dumpsys alarm > alarms.dump
     override fun onReceive(context: Context, intent: Intent) {
-        HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.ERROR)
+//        HyperLog.initialize(context)
+//        HyperLog.setLogLevel(Log.ERROR)
         val alarmId = intent.getStringExtra(ALARM_ID_PARAM) ?: return
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId)

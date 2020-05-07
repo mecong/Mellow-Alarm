@@ -131,7 +131,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 //                .setLoadControl(loadControl)
                 .build()
                 .apply {
-                    setHandleWakeLock(true)
                     setHandleAudioBecomingNoisy(true)
                     addListener(this@RadioService)
 
@@ -302,7 +301,6 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                 exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
             }
         }
-//        acquireWifiLock()
         exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
     }
 
@@ -356,19 +354,19 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
         //HyperLog.v(AlarmUtils.TAG, ">>>>>>onTracksChanged>>>>>>")
         //        IcyHeaders: name="Enigmatic robot", genre="music", bitrate=256000, metadataInterval=16000
-        for (i in 0 until trackGroups.length) {
-            val trackGroup = trackGroups[i]
-            for (j in 0 until trackGroup.length) {
-                val trackMetadata = trackGroup.getFormat(j).metadata
-                if (trackMetadata != null) {
-                    for (k in 0 until trackMetadata.length()) {
-                        //HyperLog.v(AlarmUtils.TAG, trackMetadata[k].toString())
-                    }
-                } else {
-                    //HyperLog.v(AlarmUtils.TAG, "|||Metadata not found|||")
-                }
-            }
-        }
+//        for (i in 0 until trackGroups.length) {
+//            val trackGroup = trackGroups[i]
+//            for (j in 0 until trackGroup.length) {
+//                val trackMetadata = trackGroup.getFormat(j).metadata
+////                if (trackMetadata != null) {
+////                    for (k in 0 until trackMetadata.length()) {
+////                        //HyperLog.v(AlarmUtils.TAG, trackMetadata[k].toString())
+////                    }
+////                } else {
+////                    //HyperLog.v(AlarmUtils.TAG, "|||Metadata not found|||")
+////                }
+//            }
+//        }
     }
 
     /*

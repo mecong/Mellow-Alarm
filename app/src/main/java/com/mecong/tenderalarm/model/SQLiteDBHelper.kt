@@ -71,12 +71,12 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     val nextMorningAlarm: AlarmEntity?
         get() {
             val now = Calendar.getInstance()
-            return getAlarmEntity(String.format(Locale.getDefault(),
-                    "SELECT * FROM %s WHERE active=1 " +
-                            " AND tts_notification=1" +
-                            " AND hour>1 AND hour<10 " +
-                            " AND (next_time-%d)>%d" +
-                            " ORDER BY next_time LIMIT 1", TABLE_ALARMS, now.timeInMillis, TimeUnit.HOURS.toMillis(4)))
+
+            return getAlarmEntity("SELECT * FROM $TABLE_ALARMS WHERE active=1 " +
+                    " AND tts_notification=1" +
+                    " AND hour>1 AND hour<10 " +
+                    " AND (next_time-${now.timeInMillis})>${TimeUnit.HOURS.toMillis(4)}" +
+                    " ORDER BY next_time LIMIT 1")
         }
 
     fun addOrUpdateAlarm(entity: AlarmEntity): Long {

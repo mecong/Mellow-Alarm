@@ -9,11 +9,9 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.*
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.fragment.app.FragmentActivity
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.snoozeAlarmNotification
@@ -100,8 +98,8 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             super.onCreate(savedInstanceState)
-            HyperLog.initialize(this)
-            HyperLog.setLogLevel(Log.ERROR)
+//            HyperLog.initialize(this)
+//            HyperLog.setLogLevel(Log.ERROR)
 //            EventBus.getDefault().register(this)
             turnScreenOnThroughKeyguard()
 

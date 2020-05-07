@@ -6,11 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.PowerManager
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
 import com.mecong.tenderalarm.model.AlarmEntity
@@ -20,8 +18,8 @@ import java.util.*
 class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.ERROR)
+//        HyperLog.initialize(context)
+//        HyperLog.setLogLevel(Log.ERROR)
         //HyperLog.i(TAG, "Sleep time job started")
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val nextActiveAlarm = sqLiteDBHelper!!.nextActiveAlarm
@@ -41,7 +39,6 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
                 showNotification(timeToBed, context)
             }
         }
-
     }
 
     private fun noNextActiveAlarms(nextActiveAlarm: AlarmEntity?): Boolean {
@@ -76,7 +73,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
     private fun timeToGoToBed(nextActiveAlarm: AlarmEntity?): Calendar? {
         val calendar = Calendar.getInstance()
-        val nextAlarmTime = nextActiveAlarm!!.nextTime
+        val nextAlarmTime = nextActiveAlarm!!.nextTimeWithTicks
         val difference = nextAlarmTime - calendar.timeInMillis
         calendar.timeInMillis = difference
         calendar.timeZone = TimeZone.getTimeZone("UTC")
@@ -91,7 +88,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = nextActiveAlarm!!.nextTime
         val hour = calendar[Calendar.HOUR_OF_DAY]
-        return hour in 2..10
+        return hour in 0..10
     }
 
     companion object {

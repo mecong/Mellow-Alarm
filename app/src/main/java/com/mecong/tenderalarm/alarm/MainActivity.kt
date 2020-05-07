@@ -6,11 +6,9 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
@@ -29,7 +27,7 @@ enum class MainActivityMessages {
 }
 
 private var currentFragment = MainActivity.ALARM_FRAGMENT
-private var isSleepAssistantPlaying = false
+private var sleepAssistantStatus = RadioServiceStatus.IDLE
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,8 +76,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        HyperLog.initialize(this)
-        HyperLog.setLogLevel(Log.ERROR)
+//        HyperLog.initialize(this)
+//        HyperLog.setLogLevel(Log.ERROR)
         setContentView(R.layout.activity_main)
         createNotificationChannels(this)
 
@@ -138,31 +136,30 @@ class MainActivity : AppCompatActivity() {
 
     @Subscribe
     fun onEvent(status: RadioServiceStatus) {
-        isSleepAssistantPlaying = when (status) {
-            RadioServiceStatus.LOADING -> {
-                true
-            }
-            RadioServiceStatus.ERROR -> {
-                false
-            }
-            RadioServiceStatus.PLAYING -> {
-                true
-            }
-            else -> {
-                false
-            }
-        }
+        sleepAssistantStatus = status
+
 
         setButtons()
     }
 
     private fun setButtons() {
         if (currentFragment == SLEEP_FRAGMENT) {
-            if (isSleepAssistantPlaying) {
-                ibOpenSleepAssistant.setImageResource(R.drawable.pause_btn)
-            } else {
-                ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
+
+            when (sleepAssistantStatus) {
+                RadioServiceStatus.LOADING -> {
+                    ibOpenSleepAssistant.setImageResource(R.drawable.ic_hour_glass)
+                }
+                RadioServiceStatus.ERROR -> {
+                    ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
+                }
+                RadioServiceStatus.PLAYING -> {
+                    ibOpenSleepAssistant.setImageResource(R.drawable.pause_btn)
+                }
+                else -> {
+                    ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
+                }
             }
+
             val paddingInDp = 10 // 10 dps
             val scale = resources.displayMetrics.density
             val paddingInPx = (paddingInDp * scale + 0.5f).toInt()

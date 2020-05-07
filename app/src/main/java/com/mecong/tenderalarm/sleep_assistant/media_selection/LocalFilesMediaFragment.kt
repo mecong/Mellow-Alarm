@@ -91,7 +91,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         //HyperLog.i(AlarmUtils.TAG, "Sleep assistant message received ")
 
         if (currentPlaylistID == playList.playListId) {
-            mediaListView.scrollToPosition(playList.index)
+            mediaListView?.scrollToPosition(playList.index)
             mediaItemViewAdapter?.selectedPosition = playList.index
             mediaItemViewAdapter?.notifyDataSetChanged()
         }

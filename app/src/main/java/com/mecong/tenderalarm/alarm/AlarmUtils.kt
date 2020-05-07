@@ -99,8 +99,7 @@ object AlarmUtils {
     fun setUpNextSleepTimeNotification(context: Context) {
         val nextMorningAlarm = sqLiteDBHelper(context)!!.nextMorningAlarm
         val intent = Intent(context, SleepTimeAlarmReceiver::class.java)
-        val operation = PendingIntent
-                .getBroadcast(context, 22, intent, 0)
+        val operation = PendingIntent.getBroadcast(context, 22, intent, 0)
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         if (nextMorningAlarm != null) {
             var triggerAfter = (SystemClock.elapsedRealtime()
