@@ -206,7 +206,14 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
                 AsyncTask.execute {
                     uriList.filterNotNull().forEach {
-                        context!!.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                        var done = false
+                        while (!done) {
+                            try {
+                                context!!.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                                done = true
+                            } catch (ex: Exception) {
+                            }
+                        }
                     }
                 }
 

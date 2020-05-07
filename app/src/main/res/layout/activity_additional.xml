@@ -4,89 +4,138 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
     tools:context=".AdditionalActivity">
 
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/closeBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/about"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/about"
+        android:textSize="24sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteY="19dp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/about"
-                android:textSize="24sp"
-                tools:layout_editor_absoluteY="19dp" />
+    <TextView
+        android:id="@+id/my_page"
+        android:layout_width="match_parent"
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lines="2"
-                android:text="@string/if_you_have_comments_or_ideas_please_visit_my_page" />
+        android:layout_height="wrap_content"
+
+        android:text="@string/if_you_have_comments_or_ideas_please_visit_my_page"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/about" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:gravity="center_horizontal|center_vertical"
-                android:lines="2"
-                android:text="@string/patreon_link" />
+    <TextView
+        android:id="@+id/p_link"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:autoLink="web"
+        android:gravity="center_horizontal|center_vertical"
+
+        android:text="@string/patreon_link"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_page" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/radios"
-                android:textSize="24sp"
-                tools:layout_editor_absoluteY="19dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/all_rights_on_radio_stations_belongs_to_their_owners" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/http_enigmatic_su" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/https_mynoise_net" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/https_www_milanolounge_net" />
-
-            <!--            Classical-->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/https_www_hionline_eu" />
+    <TextView
+        android:id="@+id/app_link_prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/app_link_prompt"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/p_link" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/http_jr_fm" />
-        </LinearLayout>
-    </ScrollView>
+    <Button
+        android:id="@+id/appLinkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Rate it"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_link_prompt" />
+
+    <TextView
+        android:id="@+id/radios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/radios"
+        android:textSize="24sp"
+
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appLinkButton"
+        tools:layout_editor_absoluteY="19dp" />
+
+    <TextView
+        android:id="@+id/all_rights_on_radio_stations_belongs_to_their_owners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/all_rights_on_radio_stations_belongs_to_their_owners"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radios" />
+
+    <TextView
+        android:id="@+id/http_enigmatic_su"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/http_enigmatic_su"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/all_rights_on_radio_stations_belongs_to_their_owners" />
+
+    <TextView
+        android:id="@+id/https_mynoise_net"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/https_mynoise_net"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/http_enigmatic_su" />
+
+    <TextView
+        android:id="@+id/https_www_milanolounge_net"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/https_www_milanolounge_net"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/https_mynoise_net" />
+
+    <TextView
+        android:id="@+id/https_www_hionline_eu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/https_www_hionline_eu"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/https_www_milanolounge_net" />
+
+
+    <TextView
+        android:id="@+id/http_jr_fm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/http_jr_fm"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/https_www_hionline_eu" />
 
     <Button
         android:id="@+id/closeBtn"

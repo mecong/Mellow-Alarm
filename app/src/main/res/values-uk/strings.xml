@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Делікатний будильник</string>
+    <string name="app_name">Делікатний Будильник</string>
     <string name="cancel">Відміна</string>
     <string name="delete">Видалити</string>
     <string name="mo">Пн</string>
@@ -64,6 +64,8 @@
     <string name="low_sound">Стук</string>
     <string name="high_sound">Дзвін</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">Якщо у вас є ідеї або коментарі, будь ласка відвідайте мою сторінку:</string>
+    <string name="app_link_prompt">Будьте ласкаві залишити коментар на сторінці Делікатного Будильника в Google Play:</string>
+    <string name="rate_it">Оцінити додаток</string>
     <string name="radios">Радіо</string>
     <string name="about">Про програму</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Всі права на радіостанції належать їх власникам</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Деликатный будильник</string>
+    <string name="app_name">Деликатный Будильник</string>
     <string name="volume">Громкость</string>
     <string name="volume_percent">%d%%</string>
     <string name="upcoming_alarm_notification_title">☕ Будильник</string>
@@ -70,6 +70,7 @@
     <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
     <string name="next_alarm_date">%1$tA, %1$td %1$tB, %1$tY</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">Если у вас есть идеи или комментарии, пожалуйста посетите мою страницу:</string>
+    <string name="rate_it">Оценить приложение</string>
     <string name="radios">Радио</string>
     <string name="about">О программе</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Все права на радиостанции принадлежат их владельцам</string>
@@ -165,5 +166,6 @@
         <item quantity="many">Дремать максимум %d минут</item>
         <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
+    <string name="app_link_prompt">Будьте добры оставить комментарий на странице Деликатного Будильника в Google Play:</string>
 
 </resources>

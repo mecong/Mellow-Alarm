@@ -132,6 +132,8 @@
     <string name="low_sound">Knock</string>
     <string name="high_sound">Clink</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">If you have comments or ideas please visit my page:</string>
+    <string name="app_link_prompt">I would very appreciate if you could rate the "Tender Alarm" at Google Play:</string>
+    <string name="rate_it">Rate it</string>
     <string name="radios">Radios</string>
     <string name="about">About</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">All rights on radio stations belong to their owners:</string>
