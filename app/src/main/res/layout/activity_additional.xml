@@ -51,7 +51,7 @@
         android:id="@+id/app_link_prompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="@string/rate_it_prompt"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -60,7 +60,7 @@
 
     <Button
         android:id="@+id/appLinkButton"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@color/appGreen"
@@ -73,7 +73,7 @@
         android:id="@+id/app_link_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="@string/share_it_prompt"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -82,11 +82,12 @@
 
     <Button
         android:id="@+id/appShareButton"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:background="@color/appGreen"
         android:text="@string/share_it"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_link_share" />
@@ -95,14 +96,13 @@
         android:id="@+id/radios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:text="@string/radios"
         android:textSize="24sp"
 
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appShareButton"
-        tools:layout_editor_absoluteY="19dp" />
+        app:layout_constraintTop_toBottomOf="@+id/appShareButton" />
 
     <TextView
         android:id="@+id/all_rights_on_radio_stations_belongs_to_their_owners"

@@ -86,9 +86,9 @@
     <string name="high_sound">Clink</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">If you have comments or ideas please visit my page:</string>
     <string name="rate_it_prompt">I would very appreciate if you could rate the "Tender Alarm" at Google Play:</string>
-    <string name="rate_it">Rate Tender Alarm</string>
+    <string name="rate_it">Rate</string>
     <string name="share_it_prompt">You can share Tender Alarm with whom, in your opinion, this may be useful:</string>
-    <string name="share_it">Share Tender Alarm</string>
+    <string name="share_it">Share</string>
     <string name="radios">Radios</string>
     <string name="about">About</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">All rights on radio stations belong to their owners:</string>
@@ -125,16 +125,18 @@
     <string name="Brown_noise">Brown noise</string>
     <string name="Red_noise">Red noise</string>
 
-    <string name="dialog_autostart">Power optimization of your phone could prevent the App from firing alarms.\n\nPlease turn on AutoStart option for \"%s\" </string>
+    <string name="dialog_autostart">Please turn on AutoStart option for \"%s\" for the correct operation of the application</string>
     <string name="open_autostart">Open AutoStart Dialog</string>
     <string name="cant_open_autostart">Can\'t open AutoStart. Please turn on manually.</string>
-
 
     <string name="ticks_type_label">Tender alarm sound type</string>
     <string name="alarm_complexity">Alarm complexity: %d</string>
     <string name="all_alarms_are_off">All alarms are off</string>
     <string name="next_alarm_soon">Alarm will go off soon</string>
     <string name="next_alarm_today" comment="Alarm in %d h %d m">Alarm in %s %s</string>
+
+    <string name="first_alarm_prompt">Add your first alarm!</string>
+    <string name="app_share_text">Tender Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>
@@ -180,7 +182,5 @@
         <item quantity="one">Drag circles to their places. Or shake phone <big>%d</big> time</item>
         <item quantity="other">Drag circles to their places. Or shake phone <big>%d</big> times</item>
     </plurals>
-    <string name="first_alarm_prompt">Add your first alarm!</string>
-    <string name="app_share_text">Tender Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>
 
 </resources>

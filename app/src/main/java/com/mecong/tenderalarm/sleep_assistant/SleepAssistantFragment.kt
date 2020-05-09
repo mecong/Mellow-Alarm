@@ -68,7 +68,6 @@ class SleepAssistantFragment : Fragment() {
         initializeTabsAndMediaFragments(context, activeTab)
 
         timeMinutes = dbHelper.getPropertyLong(PropertyName.SLEEP_TIME) ?: 39
-        timeMinutes = 1
         sliderSleepTime.setCurrentValue(timeMinutes)
         textViewMinutes.text = context.resources.getQuantityString(R.plurals.n_minutes_plural, timeMinutes.toInt(), timeMinutes.toInt())
 

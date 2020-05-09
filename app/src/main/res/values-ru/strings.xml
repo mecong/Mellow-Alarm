@@ -74,9 +74,9 @@
     <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
     <string name="next_alarm_date">%1$tA, %1$td %1$tB, %1$tY</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">Если у вас есть идеи или комментарии, пожалуйста посетите мою страницу:</string>
-    <string name="rate_it">Оценить приложение</string>
+    <string name="rate_it">Оценить</string>
     <string name="share_it_prompt">Вы можете поделиться «Деликатным будильником», с тем кому, по вашему мнению, это может быть полезно:</string>
-    <string name="share_it">Поделиться приложением</string>
+    <string name="share_it">Поделиться</string>
     <string name="radios">Радио</string>
     <string name="about">О программе</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Все права на радиостанции принадлежат их владельцам</string>
@@ -108,7 +108,7 @@
     <string name="Red_noise">Красный шум</string>
 
 
-    <string name="dialog_autostart">Оптимизация вашего телефона может заблокировать звонки будильников. Пожалуйста добавьте \"%s\" в Автозапуск</string>
+    <string name="dialog_autostart">Пожалуйста добавьте \"%s\" в Автозапуск для корректной работы приложения</string>
     <string name="open_autostart">Открыть Автостарт</string>
     <string name="cant_open_autostart">Не могу открыть автостарт. Пожалуйста, включите вручную</string>
 
