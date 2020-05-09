@@ -115,7 +115,13 @@ class AlarmFragment : Fragment() {
             textNextAlarmDate!!.text = context
                     .getString(R.string.next_alarm_date_time, nextAlarmTime)
         } else {
-            textNextAlarm!!.setText(R.string.all_alarms_are_off)
+            val alarmsCount = sqLiteDBHelper.alarmsCount()
+            if (alarmsCount == 0L) {
+                textNextAlarm!!.setText(R.string.your_alarms)
+
+            } else {
+                textNextAlarm!!.setText(R.string.all_alarms_are_off)
+            }
             textNextAlarmDate!!.text = ""
         }
         setUpNextSleepTimeNotification(context)

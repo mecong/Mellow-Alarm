@@ -26,6 +26,7 @@
     <string name="ticks_type_label">Звук делікатного будильнику</string>
     <string name="alarm_complexity">Складність будильнику: %d</string>
     <string name="all_alarms_are_off">Усі будильники вимкнено</string>
+    <string name="your_alarms">Ваші будильники</string>
     <string name="next_alarm_soon">Будильник скоро задзвонить</string>
     <string name="next_alarm_today">Будильник через %s %s</string>
     <string name="next_alarm_date_time">%1$tA, %1$td %1$tB, %1$tY, %1$tR</string>
@@ -104,7 +105,7 @@
     <string name="cant_open_autostart">Не можу відкрити автостарт. Будь ласка, включить вручну</string>
     <string name="sleep_assistant">Асистент сну</string>
 
-    <string name="first_alarm_prompt">Створіть перший будильник</string>
+    <string name="first_alarm_prompt">Додайте перший будильник</string>
     <string name="app_share_text">Делікатний Будильник - щоб добре виспатися!\nhttps://play.google.com/store/apps/details?id=%s</string>
 
 

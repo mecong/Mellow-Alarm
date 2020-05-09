@@ -6,6 +6,7 @@
     <string name="upcoming_alarm_notification_title">☕ Будильник</string>
     <string name="add">Добавить</string>
     <string name="all_alarms_are_off">Все будильники выключены</string>
+    <string name="your_alarms">Ваши будильники</string>
     <string name="work_days">Рабочие дни</string>
     <string name="noises">Шумы</string>
     <string name="offline">Оффлайн</string>
@@ -173,7 +174,7 @@
         <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
     <string name="rate_it_prompt">Будьте добры оставить комментарий на странице Деликатного Будильника в Google Play:</string>
-    <string name="first_alarm_prompt">Создайте первый будильник</string>
+    <string name="first_alarm_prompt">Добавьте первый будильник</string>
     <string name="app_share_text">Деликатный Будильник - чтобы выспаться!\\nhttps://play.google.com/store/apps/details?id=%s</string>
 
 </resources>

@@ -132,6 +132,7 @@
     <string name="ticks_type_label">Tender alarm sound type</string>
     <string name="alarm_complexity">Alarm complexity: %d</string>
     <string name="all_alarms_are_off">All alarms are off</string>
+    <string name="your_alarms">Your Alarm Clocks</string>
     <string name="next_alarm_soon">Alarm will go off soon</string>
     <string name="next_alarm_today" comment="Alarm in %d h %d m">Alarm in %s %s</string>
 

@@ -3,6 +3,7 @@ package com.mecong.tenderalarm.model
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.android.exoplayer2.database.DatabaseProvider
@@ -60,6 +61,10 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
             }
         }
         return entity
+    }
+
+    fun alarmsCount(): Long {
+        return DatabaseUtils.queryNumEntries(readableDatabase, TABLE_ALARMS)
     }
 
     val nextActiveAlarm: AlarmEntity?
@@ -335,6 +340,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TABLE_PLAYLISTS = "offline_media_playlists"
         private const val TABLE_PROPERTIES = "properties"
         private const val SELECT_NEXT_ALARM = "SELECT * FROM $TABLE_ALARMS WHERE active=1 ORDER BY next_not_canceled_time LIMIT 1"
+        private const val SELECT_ALARMS_COUNT = "SELECT count(*) as alarms_count FROM $TABLE_ALARMS"
         private const val DATABASE_NAME = "my_alarm_database"
 
         private var sInstance: SQLiteDBHelper? = null
