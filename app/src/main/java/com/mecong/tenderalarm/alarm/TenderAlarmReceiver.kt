@@ -25,6 +25,7 @@ class TenderAlarmReceiver : BroadcastReceiver() {
         if (canceledNextAlarms == 0) {
             if (entity.days > 0) {
                 setUpNextAlarm(entity, context, false)
+                AlarmUtils.setUpNextSleepTimeNotification(context)
             } else {
                 sqLiteDBHelper.toggleAlarmActive(alarmId, false)
             }
@@ -40,6 +41,7 @@ class TenderAlarmReceiver : BroadcastReceiver() {
                 entity.canceledNextAlarms = canceledNextAlarms - 1
                 sqLiteDBHelper.addOrUpdateAlarm(entity)
                 setUpNextAlarm(entity, context, false)
+                AlarmUtils.setUpNextSleepTimeNotification(context)
             }
         }
     }

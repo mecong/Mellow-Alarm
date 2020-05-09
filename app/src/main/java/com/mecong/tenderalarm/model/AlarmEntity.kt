@@ -42,6 +42,9 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
             isTimeToSleepNotification = cursor.getInt(cursor.getColumnIndex("tts_notification")) == 1
     )
 
+    val isRepeatedAlarm
+        get() = days > 0
+
     val nextTimeWithTicks: Long
         get() = nextTime + TimeUnit.MINUTES.toMillis(ticksTime.toLong())
 
@@ -50,7 +53,6 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
             return format.format(Date(nextTime))
         }
-
 
     fun updateNextAlarmDate(manually: Boolean) {
         val calendar = Calendar.getInstance()
@@ -97,6 +99,7 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
                 exactDate = calendar.timeInMillis
             }
         }
+
         nextNotCanceledTime = calendar.timeInMillis
         if (nextTime == -1L) {
             if (ticksTime > 0) {

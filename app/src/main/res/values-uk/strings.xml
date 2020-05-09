@@ -64,8 +64,10 @@
     <string name="low_sound">Стук</string>
     <string name="high_sound">Дзвін</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">Якщо у вас є ідеї або коментарі, будь ласка відвідайте мою сторінку:</string>
-    <string name="app_link_prompt">Будьте ласкаві залишити коментар на сторінці Делікатного Будильника в Google Play:</string>
+    <string name="rate_it_prompt">Будьте ласкаві залишити коментар на сторінці Делікатного Будильника в Google Play:</string>
     <string name="rate_it">Оцінити додаток</string>
+    <string name="share_it_prompt">Ви можете поділитися «Делікатним Будильником», з тим кому, на вашу думку, це буде корисно:</string>
+    <string name="share_it">Поділитися</string>
     <string name="radios">Радіо</string>
     <string name="about">Про програму</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Всі права на радіостанції належать їх власникам</string>
@@ -92,18 +94,22 @@
     <string name="Space_noise">У відкритому космосі</string>
     <string name="White_noise">Білий шум</string>
     <string name="Pink_noise">Рожевий шум</string>
-    <string name="Brown_noise">Коричневый шум</string>
+    <string name="Brown_noise">Коричневий шум</string>
     <string name="Red_noise">Червоний шум</string>
     <string name="dialog_autostart">Оптимізація вашого телефону може заблокувати дзвінки будильників. Будь ласка додайте \"%s\" в Автозапуск</string>
     <string name="open_autostart">Відкрити Автостарт</string>
     <string name="cant_open_autostart">Не можу відкрити автостарт. Будь ласка, включить вручну</string>
+    <string name="sleep_assistant">Асистент сну</string>
+
+    <string name="first_alarm_prompt">Створіть перший будильник</string>
+    <string name="app_share_text">Делікатний Будильник - щоб добре виспатися!\nhttps://play.google.com/store/apps/details?id=%s</string>
 
 
     <plurals name="alarm_turn_off_prompt">
         <item quantity="one">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
         <item quantity="few">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> рази</item>
-        <item quantity="many">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
-        <item quantity="other">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
+        <item quantity="many">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
+        <item quantity="other">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
     </plurals>
 
     <plurals name="next_alarm">
@@ -121,10 +127,10 @@
     </plurals>
 
     <plurals name="n_minutes_plural">
-        <item quantity="one">%02d хвилина</item>
-        <item quantity="few">%02d хвилини</item>
-        <item quantity="many">%02d хвилин</item>
-        <item quantity="other">%02d хвилин</item>
+        <item quantity="one">%d хвилина</item>
+        <item quantity="few">%d хвилини</item>
+        <item quantity="many">%d хвилин</item>
+        <item quantity="other">%d хвилин</item>
     </plurals>
 
     <plurals name="n_minutes_plural_2">
@@ -155,4 +161,5 @@
         <item quantity="many">Дрімати щонайбільше %d хвилин</item>
         <item quantity="other">Дрімати щонайбільше %d хвилин</item>
     </plurals>
+
 </resources>

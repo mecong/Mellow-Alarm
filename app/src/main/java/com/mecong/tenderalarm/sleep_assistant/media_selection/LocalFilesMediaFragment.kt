@@ -209,7 +209,9 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                         var done = false
                         while (!done) {
                             try {
-                                context!!.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                                val contentResolver = context!!.applicationContext.contentResolver
+                                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                contentResolver.takePersistableUriPermission(it, takeFlags)
                                 done = true
                             } catch (ex: Exception) {
                             }

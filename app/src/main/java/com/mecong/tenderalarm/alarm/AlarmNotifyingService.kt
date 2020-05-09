@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC
 import com.google.android.exoplayer2.C.USAGE_ALARM
+import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -34,7 +35,7 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AlarmNotifyingService : Service() {
+class AlarmNotifyingService : Service(), Player.EventListener {
     private lateinit var runnableVolume: Runnable
     private lateinit var runnableRealAlarm: Runnable
 
@@ -42,6 +43,12 @@ class AlarmNotifyingService : Service() {
     var random = Random()
     var handlerTicks: Handler? = null
     private lateinit var exoPlayer: SimpleExoPlayer
+
+    override fun onPlayerError(error: ExoPlaybackException) {
+        super.onPlayerError(error)
+        initExoPlayer(RawResourceDataSource.buildRawResourceUri(R.raw.cave_mountain_alarm), Player.REPEAT_MODE_ONE)
+        exoPlayer.playWhenReady = true
+    }
 
     private fun initExoPlayer(streamUrl: Uri, repeatMode: Int) {
         exoPlayer = SimpleExoPlayer.Builder(applicationContext)
@@ -78,7 +85,6 @@ class AlarmNotifyingService : Service() {
         if (action.equals(ACTION_STOP)) {
             stopAlarmNotification()
         } else {
-
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
             val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
             val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)

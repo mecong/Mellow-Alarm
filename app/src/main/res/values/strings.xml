@@ -5,6 +5,7 @@
     <string name="ok" translatable="false">OK</string>
 
     <string name="delete">Delete</string>
+
     <string name="mo">Mo</string>
     <string name="tu">Tu</string>
     <string name="we">We</string>
@@ -26,7 +27,7 @@
 
     <string name="buzzer_channel_description" translatable="false">Alarm Signal</string>
     <string name="buzzer_channel_name" translatable="false">Tender Alarm Buzzer</string>
-
+    <string name="sleep_assistant">Sleep Assistant</string>
     <string name="sleep_assistant_media_channel_name">Sleep Assistant</string>
     <string name="sleep_assistant_media_channel_description" translatable="false">Display media information when sleep assistant is active</string>
 
@@ -38,57 +39,12 @@
     <string name="never">Never</string>
     <string name="single_day" translatable="false">%1$td.%1$tm.%1$tY</string>
 
-    <plurals name="ticks_label">
-        <item quantity="one">Tender alarm %d minute before</item>
-        <item quantity="other">Tender alarm %d minutes before</item>
-    </plurals>
-
-    <string name="ticks_type_label">Tender alarm sound type</string>
-
-    <plurals name="snooze">
-        <item quantity="one">Maximum snooze time: %d minute</item>
-        <item quantity="other">Maximum snooze time: %d minutes</item>
-    </plurals>
-
-    <string name="alarm_complexity">Alarm complexity: %d</string>
-
-    <string name="all_alarms_are_off">All alarms are off</string>
-
-    <plurals name="next_alarm">
-        <item quantity="one">Alarm in %d day</item>
-        <item quantity="other">Alarm in %d days</item>
-    </plurals>
-
-
-    <string name="next_alarm_soon">Alarm will go off soon</string>
-    <string name="next_alarm_today" comment="Alarm in %d h %d m">Alarm in %s %s</string>
-
-    <plurals name="next_alarm_within_hour">
-        <item quantity="one">Alarm in %d m</item>
-        <item quantity="other">Alarm in %d m</item>
-    </plurals>
-
     <string name="next_alarm_date_time">%1$tA, %1$tB %1$td, %1$tY, %1$tR</string>
     <string name="next_alarm_date">%1$tA, %1$tB %1$td, %1$tY</string>
     <string name="clear_logs" translatable="false">Clear Logs</string>
     <string name="play" translatable="false">Play</string>
     <string name="add">Add</string>
     <string name="time">Time</string>
-
-    <plurals name="n_hours_plural">
-        <item quantity="one">%d h</item>
-        <item quantity="other">%d h</item>
-    </plurals>
-
-    <plurals name="n_minutes_plural">
-        <item quantity="one">%d minute</item>
-        <item quantity="other">%d minutes</item>
-    </plurals>
-
-    <plurals name="n_minutes_plural_2">
-        <item quantity="one">%d m</item>
-        <item quantity="other">%d m</item>
-    </plurals>
 
     <string name="volume">Volume</string>
     <string name="volume_percent">%d%%</string>
@@ -103,12 +59,6 @@
     <string name="image_button" translatable="false">Design element</string>
     <string name="alarms">Alarms</string>
     <string name="open_sleep_assistant" translatable="false">Open Sleep Assistant</string>
-    <!--    <string name="alarm_turn_off_prompt">Drag circles to their places. Or shake phone <big>%d</big> times</string>-->
-
-    <plurals name="alarm_turn_off_prompt">
-        <item quantity="one">Drag circles to their places. Or shake phone <big>%d</big> time</item>
-        <item quantity="other">Drag circles to their places. Or shake phone <big>%d</big> times</item>
-    </plurals>
 
     <string name="skip_1_day">Skip next 1</string>
     <string name="skip_2_day">Skip next 2</string>
@@ -132,8 +82,10 @@
     <string name="low_sound">Knock</string>
     <string name="high_sound">Clink</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">If you have comments or ideas please visit my page:</string>
-    <string name="app_link_prompt">I would very appreciate if you could rate the "Tender Alarm" at Google Play:</string>
+    <string name="rate_it_prompt">I would very appreciate if you could rate the "Tender Alarm" at Google Play:</string>
     <string name="rate_it">Rate it</string>
+    <string name="share_it_prompt">You can share Tender Alarm with whom, in your opinion, this may be useful:</string>
+    <string name="share_it">Share it</string>
     <string name="radios">Radios</string>
     <string name="about">About</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">All rights on radio stations belong to their owners:</string>
@@ -175,9 +127,57 @@
     <string name="cant_open_autostart">Can\'t open AutoStart. Please turn on manually.</string>
 
 
+    <string name="ticks_type_label">Tender alarm sound type</string>
+    <string name="alarm_complexity">Alarm complexity: %d</string>
+    <string name="all_alarms_are_off">All alarms are off</string>
+    <string name="next_alarm_soon">Alarm will go off soon</string>
+    <string name="next_alarm_today" comment="Alarm in %d h %d m">Alarm in %s %s</string>
+
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>
         <item>@string/high_sound</item>
     </string-array>
+
+    <plurals name="ticks_label">
+        <item quantity="one">Tender alarm %d minute before</item>
+        <item quantity="other">Tender alarm %d minutes before</item>
+    </plurals>
+
+    <plurals name="snooze">
+        <item quantity="one">Maximum snooze time: %d minute</item>
+        <item quantity="other">Maximum snooze time: %d minutes</item>
+    </plurals>
+
+    <plurals name="next_alarm">
+        <item quantity="one">Alarm in %d day</item>
+        <item quantity="other">Alarm in %d days</item>
+    </plurals>
+
+    <plurals name="next_alarm_within_hour">
+        <item quantity="one">Alarm in %d m</item>
+        <item quantity="other">Alarm in %d m</item>
+    </plurals>
+
+    <plurals name="n_hours_plural">
+        <item quantity="one">%d h</item>
+        <item quantity="other">%d h</item>
+    </plurals>
+
+    <plurals name="n_minutes_plural">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <plurals name="n_minutes_plural_2">
+        <item quantity="one">%d m</item>
+        <item quantity="other">%d m</item>
+    </plurals>
+
+    <plurals name="alarm_turn_off_prompt">
+        <item quantity="one">Drag circles to their places. Or shake phone <big>%d</big> time</item>
+        <item quantity="other">Drag circles to their places. Or shake phone <big>%d</big> times</item>
+    </plurals>
+    <string name="first_alarm_prompt">Add your first alarm!</string>
+    <string name="app_share_text">Tender Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>
 
 </resources>

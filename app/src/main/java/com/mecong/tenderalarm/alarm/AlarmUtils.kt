@@ -25,13 +25,11 @@ object AlarmUtils {
     const val ALARM_ID_PARAM = BuildConfig.APPLICATION_ID + ".alarm_id"
     const val ALARM_ID_PARAM_SAME_ID = BuildConfig.APPLICATION_ID + ".alarm_id.same_id"
 
-
     fun setUpNextAlarm(alarmId: String, context: Context, manually: Boolean) {
         val entity = sqLiteDBHelper(context)!!.getAlarmById(alarmId)
         setUpNextAlarm(entity, context, manually)
     }
 
-    @JvmStatic
     fun setUpNextAlarm(alarmEntity: AlarmEntity?, context: Context, manually: Boolean) {
         alarmEntity!!.updateNextAlarmDate(manually)
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -43,7 +41,7 @@ object AlarmUtils {
 //        if (nextAlarmClock != null) {
         //HyperLog.d(TAG, "Next alarm MgrTime: " + nextAlarmClock.triggerTime + " (" +context.getString(R.string.next_alarm_date_time, alarmEntity.nextTimeWithTicks) + ") intent: "+ nextAlarmClock.showIntent)
 //        }
-        setUpNextSleepTimeNotification(context)
+//        setUpNextSleepTimeNotification(context)
         setupUpcomingAlarmNotification(context, alarmEntity)
     }
 
@@ -83,7 +81,7 @@ object AlarmUtils {
         val alarmIntent = PendingIntent.getBroadcast(context,
                 alarmEntity.nextRequestCode + 1, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        var at = (SystemClock.elapsedRealtime() + alarmEntity.nextTime) - HOUR - Calendar.getInstance().timeInMillis
+        var at = (SystemClock.elapsedRealtime() + alarmEntity.nextTimeWithTicks) - HOUR - Calendar.getInstance().timeInMillis
         at = max(0, at)
 
         //HyperLog.i(TAG, "Upcoming alarm notification will start in " + (at - SystemClock.elapsedRealtime()) + " ms")
@@ -95,7 +93,6 @@ object AlarmUtils {
         return alarmEntity!!.nextTime - System.currentTimeMillis() < TimeUnit.MINUTES.toMillis(50)
     }
 
-    @JvmStatic
     fun setUpNextSleepTimeNotification(context: Context) {
         val nextMorningAlarm = sqLiteDBHelper(context)!!.nextMorningAlarm
         val intent = Intent(context, SleepTimeAlarmReceiver::class.java)
@@ -123,13 +120,14 @@ object AlarmUtils {
 
     private fun turnOffAlarm(entity: AlarmEntity?, context: Context) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        var intentToFire = Intent(context, AlarmReceiverActivity::class.java)
-        var alarmIntent = PendingIntent.getActivity(context,
-                entity!!.nextRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+//        var intentToFire = Intent(context, AlarmReceiverActivity::class.java)
+//        var intentToFire  = alarmViaBroadcastReceiver(entity, context)
+
+        var alarmIntent = alarmViaBroadcastReceiver(entity, context)
         alarmMgr.cancel(alarmIntent)
-        intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
+        val intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
         alarmIntent = PendingIntent.getBroadcast(context,
-                entity.nextRequestCode + 1, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                entity!!.nextRequestCode + 1, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmMgr.cancel(alarmIntent)
         //HyperLog.i(TAG, "Next alarm with[id=" + entity.id + "] canceled")
     }
@@ -140,11 +138,12 @@ object AlarmUtils {
         sqLiteDBHelper!!.allAlarms.use { allAlarms ->
             while (allAlarms.moveToNext()) {
                 val alarmEntity = AlarmEntity(allAlarms)
-                turnOffAlarm(alarmEntity, context)
-                setUpNextAlarm(alarmEntity, context, false)
+//                turnOffAlarm(alarmEntity, context)
+                if (alarmEntity.isActive) {
+                    setUpNextAlarm(alarmEntity, context, false)
+                }
             }
         }
-        setUpNextSleepTimeNotification(context)
     }
 
     //TODO: set when there are alarms and turn of if no any

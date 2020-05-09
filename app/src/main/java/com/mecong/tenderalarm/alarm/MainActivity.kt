@@ -11,15 +11,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
-import com.mecong.tenderalarm.model.AlarmEntity
-import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
+import com.mecong.tenderalarm.model.PropertyName
+import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.sleep_assistant.RadioServiceStatus
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
+import it.sephiroth.android.library.xtooltip.ClosePolicy.Companion.TOUCH_ANYWHERE_NO_CONSUME
+import it.sephiroth.android.library.xtooltip.Tooltip
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.*
 
 enum class MainActivityMessages {
     ADD_ALARM,
@@ -102,16 +102,6 @@ class MainActivity : AppCompatActivity() {
             fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
         }
 
-//        if (savedInstanceState == null) {
-//            sleepFragment = SleepAssistantFragment()
-//            fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
-//
-//            alarmFragment = MainAlarmFragment()
-//            fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
-//        } else {
-//            sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-//            alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
-//        }
 
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
 
@@ -134,11 +124,40 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+
+        val sqLiteDBHelper = SQLiteDBHelper.sqLiteDBHelper(this)!!
+        val firstAlarmAdded = sqLiteDBHelper.getPropertyInt(PropertyName.FIRST_ALARM_ADDED) ?: 0
+
+        if (firstAlarmAdded == 0) {
+            val tooltip = Tooltip.Builder(this)
+                    .anchor(ibOpenAlarm, 0, 0, false)
+                    .text(this.getString(R.string.first_alarm_prompt))
+                    .arrow(true)
+                    .floatingAnimation(Tooltip.Animation.SLOW)
+                    .closePolicy(TOUCH_ANYWHERE_NO_CONSUME)
+                    .showDuration(15 * 1000)
+                    .create()
+
+            ibOpenAlarm.post { tooltip.show(ibOpenAlarm, Tooltip.Gravity.TOP, true) }
+
+//            val tooltip2 = Tooltip.Builder(this)
+//                    .anchor(ibOpenSleepAssistant, 0, 0, false)
+//                    .text("Try Sleep Assistant")
+//                    .arrow(true)
+//                    .floatingAnimation(Tooltip.Animation.SLOW)
+//                    .closePolicy(TOUCH_ANYWHERE_NO_CONSUME)
+//                    .showDuration(15 * 1000)
+//                    .create()
+//
+//            ibOpenSleepAssistant.post { tooltip2.show(ibOpenSleepAssistant, Tooltip.Gravity.TOP, true) }
+        }
+    }
+
     @Subscribe
     fun onEvent(status: RadioServiceStatus) {
         sleepAssistantStatus = status
-
-
         setButtons()
     }
 
@@ -187,22 +206,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createDebugAlarm() {
-        val alarmEntity = AlarmEntity()
-                .apply {
-                    val calendar = Calendar.getInstance()
-                    hour = calendar[Calendar.HOUR_OF_DAY]
-                    minute = calendar[Calendar.MINUTE] + 2
-                    complexity = 1
-                    snoozeMaxTimes = 10
-                    ticksTime = 1
-                    isHeadsUp = true
-                    val instance = sqLiteDBHelper(this@MainActivity)
-                    val newId = instance!!.addOrUpdateAlarm(this)
-                    id = newId
-                }
-        setUpNextAlarm(alarmEntity, this, true)
-    }
+//   private fun createDebugAlarm() {
+//        val alarmEntity = AlarmEntity()
+//                .apply {
+//                    val calendar = Calendar.getInstance()
+//                    hour = calendar[Calendar.HOUR_OF_DAY]
+//                    minute = calendar[Calendar.MINUTE] + 2
+//                    complexity = 1
+//                    snoozeMaxTimes = 10
+//                    ticksTime = 1
+//                    isHeadsUp = true
+//                    val instance = sqLiteDBHelper(this@MainActivity)
+//                    val newId = instance!!.addOrUpdateAlarm(this)
+//                    id = newId
+//                }
+//        setUpNextAlarm(alarmEntity, this, true)
+//        AlarmUtils.setUpNextSleepTimeNotification(this)
+
+//    }
 
     companion object {
         const val TIME_TO_SLEEP_CHANNEL_ID = "TA_TIME_TO_SLEEP_CHANNEL"

@@ -222,7 +222,6 @@ class AlarmFragment : Fragment() {
         }
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
-        sqLiteDBHelper.close()
     }
 
     fun cancelNextAlarms(id: String, num: Int) {
@@ -234,7 +233,6 @@ class AlarmFragment : Fragment() {
         setUpNextAlarm(id, context, true)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
-        sqLiteDBHelper.close()
     }
 
     fun editAlarm(id: String) {

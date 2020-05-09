@@ -18,15 +18,28 @@ class AdditionalActivity : AppCompatActivity() {
         appLinkButton.setOnClickListener {
             rateMe()
         }
+
+        appShareButton.setOnClickListener {
+            shareApp()
+        }
     }
 
     private fun rateMe() {
         try {
             startActivity(Intent(Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=" + this.packageName)))
+                    Uri.parse("market://details?id=${this.packageName}")))
         } catch (e: ActivityNotFoundException) {
             startActivity(Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)))
+                    Uri.parse("http://play.google.com/store/apps/details?id=${this.packageName}")))
         }
+    }
+
+    private fun shareApp() {
+        val sharingIntent = Intent(Intent.ACTION_SEND)
+        sharingIntent.type = "text/plain"
+        val shareBody = this.getString(R.string.app_share_text, this.packageName)
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "App link")
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
+        startActivity(Intent.createChooser(sharingIntent, "Share App Link Via :"))
     }
 }

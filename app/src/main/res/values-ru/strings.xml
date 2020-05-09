@@ -60,6 +60,7 @@
     <string name="time_to_sleep_notification_title">🛏 Пора спать</string>
     <string name="sleep_assistant_media_channel_name">Дремль</string>
     <string name="sleep_timer">Дремать %1$tM:%1$tS</string>
+    <string name="sleep_assistant">Усыплятель</string>
 
 
     <string name="next_alarm_today" comment="Будильник через %02d часов %02d минут">Будильник через %s %s</string>
@@ -71,6 +72,8 @@
     <string name="next_alarm_date">%1$tA, %1$td %1$tB, %1$tY</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">Если у вас есть идеи или комментарии, пожалуйста посетите мою страницу:</string>
     <string name="rate_it">Оценить приложение</string>
+    <string name="share_it_prompt">Вы можете поделиться «Деликатным будильником», с тем кому, по вашему мнению, это может быть полезно:</string>
+    <string name="share_it">Поделиться</string>
     <string name="radios">Радио</string>
     <string name="about">О программе</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Все права на радиостанции принадлежат их владельцам</string>
@@ -132,10 +135,10 @@
     </plurals>
 
     <plurals name="n_minutes_plural">
-        <item quantity="one">%02d минута</item>
-        <item quantity="few">%02d минуты</item>
-        <item quantity="many">%02d минут</item>
-        <item quantity="other">%02d минут</item>
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
     </plurals>
 
     <plurals name="n_minutes_plural_2">
@@ -166,6 +169,8 @@
         <item quantity="many">Дремать максимум %d минут</item>
         <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
-    <string name="app_link_prompt">Будьте добры оставить комментарий на странице Деликатного Будильника в Google Play:</string>
+    <string name="rate_it_prompt">Будьте добры оставить комментарий на странице Деликатного Будильника в Google Play:</string>
+    <string name="first_alarm_prompt">Создайте первый будильник</string>
+    <string name="app_share_text">Деликатный Будильник - чтобы выспаться!\\nhttps://play.google.com/store/apps/details?id=%s</string>
 
 </resources>

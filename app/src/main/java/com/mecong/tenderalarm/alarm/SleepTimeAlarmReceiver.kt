@@ -73,7 +73,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
     private fun timeToGoToBed(nextActiveAlarm: AlarmEntity?): Calendar? {
         val calendar = Calendar.getInstance()
-        val nextAlarmTime = nextActiveAlarm!!.nextTimeWithTicks
+        val nextAlarmTime = nextActiveAlarm!!.nextTime
         val difference = nextAlarmTime - calendar.timeInMillis
         calendar.timeInMillis = difference
         calendar.timeZone = TimeZone.getTimeZone("UTC")

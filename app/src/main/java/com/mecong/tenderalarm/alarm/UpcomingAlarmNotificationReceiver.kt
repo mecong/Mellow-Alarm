@@ -22,16 +22,23 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         notificationManager.cancelAll()
         val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
         val sqLiteDBHelper = sqLiteDBHelper(context)
-        val entity = sqLiteDBHelper!!.getAlarmById(alarmId)
+        val entity = sqLiteDBHelper!!.getAlarmById(alarmId) ?: return
         if (actionCancelAlarm == intent.action) {
             ////HyperLog.i(TAG, "Canceling alarm: $entity")
-            entity!!.canceledNextAlarms = 1
-            sqLiteDBHelper.addOrUpdateAlarm(entity)
-            setUpNextAlarm(entity, context, false)
+            if (entity.isRepeatedAlarm) {
+                entity.canceledNextAlarms = 1
+                sqLiteDBHelper.addOrUpdateAlarm(entity)
+                setUpNextAlarm(entity, context, false)
+            } else {
+                entity.isActive = false
+                sqLiteDBHelper.addOrUpdateAlarm(entity)
+            }
+
+            AlarmUtils.setUpNextSleepTimeNotification(context)
             Toast.makeText(context, context.getString(R.string.upcoming_alarm_canceled_toast,
-                    entity.nextTimeWithTicks), Toast.LENGTH_LONG).show()
+                    entity.nextNotCanceledTime), Toast.LENGTH_LONG).show()
         } else {
-            if (entity!!.canceledNextAlarms == 0) {
+            if (entity.canceledNextAlarms == 0) {
                 ////HyperLog.i(TAG, "Before alarm notification: $entity")
                 showNotification(entity, context)
             }
@@ -44,7 +51,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         intent.putExtra(ALARM_ID_PARAM, entity!!.id.toString())
         val pendingIntent = PendingIntent.getBroadcast(context, entity.nextRequestCode + 1, intent, 0)
         val message = context.getString(R.string.upcoming_alarm_notification_message,
-                entity.nextTimeWithTicks)
+                entity.nextNotCanceledTime)
         val builder = NotificationCompat.Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)
                 .setSmallIcon(R.drawable.cat_purr)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.cat_purr))

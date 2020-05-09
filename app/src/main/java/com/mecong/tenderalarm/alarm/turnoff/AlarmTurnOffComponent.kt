@@ -169,7 +169,12 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
             if (figure!!.isFixed) {
                 canvas.drawCircle(figure.aimPoint.x.toFloat(), figure.aimPoint.y.toFloat(), figure.radius.toFloat(), lockingPaint)
                 amountOfFixed++
-            } else {
+            }
+        }
+
+        for (i in figures!!.indices.reversed()) {
+            val figure = figures!![i]
+            if (!figure!!.isFixed) {
                 canvas.drawCircle(figure.aimPoint.x.toFloat(), figure.aimPoint.y.toFloat(), figure.radius.toFloat(), spiritPaints[i]!!)
                 canvas.drawCircle(figure.currentPoint.x.toFloat(), figure.currentPoint.y.toFloat(), figure.radius.toFloat(), draggableCirclePaints[i]!!)
             }

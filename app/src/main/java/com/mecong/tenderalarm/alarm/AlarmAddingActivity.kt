@@ -51,6 +51,8 @@ class AlarmAddingActivity : AppCompatActivity() {
                     }
                     updateTimeTextView()
                 }, selectedHour, selectedMinute, true)
+
+
         timePickerDialog.show()
     }
 
@@ -362,6 +364,8 @@ class AlarmAddingActivity : AppCompatActivity() {
         val sqLiteDBHelper = sqLiteDBHelper(this)
         alarmEntity.id = sqLiteDBHelper!!.addOrUpdateAlarm(alarmEntity)
         setUpNextAlarm(alarmEntity, this, true)
+
+        AlarmUtils.setUpNextSleepTimeNotification(this)
     }
 
     private val message: String

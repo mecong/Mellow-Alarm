@@ -5,14 +5,11 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.MainActivity
 
 class MediaNotificationManager(private val service: RadioService) {
-    private val strAppName: String
     private val resources: Resources = service.resources
-    private val notificationManager: NotificationManagerCompat
 
     fun startNotify(playbackStatus: RadioServiceStatus, contentText: String?) {
         val playbackAction = Intent(service, RadioService::class.java)
@@ -39,7 +36,7 @@ class MediaNotificationManager(private val service: RadioService) {
 
         val builder = NotificationCompat.Builder(service, MainActivity.SLEEP_ASSISTANT_MEDIA_CHANNEL_ID)
                 .setAutoCancel(false)
-                .setContentTitle(strAppName)
+                .setContentTitle(service.getString(R.string.sleep_assistant))
                 .setContentText(contentText)
                 .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.cat_purr))
                 .setSmallIcon(R.drawable.sleep_active)
@@ -48,14 +45,8 @@ class MediaNotificationManager(private val service: RadioService) {
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, service.getString(R.string.stop), stopAction)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setWhen(System.currentTimeMillis())
-//        notificationManager.cancel(NOTIFICATION_ID)
-        //                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
-//                        .setMediaSession(service.getMediaSession().getSessionToken())
-//                        .setShowActionsInCompactView(0, 1)
-//                        .setShowCancelButton(true)
-//                        .setCancelButtonIntent(stopAction));
+
         service.startForeground(NOTIFICATION_ID, builder.build())
-        //notificationManager.notify(NOTIFICATION_ID,builder.build());
     }
 
     fun cancelNotify() {
@@ -66,8 +57,4 @@ class MediaNotificationManager(private val service: RadioService) {
         private const val NOTIFICATION_ID = 555
     }
 
-    init {
-        strAppName = resources.getString(R.string.app_name)
-        notificationManager = NotificationManagerCompat.from(service)
-    }
 }

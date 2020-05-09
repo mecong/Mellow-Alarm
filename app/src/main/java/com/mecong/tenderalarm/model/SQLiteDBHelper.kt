@@ -42,6 +42,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         setPropertyString(PropertyName.ACTIVE_TAB, "2", database)
         setPropertyString(PropertyName.TRACK_POSITION, "0", database)
         setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "0", database)
+        setPropertyString(PropertyName.FIRST_ALARM_ADDED, "0", database)
     }
 
     val allAlarms: Cursor
@@ -81,6 +82,9 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
 
     fun addOrUpdateAlarm(entity: AlarmEntity): Long {
         this.writableDatabase.use { database ->
+
+            setPropertyString(PropertyName.FIRST_ALARM_ADDED, "1", database)
+
             val values = ContentValues().apply {
                 put("hour", entity.hour)
                 put("minute", entity.minute)
