@@ -247,9 +247,10 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     val allOnlineMedia: Cursor
         get() = this.readableDatabase.rawQuery("SELECT * FROM $TABLE_ONLINE_MEDIA", null)
 
-    fun addMediaUrl(url: String) {
+    fun addMediaUrl(title: String, url: String) {
         this.writableDatabase.use { database ->
             val values = ContentValues()
+            values.put(TITLE, title)
             values.put(URI, url)
             //HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url")
             database.insert(TABLE_ONLINE_MEDIA, null, values)

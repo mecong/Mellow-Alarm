@@ -11,12 +11,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-
-
         android:layout_marginTop="16dp"
         android:text="@string/internet_streams"
         android:textAlignment="viewStart"
-        android:textColor="#E7E8E2"
         android:textStyle="italic"
         app:layout_constraintEnd_toStartOf="@+id/buttonAdd"
         app:layout_constraintHorizontal_bias="0.5"
@@ -27,7 +24,6 @@
         android:id="@+id/buttonAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:text="@string/add"
         android:textAlignment="center"
         android:textSize="14sp"

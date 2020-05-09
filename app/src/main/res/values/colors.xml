@@ -8,8 +8,11 @@
 
     <!--    <color name="windowBackground">#121314</color>-->
     <color name="windowBackground">#17191A</color>
+    <color name="windowBackground1">#1C1C1E</color>
+
     <color name="textColor2">#696767</color>
     <color name="textColor3">#E9DEDE</color>
+
 
     <color name="red">#FF0000</color>
     <color name="gray">#808080</color>

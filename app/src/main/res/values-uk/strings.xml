@@ -38,7 +38,8 @@
     <string name="offline">Офлайн</string>
     <string name="online">Онлайн</string>
     <string name="noises">Шуми</string>
-    <string name="url_address">URL адреса радіостанції</string>
+    <string name="url_address_prompt">URL адреса радіостанції</string>
+    <string name="url_title_prompt">Назва радіостанції</string>
     <string name="local_audio">Локальні медіа</string>
     <string name="internet_streams">Інтернет радіо</string>
     <string name="can_not_stream">Не можу відтворити медіа!</string>

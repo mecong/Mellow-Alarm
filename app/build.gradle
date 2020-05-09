@@ -2,6 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+// Brown Bat: 19.9 hours per day.
+// Giant Armadillo: 18.1 hours per day.
+// North American Opossum: 18 hours per day.
+// Python: 18 hours per day.
+// Owl Monkey: 17 hours per day.
+
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -9,7 +16,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 2
-        versionName "Owl Monkey"
+        versionName "Python"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

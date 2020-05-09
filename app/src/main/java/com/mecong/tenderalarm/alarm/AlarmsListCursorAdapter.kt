@@ -174,7 +174,6 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
         for ((key, value) in entity.daysAsMap) {
             if (java.lang.Boolean.TRUE == value) {
                 builder.append("<font color='#E9DEDE'>")
-//                        .append(context.getString(key).toUpperCase(Locale.getDefault()))
                         .append(context.getString(key))
                         .append("</font>")
             } else {

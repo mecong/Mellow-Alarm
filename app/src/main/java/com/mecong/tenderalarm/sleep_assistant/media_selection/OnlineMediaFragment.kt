@@ -31,9 +31,9 @@ class OnlineMediaFragment : Fragment(), FileItemClickListener {
         return inflater.inflate(R.layout.fragment_online_media, container, false)
     }
 
-    private fun addUrl(url: String) {
+    private fun addUrl(title: String, url: String) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-        sqLiteDBHelper.addMediaUrl(url)
+        sqLiteDBHelper.addMediaUrl(title, url)
         mediaItemViewAdapter!!.updateDataSet(sqLiteDBHelper.allOnlineMedia)
     }
 
@@ -69,12 +69,12 @@ class OnlineMediaFragment : Fragment(), FileItemClickListener {
             val dialog = Dialog(context!!, R.style.UrlDialogCustom)
             dialog.setContentView(R.layout.url_input_dialog)
             val textUrl = dialog.findViewById<EditText>(R.id.textUrl)
+            val titleUrl = dialog.findViewById<EditText>(R.id.textTitle)
             val buttonOk = dialog.findViewById<Button>(R.id.buttonOk)
             val buttonOkTop = dialog.findViewById<Button>(R.id.buttonOkTop)
             val addUrlListener: (v: View) -> Unit = {
                 try {
-                    URL(textUrl.text.toString())
-                    addUrl(textUrl.text.toString())
+                    addUrl(titleUrl.text.toString(), URL(textUrl.text.toString()).toString())
                     dialog.dismiss()
                 } catch (mue: MalformedURLException) {
                     Toast.makeText(context, "Url is not valid", Toast.LENGTH_SHORT).show()

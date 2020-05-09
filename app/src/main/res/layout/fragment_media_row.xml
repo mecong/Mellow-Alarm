@@ -57,7 +57,7 @@
         android:background="#00FFFFFF"
         android:clickable="true"
         android:contentDescription="@string/delete"
-        android:tint="#E9DEDE"
+        android:tint="@color/textColor3"
         android:focusable="true"
         android:minWidth="40sp"
         android:scaleType="center"

@@ -52,7 +52,8 @@
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="noises">Noises</string>
-    <string name="url_address">Radio station URL address</string>
+    <string name="url_address_prompt">Radio station URL address</string>
+    <string name="url_title_prompt">Radio station title</string>
     <string name="local_audio">Local audio</string>
     <string name="internet_streams">Internet streams</string>
     <string name="can_not_stream">ERROR: Can\'t play media!</string>

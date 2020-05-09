@@ -56,6 +56,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 .apply {
                     setWakeMode(C.WAKE_MODE_LOCAL)
                     setHandleAudioBecomingNoisy(true)
+                    addListener(this@AlarmNotifyingService)
                 }
 
         val audioAttributesAlarm = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
