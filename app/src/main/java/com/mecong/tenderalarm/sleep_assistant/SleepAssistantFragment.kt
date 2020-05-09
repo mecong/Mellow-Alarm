@@ -68,7 +68,7 @@ class SleepAssistantFragment : Fragment() {
         initializeTabsAndMediaFragments(context, activeTab)
 
         timeMinutes = dbHelper.getPropertyLong(PropertyName.SLEEP_TIME) ?: 39
-
+        timeMinutes = 1
         sliderSleepTime.setCurrentValue(timeMinutes)
         textViewMinutes.text = context.resources.getQuantityString(R.plurals.n_minutes_plural, timeMinutes.toInt(), timeMinutes.toInt())
 
@@ -97,7 +97,7 @@ class SleepAssistantFragment : Fragment() {
                 handler.removeCallbacks(runnable)
 
                 if (radioService.isPlaying) {
-                    radioService.stop()
+                    radioService.pause()
 
                     timeMinutes = 30
                     sliderSleepTime.setCurrentValue(timeMinutes)
@@ -201,10 +201,6 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
-    @Subscribe
-    fun onPlayFileChanged(media: Media) {
-        nowPlayingText.text = media.title
-    }
 
     @Subscribe
     fun onEvent(status: RadioServiceStatus) {
@@ -280,6 +276,11 @@ class SleepAssistantFragment : Fragment() {
     fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
         playListModel.playlist.value = playList
         radioService.setMediaList(playList)
+    }
+
+    @Subscribe
+    fun onPlayFileChanged(media: Media) {
+        nowPlayingText.text = media.title
     }
 
     @Subscribe
