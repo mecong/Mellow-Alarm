@@ -12,6 +12,7 @@
     <string name="online">Онлайн</string>
     <string name="url_address_prompt">URL адрес радиостанции</string>
     <string name="url_title_prompt">Название радиостанции</string>
+    <string name="url_invalid_warning">URL адрес не валидный</string>
     <string name="internet_streams">Интернет потоки</string>
     <string name="local_audio">Локальные медиа</string>s
     <string name="can_not_stream">Не могу воспроизвести медиа!</string>
@@ -56,6 +57,7 @@
     <string name="back">Назад</string>
     <string name="show_time_to_sleep_notification">Сообщать когда пора спать</string>
     <string name="show_heads_up_notification">Предупреждать за час до будильника</string>
+    <string name="gradually_increase_volume">Плавно увеличивать громкость будильника</string>
     <string name="time_to_sleep_notification_message">Осталось %s %s до утреннего будильника. Нажмите чтобы открыть Дремль.</string>
     <string name="time_to_sleep_channel_name">🛏 Пора спать</string>
     <string name="time_to_sleep_notification_title">🛏 Пора спать</string>
@@ -74,7 +76,7 @@
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">Если у вас есть идеи или комментарии, пожалуйста посетите мою страницу:</string>
     <string name="rate_it">Оценить приложение</string>
     <string name="share_it_prompt">Вы можете поделиться «Деликатным будильником», с тем кому, по вашему мнению, это может быть полезно:</string>
-    <string name="share_it">Поделиться</string>
+    <string name="share_it">Поделиться приложением</string>
     <string name="radios">Радио</string>
     <string name="about">О программе</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Все права на радиостанции принадлежат их владельцам</string>

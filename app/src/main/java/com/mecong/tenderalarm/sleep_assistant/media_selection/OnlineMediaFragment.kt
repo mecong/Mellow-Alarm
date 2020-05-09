@@ -77,7 +77,7 @@ class OnlineMediaFragment : Fragment(), FileItemClickListener {
                     addUrl(titleUrl.text.toString(), URL(textUrl.text.toString()).toString())
                     dialog.dismiss()
                 } catch (mue: MalformedURLException) {
-                    Toast.makeText(context, "Url is not valid", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context!!.getString(R.string.url_invalid_warning), Toast.LENGTH_SHORT).show()
                 }
             }
             buttonOk.setOnClickListener(addUrlListener)

@@ -40,6 +40,7 @@
     <string name="noises">Шуми</string>
     <string name="url_address_prompt">URL адреса радіостанції</string>
     <string name="url_title_prompt">Назва радіостанції</string>
+    <string name="url_invalid_warning">URL адреса не валідна</string>
     <string name="local_audio">Локальні медіа</string>
     <string name="internet_streams">Інтернет радіо</string>
     <string name="can_not_stream">Не можу відтворити медіа!</string>
@@ -60,6 +61,7 @@
     <string name="default_sound">Звичайний</string>
     <string name="switch_alarm_state">Перемкнути стан будильнику</string>
     <string name="show_heads_up_notification">Попереджати за годину до будильнику</string>
+    <string name="gradually_increase_volume">Плавно збільшувати гучність будильника</string>
     <string name="show_time_to_sleep_notification">Повідомляти коли пора спати</string>
     <string name="back">Назад</string>
     <string name="low_sound">Стук</string>
@@ -68,7 +70,7 @@
     <string name="rate_it_prompt">Будьте ласкаві залишити коментар на сторінці Делікатного Будильника в Google Play:</string>
     <string name="rate_it">Оцінити додаток</string>
     <string name="share_it_prompt">Ви можете поділитися «Делікатним Будильником», з тим кому, на вашу думку, це буде корисно:</string>
-    <string name="share_it">Поділитися</string>
+    <string name="share_it">Поділитися додатком</string>
     <string name="radios">Радіо</string>
     <string name="about">Про програму</string>
     <string name="all_rights_on_radio_stations_belongs_to_their_owners">Всі права на радіостанції належать їх власникам</string>

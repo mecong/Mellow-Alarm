@@ -97,6 +97,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 put("exact_date", entity.exactDate)
                 put("complexity", entity.complexity)
                 put("snooze_max_times", entity.snoozeMaxTimes)
+                put("increase_volume", entity.increaseVolume)
                 put("melody_url", entity.melodyUrl)
                 put("melody_name", entity.melodyName)
                 put("next_time", entity.nextTime)
@@ -169,6 +170,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 "active BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
                 "heads_up BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
                 "tts_notification BOOLEAN NOT NULL CHECK (active IN (0,1)) DEFAULT 1," +
+                "increase_volume TINYINT," +
                 "ticks_time TINYINT," +
                 "ticks_type INT," +
                 "melody_name TEXT," +
@@ -326,7 +328,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 51
+        private const val DATABASE_VERSION = 52
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"

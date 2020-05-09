@@ -15,6 +15,7 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
                        var complexity: Int = 1, var message: String? = null,
                        var isActive: Boolean = true, var nextTime: Long = -1L,
                        var nextNotCanceledTime: Long = -1L, var nextRequestCode: Int = -1,
+                       var increaseVolume: Int = 5,
                        var isTimeToSleepNotification: Boolean = false, var isHeadsUp: Boolean = false) {
 
 
@@ -39,7 +40,8 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
             nextNotCanceledTime = cursor.getLong(cursor.getColumnIndex("next_not_canceled_time")),
             nextRequestCode = cursor.getInt(cursor.getColumnIndex("next_request_code")),
             isHeadsUp = cursor.getInt(cursor.getColumnIndex("heads_up")) == 1,
-            isTimeToSleepNotification = cursor.getInt(cursor.getColumnIndex("tts_notification")) == 1
+            isTimeToSleepNotification = cursor.getInt(cursor.getColumnIndex("tts_notification")) == 1,
+            increaseVolume = cursor.getInt(cursor.getColumnIndex("increase_volume"))
     )
 
     val isRepeatedAlarm

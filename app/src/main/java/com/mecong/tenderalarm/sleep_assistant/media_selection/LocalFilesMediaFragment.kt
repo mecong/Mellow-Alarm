@@ -136,6 +136,8 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         val dialog = Dialog(context!!, R.style.UrlDialogCustom)
         dialog.setContentView(R.layout.url_input_dialog)
         val textUrl = dialog.findViewById<EditText>(R.id.textUrl)
+        val textTitle = dialog.findViewById<EditText>(R.id.textTitle)
+        textTitle.visibility = GONE
         textUrl.setText(context!!.getString(R.string.playlist_def_name, playlistViewAdapter!!.itemCount + 1))
         textUrl.hint = "Playlist name"
 

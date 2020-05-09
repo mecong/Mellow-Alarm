@@ -316,6 +316,7 @@ class AlarmAddingActivity : AppCompatActivity() {
 
         chbHeadsUp!!.isChecked = entity.isHeadsUp
         chbTimeToSleepNotification!!.isChecked = entity.isTimeToSleepNotification
+        chbIncreaseVolume.isChecked = entity.increaseVolume > 0
 
         spinnerTicksType.setSelection(entity.ticksType)
     }
@@ -359,6 +360,7 @@ class AlarmAddingActivity : AppCompatActivity() {
                 ticksType = spinnerTicksType.selectedItemPosition,
                 ticksTime = seekBarTicks!!.progress,
                 isHeadsUp = chbHeadsUp!!.isChecked,
+                increaseVolume = if (chbIncreaseVolume.isChecked) 5 else 0,
                 isTimeToSleepNotification = chbTimeToSleepNotification!!.isChecked)
 
         val sqLiteDBHelper = sqLiteDBHelper(this)

@@ -205,16 +205,20 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 }
 
                 initExoPlayer(getMelody(entity), Player.REPEAT_MODE_ONE)
-                volumeCounter = defaultVolume
-                exoPlayer.volume = volumeCounter
 
-                val fiveMinutes = 5 * 60000
-                volumeIncreaseStep = (1 - defaultVolume) / (fiveMinutes / volumeIncreaseDelayMs)
+                exoPlayer.volume = if (entity.increaseVolume > 0) {
+                    val increaseVolumeMinutes = entity.increaseVolume * 60000
+                    volumeIncreaseStep = (1 - defaultVolume) / (increaseVolumeMinutes / volumeIncreaseDelayMs)
+                    handlerVolume!!.removeCallbacks(runnableVolume)
+                    handlerVolume!!.post(runnableVolume)
+                    volumeCounter = defaultVolume
+                    volumeCounter
+                } else {
+                    1f
+                }
 
                 exoPlayer.playWhenReady = true
 
-                handlerVolume!!.removeCallbacks(runnableVolume)
-                handlerVolume!!.post(runnableVolume)
                 //HyperLog.i(TAG, "Real alarm started!")
             } catch (e: Exception) {
                 e.printStackTrace()

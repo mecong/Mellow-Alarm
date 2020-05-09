@@ -323,7 +323,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text=""
-                tools:text="@string/ticks_label" />
+                tools:text="Tender alarm %d minute before" />
 
             <SeekBar
                 android:id="@+id/seekBarTicks"
@@ -449,6 +449,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/complexityLayout">
+
+            <CheckBox
+                android:id="@+id/chbIncreaseVolume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/gradually_increase_volume" />
 
             <CheckBox
                 android:id="@+id/chbHeadsUp"
