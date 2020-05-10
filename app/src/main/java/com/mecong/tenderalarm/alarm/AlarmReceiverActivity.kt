@@ -158,36 +158,34 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 val handlerSleepTime = Handler()
                 sleepTimer.text = context.getString(R.string.sleep_timer, sleepText)
 
-                val sleepTimeClock: Runnable = object : Runnable {
-                    override fun run() {
-                        val newTime = sleepText.time - 1000
-                        sleepText.time = newTime
-                        sleepTimer.text = context.getString(R.string.sleep_timer, sleepText)
-                        if (newTime >= 0) {
-                            handlerSleepTime.postDelayed(this, 1000)
-                        } else {
-                            sleepTimer!!.visibility = View.GONE
 
-                            btnSnooze2m!!.visibility = View.VISIBLE
-                            btnSnooze3m!!.visibility = View.VISIBLE
-                            btnSnooze5m!!.visibility = View.VISIBLE
+                object : CountDownTimer(sleepText.time, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        sleepTimer.text = context.getString(R.string.sleep_timer, millisUntilFinished)
+                    }
 
-                            val snoozedMinutesLeft = entity.snoozeMaxTimes - snoozedMinutes
-                            if (snoozedMinutesLeft < 1) {
-                                btnSnooze2m!!.visibility = View.GONE
-                            }
+                    override fun onFinish() {
+                        sleepTimer!!.visibility = View.GONE
 
-                            if (snoozedMinutesLeft < 3) {
-                                btnSnooze3m!!.visibility = View.GONE
-                            }
+                        btnSnooze2m!!.visibility = View.VISIBLE
+                        btnSnooze3m!!.visibility = View.VISIBLE
+                        btnSnooze5m!!.visibility = View.VISIBLE
 
-                            if (snoozedMinutesLeft < 5) {
-                                btnSnooze5m!!.visibility = View.GONE
-                            }
+                        val snoozedMinutesLeft = entity.snoozeMaxTimes - snoozedMinutes
+                        if (snoozedMinutesLeft < 1) {
+                            btnSnooze2m!!.visibility = View.GONE
+                        }
+
+                        if (snoozedMinutesLeft < 3) {
+                            btnSnooze3m!!.visibility = View.GONE
+                        }
+
+                        if (snoozedMinutesLeft < 5) {
+                            btnSnooze5m!!.visibility = View.GONE
                         }
                     }
-                }
-                handlerSleepTime.post(sleepTimeClock)
+                }.start()
+
                 //HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.snoozeMaxTimes)
                 snoozeAlarmNotification(time, entity, context)
             }

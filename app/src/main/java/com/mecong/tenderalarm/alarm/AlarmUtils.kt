@@ -50,6 +50,7 @@ object AlarmUtils {
         val alarmIntent = alarmViaBroadcastReceiver(alarmEntity, context)
         val calendarSnoozeEnd = Calendar.getInstance()
         calendarSnoozeEnd.add(Calendar.MINUTE, minutes)
+
         setTheAlarm(calendarSnoozeEnd.timeInMillis, alarmIntent, alarmMgr)
     }
 
