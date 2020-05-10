@@ -46,7 +46,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
 
     override fun onPlayerError(error: ExoPlaybackException) {
         super.onPlayerError(error)
-        initExoPlayer(RawResourceDataSource.buildRawResourceUri(R.raw.cave_mountain_alarm), Player.REPEAT_MODE_ONE)
+        initExoPlayer(RawResourceDataSource.buildRawResourceUri(R.raw.dance_of_kaschey), Player.REPEAT_MODE_ONE)
         exoPlayer.playWhenReady = true
     }
 
@@ -256,7 +256,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         return if (entity!!.melodyUrl != null) {
             Uri.parse(entity.melodyUrl)
         } else {
-            RawResourceDataSource.buildRawResourceUri(R.raw.cave_mountain_alarm)
+            RawResourceDataSource.buildRawResourceUri(R.raw.dance_of_kaschey)
         }
     }
 

@@ -42,13 +42,11 @@
     <string name="next_alarm_date_time">%1$tA, %1$tB %1$td, %1$tY, %1$tR</string>
     <string name="next_alarm_date">%1$tA, %1$tB %1$td, %1$tY</string>
     <string name="clear_logs" translatable="false">Clear Logs</string>
-    <string name="play" translatable="false">Play</string>
     <string name="add">Add</string>
     <string name="time">Time</string>
 
     <string name="volume">Volume</string>
     <string name="volume_percent">%d%%</string>
-    <string name="next_s_cancel">Skip next %d</string>
     <string name="offline">Offline</string>
     <string name="online">Online</string>
     <string name="noises">Noises</string>
@@ -103,27 +101,18 @@
     <string name="playlist_def_name">Playlist %d</string>
     <string name="stop">STOP</string>
     <string name="playlist_title" translatable="false">[%s]</string>
-    <string name="system_volume_toast">System volume set to 30%</string>
 
     <string name="Ocean_noise">Ocean noise</string>
     <string name="Campfire_noise">Campfire noise</string>
-    <string name="Fireplace_noise">Fireplace noise</string>
-    <string name="Birds_noise">Birds noise</string>
     <string name="River_noise">River noise</string>
     <string name="Rain_noise">Rain noise</string>
     <string name="Garden_noise">Garden noise</string>
     <string name="Clock_noise">Clock noise</string>
-    <string name="Thunder_noise_1">Thunder noise 1</string>
-    <string name="Thunder_noise_2">Thunder noise 2</string>
-    <string name="Thunder_noise_3">Thunder noise 3</string>
+    <string name="Thunder_noise_3">Thunder noise</string>
     <string name="Crickets_noise">Crickets noise</string>
     <string name="Frogs_noise">Frogs noise</string>
     <string name="Insects_noise">Insects noise</string>
-    <string name="Space_noise">Space noise</string>
     <string name="White_noise">White noise</string>
-    <string name="Pink_noise">Pink noise</string>
-    <string name="Brown_noise">Brown noise</string>
-    <string name="Red_noise">Red noise</string>
 
     <string name="dialog_autostart">Please turn on AutoStart option for \"%s\" for the correct operation of the application</string>
     <string name="open_autostart">Open AutoStart Dialog</string>

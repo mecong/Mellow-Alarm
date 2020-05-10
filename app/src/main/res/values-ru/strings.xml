@@ -50,7 +50,6 @@
     <string name="skip_4_day">Пропустить 4</string>
     <string name="skip_5_day">Пропустить 5</string>
     <string name="turn_on">Включить</string>
-    <string name="next_s_cancel">Пропустить %d</string>
     <string name="time">Время</string>
 
     <string name="next_alarm_soon">Будильник скоро зазвонит</string>
@@ -88,31 +87,23 @@
 
     <string name="Ocean_noise">Шум моря</string>
     <string name="Campfire_noise">Звук походного костра</string>
-    <string name="Fireplace_noise">Треск камина</string>
-    <string name="Birds_noise">Пение птиц</string>
     <string name="River_noise">Шум реки</string>
     <string name="Rain_noise">Шум дождя</string>
     <string name="Garden_noise">В саду</string>
     <string name="Clock_noise">Тиканье настенных часов</string>
-    <string name="Thunder_noise_1">Гроза 1</string>
-    <string name="Thunder_noise_2">Гроза 2</string>
-    <string name="Thunder_noise_3">Гроза 3</string>
+    <string name="Thunder_noise_3">Гроза</string>
     <string name="Crickets_noise">Сверчки сверчат</string>
     <string name="Frogs_noise">Кваканье лягушек</string>
     <string name="Insects_noise">Концерт насекомых</string>
-    <string name="Space_noise">В открытом космосе</string>
     <string name="White_noise">Белый шум</string>
-    <string name="Pink_noise">Розовый шум</string>
-    <string name="Brown_noise">Коричневый шум</string>
-    <string name="Red_noise">Красный шум</string>
-
-
     <string name="dialog_autostart">Пожалуйста добавьте «%s» в Автозапуск для корректной работы приложения</string>
     <string name="open_autostart">Открыть Автозапуск</string>
     <string name="cant_open_autostart">Не могу открыть Автозапуск. Пожалуйста, включите вручную</string>
-
-    <string name="system_volume_toast">Системная громкость установлена на 30%</string>
     <string name="upcoming_alarm_channel_description">Напоминание о скором звонке будильника</string>
+    <string name="rate_it_prompt">Будьте добры оставить комментарий на странице «Деликатного Будильника» в Google Play:</string>
+    <string name="first_alarm_prompt">Добавьте первый будильник</string>
+    <string name="app_share_text">«Деликатный Будильник» - чтобы выспаться!\\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Если будильник не срабатывает, вам нужно добавить Деликатный Будильник в Автозапуск:</string>
 
 
     <plurals name="alarm_turn_off_prompt">
@@ -171,9 +162,5 @@
         <item quantity="many">Дремать максимум %d минут</item>
         <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
-    <string name="rate_it_prompt">Будьте добры оставить комментарий на странице «Деликатного Будильника» в Google Play:</string>
-    <string name="first_alarm_prompt">Добавьте первый будильник</string>
-    <string name="app_share_text">«Деликатный Будильник» - чтобы выспаться!\\nhttps://play.google.com/store/apps/details?id=%s</string>
-    <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Если будильник не срабатывает, вам нужно добавить Деликатный Будильник в Автозапуск:</string>
 
 </resources>
