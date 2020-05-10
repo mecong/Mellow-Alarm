@@ -28,16 +28,15 @@
     <string name="every_day">Каждый день</string>
     <string name="never">Никогда</string>
 
-
     <string name="ticks_type_label">Звук деликатного будильника</string>
 
-    <string name="mo">ПН</string>
-    <string name="tu">ВТ</string>
-    <string name="we">CР</string>
-    <string name="th">ЧТ</string>
-    <string name="fr">ПТ</string>
-    <string name="sa">СБ</string>
-    <string name="su">ВС</string>
+    <string name="mo">Пн</string>
+    <string name="tu">Вт</string>
+    <string name="we">Cр</string>
+    <string name="th">Чт</string>
+    <string name="fr">Пт</string>
+    <string name="sa">Сб</string>
+    <string name="su">Вс</string>
 
     <string name="upcoming_alarm_notification_channel_name">☕ Будильник</string>
     <string name="snooze_3_min">3 мин дремать</string>
@@ -64,8 +63,7 @@
     <string name="time_to_sleep_notification_title">🛏 Пора спать</string>
     <string name="sleep_assistant_media_channel_name">Дремль</string>
     <string name="sleep_timer">Дремать %1$tM:%1$tS</string>
-    <string name="sleep_assistant">Усыплятель</string>
-
+    <string name="sleep_assistant">Ассистент Сна</string>
 
     <string name="next_alarm_today" comment="Будильник через %02d часов %02d минут">Будильник через %s %s</string>
     <string name="low_sound">Стук</string>
@@ -109,9 +107,9 @@
     <string name="Red_noise">Красный шум</string>
 
 
-    <string name="dialog_autostart">Пожалуйста добавьте \"%s\" в Автозапуск для корректной работы приложения</string>
-    <string name="open_autostart">Открыть Автостарт</string>
-    <string name="cant_open_autostart">Не могу открыть автостарт. Пожалуйста, включите вручную</string>
+    <string name="dialog_autostart">Пожалуйста добавьте «%s» в Автозапуск для корректной работы приложения</string>
+    <string name="open_autostart">Открыть Автозапуск</string>
+    <string name="cant_open_autostart">Не могу открыть Автозапуск. Пожалуйста, включите вручную</string>
 
     <string name="system_volume_toast">Системная громкость установлена на 30%</string>
     <string name="upcoming_alarm_channel_description">Напоминание о скором звонке будильника</string>
@@ -173,8 +171,9 @@
         <item quantity="many">Дремать максимум %d минут</item>
         <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
-    <string name="rate_it_prompt">Будьте добры оставить комментарий на странице Деликатного Будильника в Google Play:</string>
+    <string name="rate_it_prompt">Будьте добры оставить комментарий на странице «Деликатного Будильника» в Google Play:</string>
     <string name="first_alarm_prompt">Добавьте первый будильник</string>
-    <string name="app_share_text">Деликатный Будильник - чтобы выспаться!\\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="app_share_text">«Деликатный Будильник» - чтобы выспаться!\\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Если будильник не срабатывает, вам нужно добавить Деликатный Будильник в Автозапуск:</string>
 
 </resources>

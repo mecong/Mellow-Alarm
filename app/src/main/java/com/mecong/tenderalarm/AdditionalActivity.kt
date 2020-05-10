@@ -4,8 +4,10 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View.GONE
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.mecong.tenderalarm.alarm.AutoStartUtils
 import kotlinx.android.synthetic.main.activity_additional.*
 
 class AdditionalActivity : AppCompatActivity() {
@@ -21,6 +23,16 @@ class AdditionalActivity : AppCompatActivity() {
 
         appShareButton.setOnClickListener {
             shareApp()
+        }
+
+        val autostartIntent = AutoStartUtils.findAutoStartIntent(this)
+        if (autostartIntent != null) {
+            autostartOpenButton.setOnClickListener {
+                AutoStartUtils.runAutostart(this, autostartIntent)
+            }
+        } else {
+            autostartOpenButton.visibility = GONE
+            autostartPrompt.visibility = GONE
         }
     }
 

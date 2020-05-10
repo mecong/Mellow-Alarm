@@ -85,7 +85,7 @@
     <string name="low_sound">Knock</string>
     <string name="high_sound">Clink</string>
     <string name="if_you_have_comments_or_ideas_please_visit_my_page">If you have comments or ideas please visit my page:</string>
-    <string name="rate_it_prompt">I would very appreciate if you could rate the "Tender Alarm" at Google Play:</string>
+    <string name="rate_it_prompt">I would very appreciate if you could rate Tender Alarm at Google Play:</string>
     <string name="rate_it">Rate</string>
     <string name="share_it_prompt">You can share Tender Alarm with whom, in your opinion, this may be useful:</string>
     <string name="share_it">Share</string>
@@ -138,6 +138,7 @@
 
     <string name="first_alarm_prompt">Add your first alarm!</string>
     <string name="app_share_text">Tender Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">If alarms do not fire you need to add Tender Alarm to Autostart:</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>

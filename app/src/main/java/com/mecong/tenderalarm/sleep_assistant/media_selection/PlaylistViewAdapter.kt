@@ -91,6 +91,9 @@ class PlaylistViewAdapter constructor(
                 textUrl.setText(title.tag.toString())
                 textUrl.hint = "Playlist name"
 
+                val textTitle = dialog.findViewById<EditText>(R.id.textTitle)
+                textTitle.visibility = View.GONE
+
                 val buttonOk = dialog.findViewById<Button>(R.id.buttonOk)
                 val buttonOkTop = dialog.findViewById<Button>(R.id.buttonOkTop)
                 val buttonCancel = dialog.findViewById<Button>(R.id.buttonCancel)

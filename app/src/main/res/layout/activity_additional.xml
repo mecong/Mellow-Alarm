@@ -1,163 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
     tools:context=".AdditionalActivity">
 
-
-    <TextView
-        android:id="@+id/about"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/about"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteY="19dp" />
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/closeBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/my_page"
-        android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about"
+                android:textSize="24sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteY="19dp" />
 
-        android:text="@string/if_you_have_comments_or_ideas_please_visit_my_page"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/about" />
+            <TextView
+                android:id="@+id/my_page"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/if_you_have_comments_or_ideas_please_visit_my_page"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/about" />
 
+            <TextView
+                android:id="@+id/p_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:autoLink="web"
+                android:gravity="center_horizontal|center_vertical"
 
-    <TextView
-        android:id="@+id/p_link"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:autoLink="web"
-        android:gravity="center_horizontal|center_vertical"
+                android:text="@string/patreon_link"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/my_page" />
 
-        android:text="@string/patreon_link"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_page" />
+            <TextView
+                android:id="@+id/app_link_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/rate_it_prompt"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/p_link" />
 
+            <Button
+                android:id="@+id/appLinkButton"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/appGreen"
+                android:text="@string/rate_it"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/app_link_prompt" />
 
-    <TextView
-        android:id="@+id/app_link_prompt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="@string/rate_it_prompt"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/p_link" />
+            <TextView
+                android:id="@+id/app_link_share"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/share_it_prompt"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appLinkButton" />
 
+            <Button
+                android:id="@+id/appShareButton"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@color/appGreen"
+                android:text="@string/share_it"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/app_link_share" />
 
-    <Button
-        android:id="@+id/appLinkButton"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/appGreen"
-        android:text="@string/rate_it"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_link_prompt" />
+            <TextView
+                android:id="@+id/radios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/radios"
+                android:textSize="24sp"
 
-    <TextView
-        android:id="@+id/app_link_share"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="@string/share_it_prompt"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appLinkButton" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appShareButton" />
 
+            <TextView
+                android:id="@+id/all_rights_on_radio_stations_belongs_to_their_owners"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/all_rights_on_radio_stations_belongs_to_their_owners"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/radios" />
 
-    <Button
-        android:id="@+id/appShareButton"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@color/appGreen"
-        android:text="@string/share_it"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/app_link_share" />
+            <TextView
+                android:id="@+id/http_enigmatic_su"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/http_enigmatic_su"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/all_rights_on_radio_stations_belongs_to_their_owners" />
 
-    <TextView
-        android:id="@+id/radios"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="@string/radios"
-        android:textSize="24sp"
+            <TextView
+                android:id="@+id/https_mynoise_net"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/https_mynoise_net"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/http_enigmatic_su" />
 
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appShareButton" />
+            <TextView
+                android:id="@+id/https_www_milanolounge_net"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/https_www_milanolounge_net"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/https_mynoise_net" />
 
-    <TextView
-        android:id="@+id/all_rights_on_radio_stations_belongs_to_their_owners"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/all_rights_on_radio_stations_belongs_to_their_owners"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radios" />
+            <TextView
+                android:id="@+id/https_www_hionline_eu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/https_www_hionline_eu"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/https_www_milanolounge_net" />
 
-    <TextView
-        android:id="@+id/http_enigmatic_su"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/http_enigmatic_su"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/all_rights_on_radio_stations_belongs_to_their_owners" />
+            <TextView
+                android:id="@+id/http_jr_fm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/http_jr_fm"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/https_www_hionline_eu" />
 
-    <TextView
-        android:id="@+id/https_mynoise_net"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/https_mynoise_net"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/http_enigmatic_su" />
+            <TextView
+                android:id="@+id/autostartPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/http_jr_fm" />
 
-    <TextView
-        android:id="@+id/https_www_milanolounge_net"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/https_www_milanolounge_net"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/https_mynoise_net" />
-
-    <TextView
-        android:id="@+id/https_www_hionline_eu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/https_www_hionline_eu"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/https_www_milanolounge_net" />
-
-
-    <TextView
-        android:id="@+id/http_jr_fm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/http_jr_fm"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/https_www_hionline_eu" />
+            <Button
+                android:id="@+id/autostartOpenButton"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/open_autostart"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/autostartPrompt" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/closeBtn"
@@ -167,5 +195,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
