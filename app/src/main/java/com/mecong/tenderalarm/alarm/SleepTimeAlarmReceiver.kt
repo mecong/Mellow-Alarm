@@ -59,8 +59,8 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
         val message = context.getString(R.string.time_to_sleep_notification_message, hoursText, minutesText)
 
         val builder = NotificationCompat.Builder(context, MainActivity.TIME_TO_SLEEP_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_cat_sleep)
-                .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_cat_sleep))
+                .setSmallIcon(R.drawable.cat_sleep)
+                .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.cat_sleep))
                 .setContentTitle(context.getString(R.string.time_to_sleep_notification_title))
                 .setContentText(message)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(message))

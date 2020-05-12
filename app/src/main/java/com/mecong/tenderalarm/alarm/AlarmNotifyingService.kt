@@ -188,7 +188,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                         exoPlayer.playWhenReady = true
                     }
 
-                    Timber.i("Tick!")
+                    Timber.v("Tick!")
                 } catch (e: Exception) {
                     //HyperLog.e(TAG, "Exception: " + e.message, e)
                 }
@@ -328,7 +328,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 .setContentText(entity.message)
                 .setContentIntent(pendingIntent)
                 .setFullScreenIntent(pendingIntent, true)
-                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.cat_purr))
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.cat_banjo))
                 .setSmallIcon(R.drawable.alarm_active)
                 .setAutoCancel(false)
                 .setOngoing(true)

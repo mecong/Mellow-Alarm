@@ -14,8 +14,6 @@ import timber.log.Timber
 class TenderAlarmReceiver : BroadcastReceiver() {
     //adb shell dumpsys alarm > alarms.dump
     override fun onReceive(context: Context, intent: Intent) {
-//        HyperLog.initialize(context)
-//        HyperLog.setLogLevel(Log.ERROR)
         val alarmId = intent.getStringExtra(ALARM_ID_PARAM) ?: return
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId)
@@ -26,9 +24,9 @@ class TenderAlarmReceiver : BroadcastReceiver() {
         if (canceledNextAlarms == 0) {
             if (entity.days > 0) {
                 setUpNextAlarm(entity, context, false)
-                AlarmUtils.setUpNextSleepTimeNotification(context)
             } else {
                 sqLiteDBHelper.toggleAlarmActive(alarmId, false)
+                AlarmUtils.turnOffAlarm(alarmId, context)
             }
 
             if (ALARM_PLAYING == null) {
@@ -42,9 +40,11 @@ class TenderAlarmReceiver : BroadcastReceiver() {
                 entity.canceledNextAlarms = canceledNextAlarms - 1
                 sqLiteDBHelper.addOrUpdateAlarm(entity)
                 setUpNextAlarm(entity, context, false)
-                AlarmUtils.setUpNextSleepTimeNotification(context)
+
             }
         }
+
+        AlarmUtils.setUpNextSleepTimeNotification(context)
     }
 
     private fun startAlarmNotification(context: Context, alarmId: String, sameId: Boolean = false) {

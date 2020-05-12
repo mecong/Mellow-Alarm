@@ -190,19 +190,19 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     }
 
     private fun createOnlineMediaResourcesTable(): String {
-        return "CREATE TABLE $TABLE_ONLINE_MEDIA (_id INTEGER PRIMARY KEY, title TEXT, uri TEXT)"
+        return "CREATE TABLE $TABLE_ONLINE_MEDIA (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, uri TEXT)"
     }
 
     private fun createOfflineMediaResourcesTable(): String {
-        return "CREATE TABLE $TABLE_OFFLINE_MEDIA (_id INTEGER PRIMARY KEY, playlist_id INTEGER, title TEXT, uri TEXT)"
+        return "CREATE TABLE $TABLE_OFFLINE_MEDIA (_id INTEGER PRIMARY KEY AUTOINCREMENT, playlist_id INTEGER, title TEXT, uri TEXT)"
     }
 
     private fun createOfflineMediaPlaylistsTable(): String {
-        return "CREATE TABLE $TABLE_PLAYLISTS (_id INTEGER PRIMARY KEY, title TEXT)"
+        return "CREATE TABLE $TABLE_PLAYLISTS (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT)"
     }
 
     private fun createPropertiesTable(): String {
-        return "CREATE TABLE $TABLE_PROPERTIES (_id INTEGER PRIMARY KEY, property_name TEXT, property_value TEXT)"
+        return "CREATE TABLE $TABLE_PROPERTIES (_id INTEGER PRIMARY KEY AUTOINCREMENT, property_name TEXT, property_value TEXT)"
     }
 
     fun getPropertyInt(propertyName: PropertyName): Int? {
@@ -329,7 +329,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 53
+        private const val DATABASE_VERSION = 54
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"

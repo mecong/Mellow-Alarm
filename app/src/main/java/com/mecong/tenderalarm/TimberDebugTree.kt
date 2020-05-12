@@ -16,12 +16,16 @@ class TimberDebugTree(context: Context) : Timber.Tree() {
                 HyperLog.d(tag, message)
             }
 
-            Log.ERROR -> {
-                HyperLog.e(tag, message)
+            Log.INFO -> {
+                HyperLog.i(tag, message)
             }
 
             Log.WARN -> {
                 HyperLog.w(tag, message)
+            }
+
+            Log.ERROR -> {
+                HyperLog.e(tag, message)
             }
 
             Log.ASSERT -> {

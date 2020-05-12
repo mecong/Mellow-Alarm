@@ -23,10 +23,10 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
     override fun bindView(view: View, context: Context, cursor: Cursor) {
         val entity = AlarmEntity(cursor)
         val alarmId = entity.id.toString()
-        val time = view.findViewById<TextView>(R.id.textRow1)
-        val time2 = view.findViewById<TextView>(R.id.textRow11)
-        val textRow2 = view.findViewById<TextView>(R.id.textRow2)
-        val textRow3 = view.findViewById<TextView>(R.id.textRow4)
+        val textRowHours = view.findViewById<TextView>(R.id.textRowHours)
+        val textRowMinutes = view.findViewById<TextView>(R.id.textRowMinutes)
+        val textRowDate = view.findViewById<TextView>(R.id.textRowDate)
+        val textRowAlarmTitle = view.findViewById<TextView>(R.id.textRowAlarmTitle)
         val textViewSkipped = view.findViewById<TextView>(R.id.textViewSkipped)
         val toggleButton = view.findViewById<ImageButton>(R.id.toggleButton)
         val alarmOnOff = view.findViewById<LinearLayout>(R.id.alarmOnOff)
@@ -125,11 +125,11 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
         toggleButton.setOnClickListener(
                 if (entity.days > 0) recurrentAlarmSwitch else oneTimeAlarmSwitch)
 
-        if (time2 == null) {
-            time.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
+        if (textRowMinutes == null) {
+            textRowHours.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
         } else {
-            time.text = context.getString(R.string.alarm_time_chunk, entity.hour)
-            time2.text = context.getString(R.string.alarm_time_chunk, entity.minute)
+            textRowHours.text = context.getString(R.string.alarm_time_chunk, entity.hour)
+            textRowMinutes.text = context.getString(R.string.alarm_time_chunk, entity.minute)
         }
 
         if (entity.canceledNextAlarms > 0) {
@@ -160,13 +160,13 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
             }
         }
 
-        textRow2.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        textRowDate.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Html.fromHtml(daysMessage, Html.FROM_HTML_MODE_LEGACY)
         } else {
             Html.fromHtml(daysMessage)
         }
 
-        textRow3.text = entity.message
+        textRowAlarmTitle.text = entity.message
     }
 
     private fun getDaysHtml(entity: AlarmEntity, context: Context): String {

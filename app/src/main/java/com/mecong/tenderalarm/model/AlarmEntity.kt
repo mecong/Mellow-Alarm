@@ -134,7 +134,9 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
     }
 
     override fun toString(): String {
-        return "AlarmEntity(id=$id, hour=$hour, minute=$minute, nextTime=$nextTimeFormatted, exactDate=$exactDate, ticksTime=$ticksTime, melodyUrl=$melodyUrl, complexity=$complexity, message=$message, isActive=$isActive)"
+        return "AlarmEntity(id=$id, hour=$hour, minute=$minute, nextTime=$nextTimeFormatted, " +
+                "exactDate=$exactDate, ticksTime=$ticksTime, melodyUrl=$melodyUrl, " +
+                "complexity=$complexity, message=$message, isActive=$isActive, days=$days)"
     }
 
     val daysAsMap: Map<Int, Boolean>

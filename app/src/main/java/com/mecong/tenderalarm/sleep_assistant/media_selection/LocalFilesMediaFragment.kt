@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.PlaylistEntity
+import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.PropertyName.*
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -324,6 +325,13 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
     override fun onPlaylistDeleteClick(id: Long, position: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+
+        val savedPlaylistId = sqLiteDBHelper.getPropertyLong(PropertyName.PLAYLIST_ID)
+        if (savedPlaylistId == id) {
+            sqLiteDBHelper.setPropertyString(PropertyName.PLAYLIST_ID, "-1")
+            sqLiteDBHelper.setPropertyString(PropertyName.ACTIVE_TAB, "2")
+            sqLiteDBHelper.setPropertyString(PropertyName.TRACK_POSITION, "0")
+        }
 
         sqLiteDBHelper.deletePlaylist(id)
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())

@@ -13,6 +13,7 @@ import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
+import timber.log.Timber
 
 class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
     private val actionCancelAlarm = UpcomingAlarmNotificationReceiver::class.java.canonicalName + "--CANCEL_ALARM"
@@ -39,7 +40,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
                     entity.nextNotCanceledTime), Toast.LENGTH_LONG).show()
         } else {
             if (entity.canceledNextAlarms == 0) {
-                //Timber.i( "Before alarm notification: $entity")
+                Timber.i("Before alarm notification: $entity")
                 showNotification(entity, context)
             }
         }
@@ -57,6 +58,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.cat_purr))
                 .setContentTitle(context.getString(R.string.upcoming_alarm_notification_title))
                 .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)

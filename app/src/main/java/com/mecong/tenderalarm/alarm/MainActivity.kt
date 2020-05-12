@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val sleepAssistantFragmentOpenListener: (v: View) -> Unit = {
-        Timber.i("Open Sleep Assistant button clicked")
+        Timber.v("Open Sleep Assistant button clicked")
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
         val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val alarmFragmentOpenListener: (v: View) -> Unit = {
-        Timber.i("Open Alarm button clicked")
+        Timber.v("Open Alarm button clicked")
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
         val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
@@ -77,8 +77,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        HyperLog.initialize(this)
-//        HyperLog.setLogLevel(Log.ERROR)
         setContentView(R.layout.activity_main)
         createNotificationChannels(this)
 
@@ -108,15 +106,15 @@ class MainActivity : AppCompatActivity() {
 
         currentFragment = if (ASSISTANT_FRAGMENT == desiredFragment) {
             fragmentTransaction.hide(alarmFragment)
-            Timber.i("alarmFragment hide $sleepFragment")
+            Timber.d("alarmFragment hide $sleepFragment")
             fragmentTransaction.show(sleepFragment)
-            Timber.i("sleepFragment show $sleepFragment")
+            Timber.d("sleepFragment show $sleepFragment")
             SLEEP_FRAGMENT
         } else {
             fragmentTransaction.hide(sleepFragment)
-            Timber.i("sleepFragment hide $sleepFragment")
+            Timber.d("sleepFragment hide $sleepFragment")
             fragmentTransaction.show(alarmFragment)
-            Timber.i("alarmFragment show $sleepFragment")
+            Timber.d("alarmFragment show $sleepFragment")
             ALARM_FRAGMENT
         }
 

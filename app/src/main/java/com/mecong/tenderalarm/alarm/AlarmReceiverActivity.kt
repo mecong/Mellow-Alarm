@@ -60,7 +60,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     private fun useActivityScreenMethods() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             try {
-                Timber.i("useActivityScreenMethods")
+                Timber.v("useActivityScreenMethods")
                 setTurnScreenOn(true)
                 setShowWhenLocked(true)
             } catch (e: NoSuchMethodError) {
@@ -70,7 +70,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     }
 
     private fun usePowerManagerWakeup() {
-        Timber.i("alarm receiver PowerManagerWakeup")
+        Timber.v("alarm receiver PowerManagerWakeup")
         val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.localClassName)
         wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
@@ -198,7 +198,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                     }
                 }.start()
 
-                //HyperLog.d(TAG, "Snoozed Minutes: " + snoozedMinutes + " max: " + entity.snoozeMaxTimes)
+                Timber.d("""Snoozed Minutes: $snoozedMinutes max: ${entity.snoozeMaxTimes}""")
                 snoozeAlarmNotification(time, entity, context)
             }
 

@@ -160,7 +160,7 @@ class AlarmFragment : Fragment() {
         sqLiteDBHelper!!.deleteAlarm(id!!)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
-        sqLiteDBHelper.close()
+//        sqLiteDBHelper.close()
     }
 
     fun setActive(id: String, active: Boolean) {

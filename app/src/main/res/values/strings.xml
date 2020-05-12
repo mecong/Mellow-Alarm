@@ -160,8 +160,8 @@
     </plurals>
 
     <plurals name="n_minutes_plural">
-        <item quantity="one">%d minute</item>
-        <item quantity="other">%d minutes</item>
+        <item quantity="one">%d m</item>
+        <item quantity="other">%d m</item>
     </plurals>
 
     <plurals name="n_minutes_plural_2">
