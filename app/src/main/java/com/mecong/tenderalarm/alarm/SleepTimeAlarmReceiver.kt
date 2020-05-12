@@ -13,6 +13,7 @@ import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
+import timber.log.Timber
 import java.util.*
 
 class SleepTimeAlarmReceiver : BroadcastReceiver() {
@@ -20,7 +21,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 //        HyperLog.initialize(context)
 //        HyperLog.setLogLevel(Log.ERROR)
-        //HyperLog.i(TAG, "Sleep time job started")
+        Timber.i("Sleep time job started")
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val nextActiveAlarm = sqLiteDBHelper!!.nextActiveAlarm
 
@@ -32,7 +33,7 @@ class SleepTimeAlarmReceiver : BroadcastReceiver() {
 
         val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val isScreenOn = pm.isInteractive
-        //HyperLog.v(TAG, "Device is used: $isScreenOn")
+        Timber.v("Device is used: $isScreenOn")
         if (isScreenOn) {
             val timeToBed = timeToGoToBed(nextActiveAlarm)
             if (timeToBed != null && alarmInTheMorning(nextActiveAlarm)) {

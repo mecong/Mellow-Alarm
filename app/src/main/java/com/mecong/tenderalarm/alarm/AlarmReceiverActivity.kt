@@ -19,6 +19,7 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import kotlinx.android.synthetic.main.activity_alarm_receiver.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.sqrt
@@ -36,6 +37,17 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
         useActivityScreenMethods()
     }
 
+    override fun onPause() {
+        super.onPause()
+        IS_SHOWN = false
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        IS_SHOWN = true
+    }
+
     private fun useWindowFlags() {
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -48,7 +60,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     private fun useActivityScreenMethods() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             try {
-                //HyperLog.i(TAG, "useActivityScreenMethods")
+                Timber.i("useActivityScreenMethods")
                 setTurnScreenOn(true)
                 setShowWhenLocked(true)
             } catch (e: NoSuchMethodError) {
@@ -58,7 +70,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     }
 
     private fun usePowerManagerWakeup() {
-        //HyperLog.i(TAG, "alarm receiver PowerManagerWakeup")
+        Timber.i("alarm receiver PowerManagerWakeup")
         val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.localClassName)
         wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
@@ -89,7 +101,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
     @Subscribe
     fun messageReceived(message: AlarmMessage) {
-        //HyperLog.i(TAG, "Stop Activity with message: $message")
+        Timber.i("Stop Activity with message: $message")
         if (message === AlarmMessage.STOP_ALARM) {
             finish()
         }
@@ -112,8 +124,8 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
             setContentView(R.layout.activity_alarm_receiver)
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
-            //HyperLog.i(TAG, "Running alarm with extras: " + intent.extras)
-            //HyperLog.i(TAG, "Running alarm with id: $alarmId")
+            Timber.i("Running alarm with extras: " + intent.extras)
+            Timber.i("Running alarm with id: $alarmId")
             val context = applicationContext
             if (alarmId == null) {
                 //HyperLog.e(TAG, "Alarm id is NULL")
@@ -126,7 +138,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
             val entity = sqLiteDBHelper(context)!!.getAlarmById(alarmId)
             alarm_info.text = entity!!.message
-            //HyperLog.i(TAG, "Running alarm: $entity")
+            Timber.i("Running alarm: $entity")
             val complexity = entity.complexity
             shakeCount = complexity * 2
 
@@ -267,13 +279,15 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-        //HyperLog.i(TAG, "Sensor accuracy: $accuracy")
+        Timber.i("Sensor accuracy: $accuracy")
         shareThreshold = 10f - accuracy
     }
 
     companion object {
 
         private const val MIN_TIME_BETWEEN_SHAKES_MILLISECONDS = 1000
+        var IS_SHOWN = false
+
         fun unlockScreen(activity: AlarmReceiverActivity) {
             activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -288,17 +302,17 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 //                keyguardManager.requestDismissKeyguard(activity, object : KeyguardDismissCallback() {
 //                    override fun onDismissError() {
 //                        super.onDismissError()
-//                        //HyperLog.i(TAG, "Keyguard Dismiss Error")
+//                        Timber.i( "Keyguard Dismiss Error")
 //                    }
 //
 //                    override fun onDismissSucceeded() {
 //                        super.onDismissSucceeded()
-//                        //HyperLog.i(TAG, "Keyguard Dismiss Success")
+//                        Timber.i( "Keyguard Dismiss Success")
 //                    }
 //
 //                    override fun onDismissCancelled() {
 //                        super.onDismissCancelled()
-//                        //HyperLog.i(TAG, "Keyguard Dismiss Cancelled")
+//                        Timber.i( "Keyguard Dismiss Cancelled")
 //                    }
 //                })
                 activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)

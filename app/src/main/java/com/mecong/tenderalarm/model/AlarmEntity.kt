@@ -109,11 +109,17 @@ data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0,
             }
             nextTime = calendar.timeInMillis
         }
-        nextRequestCode = requestCode
+        nextRequestCode = alarmRequestCode
     }
 
-    private val requestCode: Int
+    val alarmRequestCode: Int
         get() = id.toInt() * 100000
+
+    val upcomingAlarmRequestCode: Int
+        get() = alarmRequestCode + 1
+
+    val snoozedAlarmRequestCode: Int
+        get() = alarmRequestCode + 2
 
 
     private fun allDaysAsList(): List<Boolean> {

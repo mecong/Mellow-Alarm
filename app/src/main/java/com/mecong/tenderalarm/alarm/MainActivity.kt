@@ -20,6 +20,7 @@ import it.sephiroth.android.library.xtooltip.Tooltip
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
 
 enum class MainActivityMessages {
     ADD_ALARM,
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val sleepAssistantFragmentOpenListener: (v: View) -> Unit = {
-        //HyperLog.i(TAG, "Open Sleep Assistant button clicked")
+        Timber.i("Open Sleep Assistant button clicked")
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
         val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val alarmFragmentOpenListener: (v: View) -> Unit = {
-        //HyperLog.i(TAG, "Open Alarm button clicked")
+        Timber.i("Open Alarm button clicked")
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
         val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
@@ -107,15 +108,15 @@ class MainActivity : AppCompatActivity() {
 
         currentFragment = if (ASSISTANT_FRAGMENT == desiredFragment) {
             fragmentTransaction.hide(alarmFragment)
-            //HyperLog.i(TAG, "alarmFragment hide $sleepFragment")
+            Timber.i("alarmFragment hide $sleepFragment")
             fragmentTransaction.show(sleepFragment)
-            //HyperLog.i(TAG, "sleepFragment show $sleepFragment")
+            Timber.i("sleepFragment show $sleepFragment")
             SLEEP_FRAGMENT
         } else {
             fragmentTransaction.hide(sleepFragment)
-            //HyperLog.i(TAG, "sleepFragment hide $sleepFragment")
+            Timber.i("sleepFragment hide $sleepFragment")
             fragmentTransaction.show(alarmFragment)
-            //HyperLog.i(TAG, "alarmFragment show $sleepFragment")
+            Timber.i("alarmFragment show $sleepFragment")
             ALARM_FRAGMENT
         }
 

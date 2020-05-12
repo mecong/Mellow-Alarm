@@ -9,6 +9,7 @@ import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM_SAME_ID
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
+import timber.log.Timber
 
 class TenderAlarmReceiver : BroadcastReceiver() {
     //adb shell dumpsys alarm > alarms.dump
@@ -21,7 +22,7 @@ class TenderAlarmReceiver : BroadcastReceiver() {
         SleepTimeAlarmReceiver.cancelNotification(context)
         UpcomingAlarmNotificationReceiver.cancelNotification(context)
         val canceledNextAlarms = entity!!.canceledNextAlarms
-        //HyperLog.i(TAG, "TenderAlarmReceiver received alarm: $entity, ALARM_PLAYING: $ALARM_PLAYING")
+        Timber.i("TenderAlarmReceiver received alarm: $entity, ALARM_PLAYING: $ALARM_PLAYING")
         if (canceledNextAlarms == 0) {
             if (entity.days > 0) {
                 setUpNextAlarm(entity, context, false)
@@ -31,9 +32,9 @@ class TenderAlarmReceiver : BroadcastReceiver() {
             }
 
             if (ALARM_PLAYING == null) {
-                ALARM_PLAYING = alarmId.toInt()
-                startAlarmNotification(context, alarmId)
-            } else if (ALARM_PLAYING == alarmId.toInt()) {
+                ALARM_PLAYING = alarmId
+                startAlarmNotification(context, alarmId, false)
+            } else if (ALARM_PLAYING == alarmId) {
                 startAlarmNotification(context, alarmId, true)
             }
         } else {

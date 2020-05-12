@@ -21,7 +21,8 @@ class LogsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListene
         setContentView(R.layout.activity_logs)
         val recyclerView = findViewById<RecyclerView>(R.id.logsList)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyRecyclerViewAdapter(this, HyperLog.getDeviceLogsAsStringList(false))
+        val data = HyperLog.getDeviceLogsAsStringList(false)
+        adapter = MyRecyclerViewAdapter(this, data)
         adapter!!.setClickListener(this)
         recyclerView.adapter = adapter
         val btnClearLogs = findViewById<Button>(R.id.btnClearLogs)
@@ -31,7 +32,8 @@ class LogsActivity : AppCompatActivity(), MyRecyclerViewAdapter.ItemClickListene
                     HyperLog.getDeviceLogsAsStringList(false))
             recyclerView.adapter = adapter
         }
-        recyclerView.scrollToPosition(recyclerView.childCount)
+
+        recyclerView.scrollToPosition(data.size - 1)
     }
 
 

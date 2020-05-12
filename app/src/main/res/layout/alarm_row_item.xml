@@ -14,7 +14,7 @@
         android:id="@+id/textRow4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="marquee"
+        android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
         android:textColor="@color/textColor3"
@@ -29,15 +29,12 @@
         android:layout_width="300dp"
         android:layout_height="5dp"
         android:background="@drawable/custom_border_line"
-        android:ellipsize="marquee"
         android:gravity="center"
         android:singleLine="true"
         android:textColor="@color/textColor3"
-        android:textSize="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textRow4" />
-
 
     <TextView
         android:id="@+id/textRow1"

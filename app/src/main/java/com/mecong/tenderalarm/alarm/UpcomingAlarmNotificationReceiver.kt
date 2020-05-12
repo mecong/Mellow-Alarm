@@ -24,7 +24,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId) ?: return
         if (actionCancelAlarm == intent.action) {
-            ////HyperLog.i(TAG, "Canceling alarm: $entity")
+            //Timber.i( "Canceling alarm: $entity")
             if (entity.isRepeatedAlarm) {
                 entity.canceledNextAlarms = 1
                 sqLiteDBHelper.addOrUpdateAlarm(entity)
@@ -39,7 +39,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
                     entity.nextNotCanceledTime), Toast.LENGTH_LONG).show()
         } else {
             if (entity.canceledNextAlarms == 0) {
-                ////HyperLog.i(TAG, "Before alarm notification: $entity")
+                //Timber.i( "Before alarm notification: $entity")
                 showNotification(entity, context)
             }
         }
@@ -49,7 +49,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         val intent = Intent(context, this.javaClass)
         intent.action = actionCancelAlarm
         intent.putExtra(ALARM_ID_PARAM, entity!!.id.toString())
-        val pendingIntent = PendingIntent.getBroadcast(context, entity.nextRequestCode + 1, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(context, entity.upcomingAlarmRequestCode, intent, 0)
         val message = context.getString(R.string.upcoming_alarm_notification_message,
                 entity.nextNotCanceledTime)
         val builder = NotificationCompat.Builder(context, MainActivity.BEFORE_ALARM_CHANNEL_ID)

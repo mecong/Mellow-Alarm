@@ -10,14 +10,12 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.util.Strings
-import com.hypertrack.hyperlog.HyperLog
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.AlarmEntity
@@ -334,9 +332,6 @@ class AlarmAddingActivity : AppCompatActivity() {
     }
 
     private fun initLogsAndControls() {
-        HyperLog.initialize(this)
-        HyperLog.setLogLevel(Log.ERROR)
-        //HyperLog.i(AlarmUtils.TAG, "Start AlarmAddingActivity")
         setContentView(R.layout.activity_alarm_adding)
     }
 

@@ -7,6 +7,7 @@ import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.google.android.exoplayer2.database.DatabaseProvider
+import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -107,17 +108,17 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 put("melody_name", entity.melodyName)
                 put("next_time", entity.nextTime)
                 put("next_not_canceled_time", entity.nextNotCanceledTime)
-                put("next_request_code", entity.nextRequestCode)
+                put("next_request_code", entity.nextRequestCode)// deprecated
                 put("tts_notification", entity.isTimeToSleepNotification)
                 put("heads_up", entity.isHeadsUp)
             }
 
             return if (entity.id == 0L) {
-                //HyperLog.d(AlarmUtils.TAG, "Alarm added :: $entity")
+                Timber.i("Alarm added :: $entity")
                 database.insert(TABLE_ALARMS, null, values)
             } else {
                 database.update(TABLE_ALARMS, values, "_id=${entity.id}", null)
-                //HyperLog.d(AlarmUtils.TAG, "Alarm updated :: $entity")
+                Timber.i("Alarm updated :: $entity")
                 entity.id
             }
         }
@@ -132,14 +133,12 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 updateValues.put("next_time", -1)
             }
             writableDatabase.update(TABLE_ALARMS, updateValues, "_id=?", arrayOf(id))
-            //HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] toggled to: $active")
         }
     }
 
     fun deleteAlarm(id: String) {
         this.writableDatabase.use { writableDatabase ->
             writableDatabase.delete(TABLE_ALARMS, "_id=$id", null)
-            //HyperLog.v(AlarmUtils.TAG, "Alarm [id=$id] deleted")
         }
     }
 
@@ -151,7 +150,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         sqLiteDatabase.execSQL(createPropertiesTable())
         setDefaultOnlineMedia(sqLiteDatabase)
         initializeDefaultProperties(sqLiteDatabase)
-        //HyperLog.i(AlarmUtils.TAG, "Database created")
+        Timber.i("Database created")
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldDbVersion: Int, newVersion: Int) {
@@ -165,7 +164,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
 
     private fun createAlarmTable(): String {
         return "CREATE TABLE $TABLE_ALARMS (" +
-                "_id INTEGER PRIMARY KEY," +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "hour TINYINT," +
                 "minute TINYINT," +
                 "complexity TINYINT," +
@@ -259,7 +258,6 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
             val values = ContentValues()
             values.put(TITLE, title)
             values.put(URI, url)
-            //HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url")
             database.insert(TABLE_ONLINE_MEDIA, null, values)
         }
     }
@@ -267,7 +265,6 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     fun deleteOnlineMedia(id: String) {
         this.writableDatabase.use { writableDatabase ->
             writableDatabase.delete(TABLE_ONLINE_MEDIA, "_id=?", arrayOf(id))
-            //HyperLog.v(AlarmUtils.TAG, "Online Media [id=$id] deleted")
         }
     }
 
@@ -283,7 +280,6 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
             values.put(URI, url)
             values.put(PLAYLIST_ID, playlistId)
             values.put(TITLE, title)
-            //HyperLog.v(AlarmUtils.TAG, "Add media URL :: $url to playlist $playlistId")
             database.insert(TABLE_OFFLINE_MEDIA, null, values)
         }
     }
@@ -333,14 +329,13 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 52
+        private const val DATABASE_VERSION = 53
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"
         private const val TABLE_PLAYLISTS = "offline_media_playlists"
         private const val TABLE_PROPERTIES = "properties"
         private const val SELECT_NEXT_ALARM = "SELECT * FROM $TABLE_ALARMS WHERE active=1 ORDER BY next_not_canceled_time LIMIT 1"
-        private const val SELECT_ALARMS_COUNT = "SELECT count(*) as alarms_count FROM $TABLE_ALARMS"
         private const val DATABASE_NAME = "my_alarm_database"
 
         private var sInstance: SQLiteDBHelper? = null

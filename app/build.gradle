@@ -10,14 +10,23 @@ apply plugin: 'kotlin-android-extensions'
 
 
 android {
+    signingConfigs {
+        '1' {
+            storeFile file('/Users/mecong/tender_alarm_keystore')
+            storePassword 'LongPhrase#42'
+            keyPassword 'LongPhrase#42'
+            keyAlias 'upload'
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.mecong.tenderalarm"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 2
+        versionCode 3
         versionName "Python"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.'1'
     }
     buildTypes {
         release {

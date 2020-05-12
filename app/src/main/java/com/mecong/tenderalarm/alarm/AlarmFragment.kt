@@ -9,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mecong.tenderalarm.AdditionalActivity
+import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.setBootReceiverActive
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextSleepTimeNotification
+import com.mecong.tenderalarm.logs.LogsActivity
 import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -31,10 +33,12 @@ class AlarmFragment : Fragment() {
         val context = this.activity!!
 //        HyperLog.initialize(context)
 //        HyperLog.setLogLevel(Log.ERROR)
-//        textNextAlarm.setOnClickListener {
-//            val addAlarmIntent = Intent(context, LogsActivity::class.java)
-//            startActivity(addAlarmIntent)
-//        }
+        if (BuildConfig.DEBUG) {
+            textNextAlarm.setOnClickListener {
+                val addAlarmIntent = Intent(context, LogsActivity::class.java)
+                startActivity(addAlarmIntent)
+            }
+        }
 
         ibtnInfo.setOnClickListener {
             val additionalIntent = Intent(context, AdditionalActivity::class.java)
@@ -49,7 +53,7 @@ class AlarmFragment : Fragment() {
         alarms_list.adapter = alarmsAdapter
         updateNextActiveAlarm(sqLiteDBHelper)
 
-        sqLiteDBHelper.close()
+//        sqLiteDBHelper.close()
     }
 
     @Subscribe
@@ -121,14 +125,14 @@ class AlarmFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val context: Context? = this.activity
-        val sqLiteDBHelper = sqLiteDBHelper(context!!)
+        val sqLiteDBHelper = sqLiteDBHelper(context!!)!!
         // Check which request we're responding to
         // Make sure the request was successful
         if (requestCode == ALARM_ADDING_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            alarmsAdapter!!.changeCursor(sqLiteDBHelper!!.allAlarms)
+            alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
             updateNextActiveAlarm(sqLiteDBHelper)
         }
-        sqLiteDBHelper!!.close()
+        sqLiteDBHelper.close()
     }
 
     override fun onStart() {
@@ -150,9 +154,9 @@ class AlarmFragment : Fragment() {
     }
 
     fun deleteAlarm(id: String?) {
-        val context: Context? = this.activity
-        val sqLiteDBHelper = sqLiteDBHelper(context!!)
+        val context: Context = this.activity!!
         AlarmUtils.turnOffAlarm(id, context)
+        val sqLiteDBHelper = sqLiteDBHelper(context)
         sqLiteDBHelper!!.deleteAlarm(id!!)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
@@ -174,8 +178,8 @@ class AlarmFragment : Fragment() {
 
     fun cancelNextAlarms(id: String, num: Int) {
         val context: Context? = this.activity
-        val sqLiteDBHelper = sqLiteDBHelper(context!!)
-        val alarmById = sqLiteDBHelper!!.getAlarmById(id)
+        val sqLiteDBHelper = sqLiteDBHelper(context!!)!!
+        val alarmById = sqLiteDBHelper.getAlarmById(id)
         alarmById!!.canceledNextAlarms = num
         sqLiteDBHelper.addOrUpdateAlarm(alarmById)
         setUpNextAlarm(id, context, true)

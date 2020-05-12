@@ -1,5 +1,6 @@
 package com.mecong.tenderalarm.alarm
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ContentUris
@@ -31,6 +32,7 @@ import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -89,10 +91,13 @@ class AlarmNotifyingService : Service(), Player.EventListener {
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
             val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
             val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
-            //HyperLog.i(TAG, "Running alarm: $entity")
+            Timber.i("Running alarm: $entity")
             usePowerManagerWakeup()
-            stopForeground(true)
-            startAlarmNotification(this, entity)
+
+            if (!AlarmReceiverActivity.IS_SHOWN) {
+                stopForeground(true)
+                startAlarmNotification(this, entity)
+            }
 
             if (sameId)
                 startSnoozedSound(entity)
@@ -104,7 +109,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
     }
 
     private fun usePowerManagerWakeup() {
-        //HyperLog.v(TAG, "Alarm Notifying service usePowerManagerWakeup")
+        Timber.v("Alarm Notifying service usePowerManagerWakeup")
         val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
         val wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, this.javaClass.canonicalName)
         wakeLock.acquire(TimeUnit.SECONDS.toMillis(10))
@@ -132,7 +137,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
     }
 
     private fun snooze(minutes: Int) {
-        //HyperLog.d(TAG, "Snooze for $minutes min")
+        Timber.d("Snooze for $minutes min")
         handlerTicks!!.removeCallbacksAndMessages(null)
         cancelVolumeIncreasing()
 
@@ -183,7 +188,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                         exoPlayer.playWhenReady = true
                     }
 
-                    //HyperLog.i(TAG, "Tick!")
+                    Timber.i("Tick!")
                 } catch (e: Exception) {
                     //HyperLog.e(TAG, "Exception: " + e.message, e)
                 }
@@ -219,7 +224,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
 
                 exoPlayer.playWhenReady = true
 
-                //HyperLog.i(TAG, "Real alarm started!")
+                Timber.i("Real alarm started!")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -231,7 +236,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
             override fun run() {
                 try {
                     volumeCounter += volumeIncreaseStep
-                    //HyperLog.v(TAG, "New alarm volume: $volumeCounter")
+                    Timber.v("New alarm volume: $volumeCounter")
 
                     if (exoPlayer.isPlaying) {
                         exoPlayer.volume = volumeCounter
@@ -261,7 +266,15 @@ class AlarmNotifyingService : Service(), Player.EventListener {
     }
 
     private fun stopAlarmNotification() {
-        //HyperLog.i(TAG, "Stop Alarm notification")
+        Timber.i("Stop Alarm notification")
+        if (ALARM_PLAYING != null) {
+            val entity = sqLiteDBHelper(this)!!.getAlarmById(ALARM_PLAYING)
+            if (entity != null) {
+                val alarmMgr = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                AlarmUtils.turnOffSnoozeAlarm(entity, alarmMgr, this)
+            }
+        }
+
         handlerTicks!!.removeCallbacksAndMessages(null)
         stopAlarmSound()
         cancelVolumeIncreasing()
@@ -291,7 +304,6 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         } else {
             vibrator.vibrate(1000)
         }
-
     }
 
     private fun startAlarmNotification(context: Context, entity: AlarmEntity?) {
@@ -330,13 +342,12 @@ class AlarmNotifyingService : Service(), Player.EventListener {
 
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.cancelAll()
-
         startForeground(43, alarmNotification.build())
     }
 
     companion object {
         const val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"
-        var ALARM_PLAYING: Int? = null
+        var ALARM_PLAYING: String? = null
         private val CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/alarms")
     }
 }
