@@ -97,7 +97,7 @@
     <string name="http_jr_fm" translatable="false">http://jr.fm/</string>
     <string name="close">Close</string>
     <string name="empty_playlist_name_warning">Playlist name should not be empty</string>
-    <string name="alarm_ringing">⏰ Alarm Ringing</string>
+    <string name="alarm_ringing">⏰ Alarm is ringing</string>
     <string name="playlist_def_name">Playlist %d</string>
     <string name="stop">STOP</string>
     <string name="playlist_title" translatable="false">[%s]</string>
@@ -160,11 +160,11 @@
     </plurals>
 
     <plurals name="n_minutes_plural">
-        <item quantity="one">%d m</item>
-        <item quantity="other">%d m</item>
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
     </plurals>
 
-    <plurals name="n_minutes_plural_2">
+    <plurals name="n_minutes_plural_short">
         <item quantity="one">%d m</item>
         <item quantity="other">%d m</item>
     </plurals>

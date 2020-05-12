@@ -60,7 +60,7 @@ class HourglassComponent(context: Context, attrs: AttributeSet?) : View(context,
                 filled,
                 frame.right - padding,
                 frame.bottom.toFloat(),
-                filledPaint)
+                if (changingMode) changingPaint else filledPaint)
         //        canvas.drawRect(frame, framedPaint);
         if (changingMode) {
             canvas.drawLine(frame.left + padding, filled, frame.right - padding, filled, changingPaint)
@@ -121,7 +121,7 @@ class HourglassComponent(context: Context, attrs: AttributeSet?) : View(context,
         framedPaint.style = Paint.Style.STROKE
         framedPaint.strokeWidth = 1f
 
-        changingPaint.color = Color.parseColor("#327C1F")
+        changingPaint.color = Color.parseColor("#203020")
         changingPaint.strokeWidth = 1f
 
         //TODO: remove?

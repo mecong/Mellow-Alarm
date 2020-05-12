@@ -8,9 +8,9 @@ import timber.log.Timber
 class TimberDebugTree(context: Context) : Timber.Tree() {
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         when (priority) {
-            Log.VERBOSE -> {
-                HyperLog.v(tag, message)
-            }
+//            Log.VERBOSE -> {
+//                HyperLog.v(tag, message)
+//            }
 
             Log.DEBUG -> {
                 HyperLog.d(tag, message)

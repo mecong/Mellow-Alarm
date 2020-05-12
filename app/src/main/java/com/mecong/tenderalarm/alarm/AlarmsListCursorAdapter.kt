@@ -11,6 +11,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
+import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
 
@@ -122,9 +123,6 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
         alarmOnOff.setOnClickListener(
                 if (entity.days > 0) recurrentAlarmSwitch else oneTimeAlarmSwitch)
 
-        toggleButton.setOnClickListener(
-                if (entity.days > 0) recurrentAlarmSwitch else oneTimeAlarmSwitch)
-
         if (textRowMinutes == null) {
             textRowHours.text = context.getString(R.string.alarm_time, entity.hour, entity.minute)
         } else {
@@ -166,7 +164,11 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
             Html.fromHtml(daysMessage)
         }
 
-        textRowAlarmTitle.text = entity.message
+        if (BuildConfig.DEBUG) {
+            textRowAlarmTitle.text = """$alarmId::${entity.message}"""
+        } else {
+            textRowAlarmTitle.text = entity.message
+        }
     }
 
     private fun getDaysHtml(entity: AlarmEntity, context: Context): String {

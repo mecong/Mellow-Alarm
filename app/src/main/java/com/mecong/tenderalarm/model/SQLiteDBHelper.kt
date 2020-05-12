@@ -113,12 +113,12 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 put("heads_up", entity.isHeadsUp)
             }
 
-            return if (entity.id == 0L) {
-                Timber.i("Alarm added :: $entity")
+            return if (entity.id < 0) {
+                Timber.i("Alarm adding :: $entity")
                 database.insert(TABLE_ALARMS, null, values)
             } else {
                 database.update(TABLE_ALARMS, values, "_id=${entity.id}", null)
-                Timber.i("Alarm updated :: $entity")
+                Timber.i("Alarm updating :: $entity")
                 entity.id
             }
         }

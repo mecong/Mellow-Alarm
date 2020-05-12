@@ -110,12 +110,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             super.onCreate(savedInstanceState)
-//            HyperLog.initialize(this)
-//            HyperLog.setLogLevel(Log.ERROR)
-//            EventBus.getDefault().register(this)
             turnScreenOnThroughKeyguard()
-
-//            unlockScreen(this)
 
             // Close dialogs and window shade, so this is fully visible
             sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
@@ -124,7 +119,6 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
             setContentView(R.layout.activity_alarm_receiver)
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
-            Timber.i("Running alarm with extras: " + intent.extras)
             Timber.i("Running alarm with id: $alarmId")
             val context = applicationContext
             if (alarmId == null) {
@@ -138,7 +132,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
 
             val entity = sqLiteDBHelper(context)!!.getAlarmById(alarmId)
             alarm_info.text = entity!!.message
-            Timber.i("Running alarm: $entity")
+            Timber.i("Alarm activity start: $entity")
             val complexity = entity.complexity
             shakeCount = complexity * 2
 
@@ -284,42 +278,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     }
 
     companion object {
-
         private const val MIN_TIME_BETWEEN_SHAKES_MILLISECONDS = 1000
         var IS_SHOWN = false
-
-        fun unlockScreen(activity: AlarmReceiverActivity) {
-            activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                // in addition to flags
-                activity.setShowWhenLocked(true)
-                activity.setTurnScreenOn(true)
-            } else {
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                val keyguardManager = activity.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-//                keyguardManager.requestDismissKeyguard(activity, object : KeyguardDismissCallback() {
-//                    override fun onDismissError() {
-//                        super.onDismissError()
-//                        Timber.i( "Keyguard Dismiss Error")
-//                    }
-//
-//                    override fun onDismissSucceeded() {
-//                        super.onDismissSucceeded()
-//                        Timber.i( "Keyguard Dismiss Success")
-//                    }
-//
-//                    override fun onDismissCancelled() {
-//                        super.onDismissCancelled()
-//                        Timber.i( "Keyguard Dismiss Cancelled")
-//                    }
-//                })
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
-
-            } else {
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD)
-            }
-        }
     }
 }

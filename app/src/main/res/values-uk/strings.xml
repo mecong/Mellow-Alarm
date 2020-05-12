@@ -128,7 +128,7 @@
         <item quantity="other">%d хвилин</item>
     </plurals>
 
-    <plurals name="n_minutes_plural_2">
+    <plurals name="n_minutes_plural_short">
         <item quantity="one">%02d хвилину</item>
         <item quantity="few">%02d хвилини</item>
         <item quantity="many">%02d хвилин</item>

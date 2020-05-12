@@ -31,8 +31,7 @@ class AlarmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val context = this.activity!!
-//        HyperLog.initialize(context)
-//        HyperLog.setLogLevel(Log.ERROR)
+
         if (BuildConfig.DEBUG) {
             textNextAlarm.setOnClickListener {
                 val addAlarmIntent = Intent(context, LogsActivity::class.java)
@@ -53,7 +52,6 @@ class AlarmFragment : Fragment() {
         alarms_list.adapter = alarmsAdapter
         updateNextActiveAlarm(sqLiteDBHelper)
 
-//        sqLiteDBHelper.close()
     }
 
     @Subscribe
@@ -99,7 +97,7 @@ class AlarmFragment : Fragment() {
                     val hours = calendar[Calendar.HOUR_OF_DAY]
                     val minutes = calendar[Calendar.MINUTE]
                     val nHours = context.resources.getQuantityString(R.plurals.n_hours_plural, hours, hours)
-                    val nMinutes = context.resources.getQuantityString(R.plurals.n_minutes_plural_2, minutes, minutes)
+                    val nMinutes = context.resources.getQuantityString(R.plurals.n_minutes_plural_short, minutes, minutes)
 
                     textNextAlarm!!.text = context.getString(R.string.next_alarm_today, nHours, nMinutes)
                 }
@@ -132,7 +130,7 @@ class AlarmFragment : Fragment() {
             alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
             updateNextActiveAlarm(sqLiteDBHelper)
         }
-        sqLiteDBHelper.close()
+//        sqLiteDBHelper.close()
     }
 
     override fun onStart() {

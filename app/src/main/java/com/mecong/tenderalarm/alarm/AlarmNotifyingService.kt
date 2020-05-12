@@ -91,7 +91,8 @@ class AlarmNotifyingService : Service(), Player.EventListener {
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
             val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
             val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
-            Timber.i("Running alarm: $entity")
+            Timber.i("Alarm notification start: $entity")
+            Timber.i("Notification activity shown: $AlarmReceiverActivity.IS_SHOWN")
             usePowerManagerWakeup()
 
             if (!AlarmReceiverActivity.IS_SHOWN) {

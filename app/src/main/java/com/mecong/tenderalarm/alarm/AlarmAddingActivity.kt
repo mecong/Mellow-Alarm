@@ -31,7 +31,7 @@ class AlarmAddingActivity : AppCompatActivity() {
     private var selectedMonth = 0
     private var getSelectedDayOfMonth = 0
     private var exactDate: Long = 0
-    private var alarmId: String? = "0"
+    private var alarmId: String? = "-1"
     private var melodyUrl: String? = null
 
     fun timeTextViewClick(v: View?) { // Launch Time Picker Dialog
@@ -268,7 +268,7 @@ class AlarmAddingActivity : AppCompatActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
-        if (alarmId == "0") {
+        if (alarmId == "-1") {
             initFormForNewAlarm()
             timeTextView.performClick()
         } else {
@@ -361,8 +361,6 @@ class AlarmAddingActivity : AppCompatActivity() {
         val sqLiteDBHelper = sqLiteDBHelper(this)
         alarmEntity.id = sqLiteDBHelper!!.addOrUpdateAlarm(alarmEntity)
         setUpNextAlarm(alarmEntity, this, true)
-
-        AlarmUtils.setUpNextSleepTimeNotification(this)
     }
 
     private val message: String

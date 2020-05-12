@@ -102,6 +102,7 @@ object AlarmUtils {
         val intent = Intent(context, SleepTimeAlarmReceiver::class.java)
         val operation = PendingIntent.getBroadcast(context, 22, intent, 0)
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmMgr.cancel(operation)
         if (nextMorningAlarm != null) {
             var triggerAfter = (SystemClock.elapsedRealtime()
                     + nextMorningAlarm.nextTime) - SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME * HOUR - Calendar.getInstance().timeInMillis
@@ -110,9 +111,6 @@ object AlarmUtils {
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
                     AlarmManager.INTERVAL_FIFTEEN_MINUTES, operation)
             Timber.d("%s min", """Sleep time will start in ${TimeUnit.MILLISECONDS.toMinutes(triggerAfter - SystemClock.elapsedRealtime())}""")
-        } else {
-            alarmMgr.cancel(operation)
-            //HyperLog.d(TAG, "Sleep time alarm removed")
         }
     }
 
@@ -173,12 +171,12 @@ object AlarmUtils {
         sqLiteDBHelper!!.allAlarms.use { allAlarms ->
             while (allAlarms.moveToNext()) {
                 val alarmEntity = AlarmEntity(allAlarms)
-//                turnOffAlarm(alarmEntity, context)
                 if (alarmEntity.isActive) {
                     setUpNextAlarm(alarmEntity, context, false)
                 }
             }
         }
+//        setUpNextSleepTimeNotification(context)
     }
 
     //TODO: set when there are alarms and turn of if no any

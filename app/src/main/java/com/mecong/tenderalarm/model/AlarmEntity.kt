@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-data class AlarmEntity(var id: Long = 0, var hour: Int = 0, var minute: Int = 0, var days: Int = 0,
+data class AlarmEntity(var id: Long = -1, var hour: Int = 0, var minute: Int = 0, var days: Int = 0,
                        var exactDate: Long = 0, var ticksTime: Int = 0,
                        var ticksType: Int = 0,
                        var melodyUrl: String? = null, var melodyName: String? = null,

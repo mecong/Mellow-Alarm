@@ -178,6 +178,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            ibOpenAlarm.setImageResource(R.drawable.alarm_active)
             val paddingInDp = 10 // 10 dps
             val scale = resources.displayMetrics.density
             val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
@@ -188,11 +189,11 @@ class MainActivity : AppCompatActivity() {
             ibOpenAlarm.setOnClickListener(alarmFragmentOpenListener)
             ibOpenSleepAssistant.setOnClickListener(switchPlayStateListener)
 
-            ibOpenAlarm.setImageResource(R.drawable.alarm_active)
+
 //            ibOpenAlarm.clearColorFilter()
         } else {
-            ibOpenAlarm.setImageResource(R.drawable.alarm_add)
-            val paddingInDp = 9 // 7 dps
+            ibOpenAlarm.setImageResource(R.drawable.ic_round_add_alarm_24)
+            val paddingInDp = 7 // 7 dps
             val scale = resources.displayMetrics.density
             val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
             ibOpenAlarm.setPadding(0, paddingInPx, 0, paddingInPx)
