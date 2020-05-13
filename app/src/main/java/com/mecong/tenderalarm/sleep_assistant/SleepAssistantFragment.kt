@@ -47,6 +47,10 @@ class SleepAssistantFragment : Fragment() {
             radioService = (binder as LocalBinder).service
             serviceBound = true
             radioService.audioVolume = volume / 100
+
+            if (!EventBus.getDefault().isRegistered(this@SleepAssistantFragment)) {
+                EventBus.getDefault().register(this@SleepAssistantFragment)
+            }
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -127,10 +131,6 @@ class SleepAssistantFragment : Fragment() {
         }
 
 
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
-        }
-
         nowPlayingText.setOnClickListener {
             val currentTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
             tabs.getTabAt(currentTab % tabs.tabCount)!!.select()
@@ -138,9 +138,13 @@ class SleepAssistantFragment : Fragment() {
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        bindRadioService()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        bindRadioService()
 
         return inflater.inflate(
                 R.layout.content_sleep_assistant, container, false) as ViewGroup
@@ -224,54 +228,14 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        EventBus.getDefault().unregister(this)
-        handler.removeCallbacks(runnable)
-        if (::radioService.isInitialized) {
-            if (radioService.isPlaying) {
-                radioService.stop()
-            }
-            if (serviceBound) {
-                this.activity?.application?.unbindService(serviceConnection)
-            }
-        }
-        super.onDestroy()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //HyperLog.i(AlarmUtils.TAG, "SA onResume")
-
-        if (!::radioService.isInitialized || !radioService.isPlaying) {
-            val audioManager = this.activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-            if (volumeCoefficient < 0.3f || volumeCoefficient > 0.7f) {
-                volumeCoefficient = 0.32f
-                audioManager.setStreamVolume(
-                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
-//                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
-            }
-
-            volume = 105 - 100 * volumeCoefficient
-            volume = min(volume, 100f)
-
-            sliderVolume.setCurrentValue(volume.toLong())
-            timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
-            volumeStep = volume * STEP_MILLIS / timeMs
-            textViewVolumePercent.text = this.activity?.getString(R.string.volume_percent, volume.roundToInt())
-        }
-    }
-
-    @Subscribe
+    @Subscribe(sticky = true)
     fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
         radioService.setMediaList(playList)
         playListModel.playlist.value = playList
         radioService.play()
     }
 
-    @Subscribe
+    @Subscribe(sticky = true)
     fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
         playListModel.playlist.value = playList
         radioService.setMediaList(playList)
@@ -296,6 +260,47 @@ class SleepAssistantFragment : Fragment() {
         dbHelper.setPropertyString(PropertyName.TRACK_POSITION, playList.index.toString())
         dbHelper.setPropertyString(PropertyName.PLAYLIST_ID, playList.playListId.toString())
     }
+
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        handler.removeCallbacks(runnable)
+        if (::radioService.isInitialized) {
+            if (radioService.isPlaying) {
+                radioService.stop()
+            }
+            if (serviceBound) {
+                this.activity?.application?.unbindService(serviceConnection)
+            }
+        }
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (!::radioService.isInitialized || !radioService.isPlaying) {
+            val audioManager = this.activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
+            if (volumeCoefficient < 0.3f || volumeCoefficient > 0.7f) {
+                volumeCoefficient = 0.32f
+                audioManager.setStreamVolume(
+                        AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
+//                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
+            }
+
+            volume = 105 - 100 * volumeCoefficient
+            volume = min(volume, 100f)
+
+            sliderVolume.setCurrentValue(volume.toLong())
+            timeMs = TimeUnit.MINUTES.toMillis(timeMinutes)
+            volumeStep = volume * STEP_MILLIS / timeMs
+            textViewVolumePercent.text = this.activity?.getString(R.string.volume_percent, volume.roundToInt())
+        }
+    }
+
 
     private fun bindRadioService() {
         val intent = Intent(this.context, RadioService::class.java)

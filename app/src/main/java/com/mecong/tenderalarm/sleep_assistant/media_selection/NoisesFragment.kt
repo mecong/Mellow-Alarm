@@ -60,27 +60,11 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
         else
             SleepAssistantPlayListIdle(position, noises, SleepMediaType.NOISE, -1)
 
-        EventBus.getDefault().post(newPlayList)
+        EventBus.getDefault().postSticky(newPlayList)
     }
 
     companion object {
         private const val SELECTED_POSITION = "selectedPosition"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param selectedPosition - selected item in the list
-         * @return A new instance of fragment NoisesFragment.
-         */
-        @JvmStatic
-        fun noisesFragmentNewInstance(selectedPosition: Int): NoisesFragment {
-            val fragment = NoisesFragment()
-            val args = Bundle()
-            args.putInt(SELECTED_POSITION, selectedPosition)
-            fragment.arguments = args
-            return fragment
-        }
     }
 
 }
