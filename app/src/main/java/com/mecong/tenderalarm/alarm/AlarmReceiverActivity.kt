@@ -40,7 +40,6 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     override fun onPause() {
         super.onPause()
         IS_SHOWN = false
-
     }
 
     override fun onResume() {
@@ -141,7 +140,11 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             turnOffComponent.complexity = complexity
 
             val snoozeOnClickListener = View.OnClickListener { v ->
-                val time = v.tag.toString().toInt()
+                var time = v.tag.toString().toInt()
+//                if (BuildConfig.DEBUG) {
+//                    time = 1
+//                }
+
                 snoozedMinutes += time.toLong()
                 when (time) {
                     2 -> {

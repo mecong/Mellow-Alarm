@@ -130,7 +130,6 @@ class AlarmFragment : Fragment() {
             alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
             updateNextActiveAlarm(sqLiteDBHelper)
         }
-//        sqLiteDBHelper.close()
     }
 
     override fun onStart() {
@@ -140,7 +139,6 @@ class AlarmFragment : Fragment() {
         val autoStartTurnedOn = sqLiteDBHelper.getPropertyInt(PropertyName.AUTOSTART_TURNED_ON)
         if (autoStartTurnedOn == 0) {
             AutoStartUtils.runAutostartIfSupported(this.context!!)
-            sqLiteDBHelper.setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "1")
         }
     }
 
@@ -158,7 +156,6 @@ class AlarmFragment : Fragment() {
         sqLiteDBHelper!!.deleteAlarm(id!!)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
-//        sqLiteDBHelper.close()
     }
 
     fun setActive(id: String, active: Boolean) {

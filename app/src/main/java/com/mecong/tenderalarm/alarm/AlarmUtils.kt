@@ -49,7 +49,7 @@ object AlarmUtils {
         intentToFire.putExtra(ALARM_ID_PARAM, alarmEntity!!.id.toString())
         intentToFire.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         val alarmIntent = PendingIntent.getBroadcast(context,
-                alarmEntity.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                alarmEntity.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)
 
         val calendarSnoozeEnd = Calendar.getInstance()
         calendarSnoozeEnd.add(Calendar.MINUTE, minutes)
@@ -62,7 +62,7 @@ object AlarmUtils {
         intentToFire.putExtra(ALARM_ID_PARAM, alarmEntity!!.id.toString())
         intentToFire.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         return PendingIntent.getBroadcast(context,
-                alarmEntity.alarmRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                alarmEntity.alarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)
     }
 
     private fun setTheAlarm(time: Long, alarmIntent: PendingIntent, alarmMgr: AlarmManager) {
@@ -83,7 +83,7 @@ object AlarmUtils {
         val intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
         intentToFire.putExtra(ALARM_ID_PARAM, alarmEntity.id.toString())
         val alarmIntent = PendingIntent.getBroadcast(context,
-                alarmEntity.upcomingAlarmRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                alarmEntity.upcomingAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)
 
         var at = (SystemClock.elapsedRealtime() + alarmEntity.nextTimeWithTicks) - HOUR - Calendar.getInstance().timeInMillis
         at = max(0, at)
@@ -134,7 +134,7 @@ object AlarmUtils {
     fun turnOffUpcomingNotificationAlarm(entity: AlarmEntity, alarmMgr: AlarmManager, context: Context) {
         val intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
         val alarmIntent = PendingIntent.getBroadcast(context,
-                entity.upcomingAlarmRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                entity.upcomingAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)
 
         alarmMgr.cancel(alarmIntent)
     }
@@ -143,7 +143,7 @@ object AlarmUtils {
         val intentToFire = Intent(context, TenderAlarmReceiver::class.java)
         intentToFire.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         val alarmIntent = PendingIntent.getBroadcast(context,
-                entity.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                entity.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)
 
         alarmMgr.cancel(alarmIntent)
     }
@@ -160,7 +160,7 @@ object AlarmUtils {
 
         val intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
         alarmIntent = PendingIntent.getBroadcast(context,
-                entity!!.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_UPDATE_CURRENT)
+                entity!!.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)
         alarmMgr.cancel(alarmIntent)
         Timber.i("""Next alarm with[id=${entity.id}] canceled""")
     }
@@ -176,7 +176,6 @@ object AlarmUtils {
                 }
             }
         }
-//        setUpNextSleepTimeNotification(context)
     }
 
     //TODO: set when there are alarms and turn of if no any

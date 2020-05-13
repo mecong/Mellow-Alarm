@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#1A1B1D</color>
-    <!--    <color name="colorPrimary">#AA9999</color>-->
     <color name="colorPrimaryDark">#525354</color>
-    <!--    <color name="colorAccent">#121314</color>-->
     <color name="colorAccent">#327C1F</color>
 
-    <!--    <color name="windowBackground">#121314</color>-->
     <color name="windowBackground">#17191A</color>
     <color name="windowBackground1">#1C1C1E</color>
 
     <color name="textColor3">#E9DEDE</color>
 
-
     <color name="gray">#808080</color>
     <color name="dimgray">#696969</color>
     <color name="green">#008000</color>
     <color name="appGreen">#327C1F</color>
-
-
 </resources>

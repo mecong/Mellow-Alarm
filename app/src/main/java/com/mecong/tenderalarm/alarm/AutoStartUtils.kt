@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import com.mecong.tenderalarm.R
+import com.mecong.tenderalarm.model.PropertyName
+import com.mecong.tenderalarm.model.SQLiteDBHelper
 
 class AutoStartUtils {
 
@@ -27,6 +29,9 @@ class AutoStartUtils {
 
         fun runAutostart(context: Context, intent: Intent) {
             try {
+                val sqLiteDBHelper = SQLiteDBHelper.sqLiteDBHelper(context)!!
+                sqLiteDBHelper.setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "1")
+
                 startActivity(context, intent, null)
             } catch (e: Exception) {
                 Toast.makeText(context, context.getString(R.string.cant_open_autostart), Toast.LENGTH_LONG).show()

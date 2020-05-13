@@ -40,7 +40,6 @@ class TenderAlarmReceiver : BroadcastReceiver() {
                 entity.canceledNextAlarms = canceledNextAlarms - 1
                 sqLiteDBHelper.addOrUpdateAlarm(entity)
                 setUpNextAlarm(entity, context, false)
-
             }
         }
 

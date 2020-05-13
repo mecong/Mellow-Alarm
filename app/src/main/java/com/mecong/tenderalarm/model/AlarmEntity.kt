@@ -121,6 +121,9 @@ data class AlarmEntity(var id: Long = -1, var hour: Int = 0, var minute: Int = 0
     val snoozedAlarmRequestCode: Int
         get() = alarmRequestCode + 2
 
+    val fullScreenIntentCode: Int
+        get() = alarmRequestCode + 3
+
 
     private fun allDaysAsList(): List<Boolean> {
         return listOf(
@@ -135,7 +138,7 @@ data class AlarmEntity(var id: Long = -1, var hour: Int = 0, var minute: Int = 0
 
     override fun toString(): String {
         return "AlarmEntity(id=$id, hour=$hour, minute=$minute, nextTime=$nextTimeFormatted, " +
-                "exactDate=$exactDate, ticksTime=$ticksTime, melodyUrl=$melodyUrl, " +
+                "exactDate=$exactDate, ticksTime=$ticksTime, melodyUrl=$melodyUrl, canceled=$canceledNextAlarms, " +
                 "complexity=$complexity, message=$message, isActive=$isActive, days=$days)"
     }
 

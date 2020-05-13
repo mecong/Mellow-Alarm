@@ -99,6 +99,28 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/app_link_share" />
 
+
+            <TextView
+                android:id="@+id/autostartPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="@string/if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appShareButton" />
+
+            <Button
+                android:id="@+id/autostartOpenButton"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@color/appGreen"
+                android:text="@string/open_autostart"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/autostartPrompt" />
+
             <TextView
                 android:id="@+id/radios"
                 android:layout_width="match_parent"
@@ -109,7 +131,7 @@
 
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/appShareButton" />
+                app:layout_constraintTop_toBottomOf="@+id/autostartOpenButton" />
 
             <TextView
                 android:id="@+id/all_rights_on_radio_stations_belongs_to_their_owners"
@@ -165,25 +187,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/https_www_hionline_eu" />
 
-            <TextView
-                android:id="@+id/autostartPrompt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="@string/if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/http_jr_fm" />
 
-            <Button
-                android:id="@+id/autostartOpenButton"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="@string/open_autostart"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/autostartPrompt" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -192,6 +196,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/close"
+        android:background="@drawable/custom_border7"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

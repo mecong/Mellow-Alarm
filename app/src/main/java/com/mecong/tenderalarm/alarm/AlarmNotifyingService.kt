@@ -91,19 +91,22 @@ class AlarmNotifyingService : Service(), Player.EventListener {
             val alarmId = intent.getStringExtra(ALARM_ID_PARAM)
             val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
             val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
-            Timber.i("Alarm notification start: $entity")
-            Timber.i("Notification activity shown: $AlarmReceiverActivity.IS_SHOWN")
+            Timber.i("Alarm notification service start: $entity")
+            Timber.i("Notification activity shown: ${AlarmReceiverActivity.IS_SHOWN}")
             usePowerManagerWakeup()
 
-            if (!AlarmReceiverActivity.IS_SHOWN) {
-                stopForeground(true)
+            if (sameId) {
+                val pm = this.getSystemService(Context.POWER_SERVICE) as PowerManager
+                val isScreenOn = pm.isInteractive
+                if (!AlarmReceiverActivity.IS_SHOWN || !isScreenOn) {
+                    stopForeground(true)
+                    startAlarmNotification(this, entity)
+                }
+                startSnoozedSound(entity)
+            } else {
+                startSound(entity)
                 startAlarmNotification(this, entity)
             }
-
-            if (sameId)
-                startSnoozedSound(entity)
-            else
-                startSound(entity)
 
         }
         return START_NOT_STICKY
@@ -314,17 +317,18 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         stopIntent.action = ACTION_STOP
         val stopAction = PendingIntent.getService(context, 3, stopIntent, 0)
 
+        Timber.i("Start alarm notification: %s", entity)
 
         val startAlarmIntent = Intent(context, AlarmReceiverActivity::class.java)
                 .setData(ContentUris.withAppendedId(CONTENT_URI, alarmId.toLong()))
         startAlarmIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startAlarmIntent.putExtra(ALARM_ID_PARAM, alarmId)
 
-        val pendingIntent = PendingIntent.getActivity(context, 42,
-                startAlarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(context, entity.fullScreenIntentCode,
+                startAlarmIntent, PendingIntent.FLAG_CANCEL_CURRENT)
 
         val alarmNotification = NotificationCompat.Builder(context, MainActivity.ALARM_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_cat_sleep)
+                .setSmallIcon(R.drawable.cat_sleep)
                 .setContentTitle(context.getString(R.string.alarm_ringing))
                 .setContentText(entity.message)
                 .setContentIntent(pendingIntent)
