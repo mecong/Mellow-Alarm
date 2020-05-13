@@ -115,7 +115,7 @@ class OnlineMediaFragment : Fragment(), FileItemClickListener {
         else
             SleepAssistantPlayListIdle(position, media, SleepMediaType.ONLINE, -1)
 
-        EventBus.getDefault().post(newPlayList)
+        EventBus.getDefault().postSticky(newPlayList)
 
     }
 

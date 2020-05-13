@@ -288,7 +288,7 @@ class SleepAssistantFragment : Fragment() {
                 volumeCoefficient = 0.32f
                 audioManager.setStreamVolume(
                         AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
-//                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
             }
 
             volume = 105 - 100 * volumeCoefficient
