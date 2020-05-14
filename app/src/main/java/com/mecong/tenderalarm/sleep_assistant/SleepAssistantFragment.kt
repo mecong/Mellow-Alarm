@@ -61,8 +61,6 @@ class SleepAssistantFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //HyperLog.i(AlarmUtils.TAG, "Sleep assistant fragment create view")
-
         playListModel = ViewModelProvider(this).get(SleepAssistantPlayListModel::class.java)
 
         val context = this.context!!
@@ -228,39 +226,6 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
-    @Subscribe(sticky = true)
-    fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
-        radioService.setMediaList(playList)
-        playListModel.playlist.value = playList
-        radioService.play()
-    }
-
-    @Subscribe(sticky = true)
-    fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
-        playListModel.playlist.value = playList
-        radioService.setMediaList(playList)
-    }
-
-    @Subscribe
-    fun onPlayFileChanged(media: Media) {
-        nowPlayingText.text = media.title
-    }
-
-    @Subscribe
-    fun persistMediaPosition(playList: SleepAssistantPlayList) {
-        val dbHelper = sqLiteDBHelper(this.context!!)!!
-
-        val activeTab = when (playList.mediaType) {
-            SleepMediaType.LOCAL -> "0"
-            SleepMediaType.ONLINE -> "1"
-            SleepMediaType.NOISE -> "2"
-        }
-
-        dbHelper.setPropertyString(PropertyName.ACTIVE_TAB, activeTab)
-        dbHelper.setPropertyString(PropertyName.TRACK_POSITION, playList.index.toString())
-        dbHelper.setPropertyString(PropertyName.PLAYLIST_ID, playList.playListId.toString())
-    }
-
 
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
@@ -301,14 +266,14 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
-    @Subscribe
+    @Subscribe(sticky = true)
     fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
         radioService.setMediaList(playList)
         playListModel.playlist.value = playList
         radioService.play()
     }
 
-    @Subscribe
+    @Subscribe(sticky = true)
     fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
         playListModel.playlist.value = playList
         radioService.setMediaList(playList)

@@ -5,28 +5,19 @@ apply plugin: 'kotlin-android-extensions'
 // Brown Bat: 19.9 hours per day.
 // Giant Armadillo: 18.1 hours per day.
 // North American Opossum: 18 hours per day.
-// Python: 18 hours per day.
-// Owl Monkey: 17 hours per day.
-
+// 3-Python: 18 hours per day.
+// 1-Owl Monkey: 17 hours per day.
+// 5-French Bulldog
 
 android {
-    signingConfigs {
-        '1' {
-            storeFile file('/Users/mecong/tender_alarm_keystore')
-            storePassword 'LongPhrase#42'
-            keyPassword 'LongPhrase#42'
-            keyAlias 'upload'
-        }
-    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.mecong.tenderalarm"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 3
-        versionName "Python"
+        versionCode 6
+        versionName "French Bulldog"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.'1'
     }
     buildTypes {
         release {
@@ -87,7 +78,6 @@ dependencies {
         }
     }
 }
-
 
 repositories {
     mavenCentral()
