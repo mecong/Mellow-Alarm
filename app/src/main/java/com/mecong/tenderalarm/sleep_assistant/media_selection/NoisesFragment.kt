@@ -42,7 +42,7 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
         adapter = NoisesItemViewAdapter(this.context, noises, selectedPosition)
         adapter.setClickListener(this)
         noisesList.adapter = adapter
-        noisesList.scrollToPosition(selectedPosition)
+        noisesList.scrollToPosition(if (selectedPosition > -1) selectedPosition else 0)
     }
 
     override fun onItemClick(view: View?, position: Int) {
