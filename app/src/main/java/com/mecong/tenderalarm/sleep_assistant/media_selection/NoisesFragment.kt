@@ -55,7 +55,7 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
         else
             SleepAssistantPlayListIdle(position, noises, SleepMediaType.NOISE, -1)
 
-        EventBus.getDefault().post(newPlayList)
+        EventBus.getDefault().postSticky(newPlayList)
     }
 
     companion object {

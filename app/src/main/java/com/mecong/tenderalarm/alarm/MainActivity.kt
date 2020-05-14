@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.PropertyName
@@ -35,36 +37,36 @@ class MainActivity : AppCompatActivity() {
 
     private val sleepAssistantFragmentOpenListener: (v: View) -> Unit = {
         Timber.v("Open Sleep Assistant button clicked")
+        val alarmFragment: Fragment = alarmFragmentInstance(supportFragmentManager, null, true)!!
+        val sleepFragment: Fragment = sleepFragmentInstance(supportFragmentManager, null, true)!!
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-        val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
 
         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-        fragmentTransaction.hide(alarmFragment!!)
-        fragmentTransaction.show(sleepFragment!!)
+        fragmentTransaction.hide(alarmFragment)
+        fragmentTransaction.show(sleepFragment)
 
         currentFragment = SLEEP_FRAGMENT
 
+        fragmentTransaction.commit()
         setButtons()
 
-        fragmentTransaction.commit()
     }
 
     private val alarmFragmentOpenListener: (v: View) -> Unit = {
         Timber.v("Open Alarm button clicked")
+        val alarmFragment: Fragment = alarmFragmentInstance(supportFragmentManager, null, true)!!
+        val sleepFragment: Fragment = sleepFragmentInstance(supportFragmentManager, null, true)!!
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        val sleepFragment = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-        val alarmFragment = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
 
         fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
-        fragmentTransaction.hide(sleepFragment!!)
-        fragmentTransaction.show(alarmFragment!!)
+        fragmentTransaction.hide(sleepFragment)
+        fragmentTransaction.show(alarmFragment)
 
         currentFragment = ALARM_FRAGMENT
 
+        fragmentTransaction.commit()
         setButtons()
 
-        fragmentTransaction.commit()
     }
 
     private val addAlarmListener: (v: View) -> Unit = {
@@ -88,38 +90,65 @@ class MainActivity : AppCompatActivity() {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         //        fragmentTransaction.addToBackStack("Init");
 
-        var sleepFragment: Fragment? = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
-        if (sleepFragment == null) {
-            sleepFragment = SleepAssistantFragment()
-            fragmentTransaction.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
-        }
-
-
-        var alarmFragment: Fragment? = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
-        if (alarmFragment == null) {
-            alarmFragment = AlarmFragment()
-            fragmentTransaction.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
-        }
-
 
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
 
         currentFragment = if (ASSISTANT_FRAGMENT == desiredFragment) {
-            fragmentTransaction.hide(alarmFragment)
-            Timber.d("alarmFragment hide $sleepFragment")
+            val alarmFragment: Fragment? = alarmFragmentInstance(supportFragmentManager, fragmentTransaction, false)
+            if (alarmFragment != null) {
+                fragmentTransaction.hide(alarmFragment)
+            }
+
+            val sleepFragment: Fragment = sleepFragmentInstance(supportFragmentManager, fragmentTransaction, true)!!
             fragmentTransaction.show(sleepFragment)
+
+            Timber.d("alarmFragment hide $sleepFragment")
             Timber.d("sleepFragment show $sleepFragment")
             SLEEP_FRAGMENT
         } else {
-            fragmentTransaction.hide(sleepFragment)
-            Timber.d("sleepFragment hide $sleepFragment")
+            val sleepFragment: Fragment? = sleepFragmentInstance(supportFragmentManager, fragmentTransaction, false)
+            if (sleepFragment != null) {
+                fragmentTransaction.hide(sleepFragment)
+            }
+
+            val alarmFragment: Fragment = alarmFragmentInstance(supportFragmentManager, fragmentTransaction, true)!!
             fragmentTransaction.show(alarmFragment)
+
+            Timber.d("sleepFragment hide $sleepFragment")
             Timber.d("alarmFragment show $sleepFragment")
             ALARM_FRAGMENT
         }
 
         fragmentTransaction.commit()
         setButtons()
+    }
+
+
+    private fun alarmFragmentInstance(supportFragmentManager: FragmentManager,
+                                      fragmentTransaction: FragmentTransaction?, mandatory: Boolean): Fragment? {
+        var alarmFragment: Fragment? = supportFragmentManager.findFragmentByTag(ALARM_FRAGMENT)
+        if (alarmFragment == null && mandatory) {
+            alarmFragment = AlarmFragment()
+            val fragmentTransaction1 = supportFragmentManager.beginTransaction()
+
+            fragmentTransaction1.add(R.id.container, alarmFragment, ALARM_FRAGMENT)
+            fragmentTransaction1.commit()
+        }
+        return alarmFragment
+    }
+
+    private fun sleepFragmentInstance(supportFragmentManager: FragmentManager,
+                                      fragmentTransaction: FragmentTransaction?, mandatory: Boolean): Fragment? {
+        var sleepFragment: Fragment? = supportFragmentManager.findFragmentByTag(SLEEP_FRAGMENT)
+        if (sleepFragment == null && mandatory) {
+            sleepFragment = SleepAssistantFragment()
+            val fragmentTransaction1 = supportFragmentManager.beginTransaction()
+
+            fragmentTransaction1.add(R.id.container, sleepFragment, SLEEP_FRAGMENT)
+            fragmentTransaction1.commit()
+
+        }
+        return sleepFragment
     }
 
 
@@ -266,7 +295,6 @@ class MainActivity : AppCompatActivity() {
                             setShowBadge(false)
                             description = context.getString(R.string.sleep_assistant_media_channel_description)
                         }
-
 
                 val alarmChannel = NotificationChannel(
                         ALARM_CHANNEL_ID,

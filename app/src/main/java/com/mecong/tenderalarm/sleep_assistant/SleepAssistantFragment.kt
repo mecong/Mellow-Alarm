@@ -47,6 +47,10 @@ class SleepAssistantFragment : Fragment() {
             radioService = (binder as LocalBinder).service
             serviceBound = true
             radioService.audioVolume = volume / 100
+
+            if (!EventBus.getDefault().isRegistered(this@SleepAssistantFragment)) {
+                EventBus.getDefault().register(this@SleepAssistantFragment)
+            }
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -127,10 +131,6 @@ class SleepAssistantFragment : Fragment() {
         }
 
 
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
-        }
-
         nowPlayingText.setOnClickListener {
             val currentTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
             tabs.getTabAt(currentTab % tabs.tabCount)!!.select()
@@ -138,9 +138,13 @@ class SleepAssistantFragment : Fragment() {
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        bindRadioService()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        bindRadioService()
 
         return inflater.inflate(
                 R.layout.content_sleep_assistant, container, false) as ViewGroup
@@ -224,6 +228,40 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
+    @Subscribe(sticky = true)
+    fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
+        radioService.setMediaList(playList)
+        playListModel.playlist.value = playList
+        radioService.play()
+    }
+
+    @Subscribe(sticky = true)
+    fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
+        playListModel.playlist.value = playList
+        radioService.setMediaList(playList)
+    }
+
+    @Subscribe
+    fun onPlayFileChanged(media: Media) {
+        nowPlayingText.text = media.title
+    }
+
+    @Subscribe
+    fun persistMediaPosition(playList: SleepAssistantPlayList) {
+        val dbHelper = sqLiteDBHelper(this.context!!)!!
+
+        val activeTab = when (playList.mediaType) {
+            SleepMediaType.LOCAL -> "0"
+            SleepMediaType.ONLINE -> "1"
+            SleepMediaType.NOISE -> "2"
+        }
+
+        dbHelper.setPropertyString(PropertyName.ACTIVE_TAB, activeTab)
+        dbHelper.setPropertyString(PropertyName.TRACK_POSITION, playList.index.toString())
+        dbHelper.setPropertyString(PropertyName.PLAYLIST_ID, playList.playListId.toString())
+    }
+
+
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
         handler.removeCallbacks(runnable)
@@ -240,7 +278,6 @@ class SleepAssistantFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        //HyperLog.i(AlarmUtils.TAG, "SA onResume")
 
         if (!::radioService.isInitialized || !radioService.isPlaying) {
             val audioManager = this.activity?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -251,7 +288,7 @@ class SleepAssistantFragment : Fragment() {
                 volumeCoefficient = 0.32f
                 audioManager.setStreamVolume(
                         AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0)
-//                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this.activity!!, context!!.getString(R.string.system_volume_toast), Toast.LENGTH_SHORT).show()
             }
 
             volume = 105 - 100 * volumeCoefficient

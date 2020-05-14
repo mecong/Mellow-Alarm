@@ -304,7 +304,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
             else
                 SleepAssistantPlayListIdle(position, media, SleepMediaType.LOCAL, currentPlaylistID)
 
-            EventBus.getDefault().post(newPlayList)
+            EventBus.getDefault().postSticky(newPlayList)
         }
     }
 

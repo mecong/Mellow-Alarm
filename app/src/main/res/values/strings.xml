@@ -129,6 +129,8 @@
     <string name="app_share_text">Tender Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">If alarms do not fire you need to add Tender Alarm to Autostart:</string>
 
+    <string name="system_volume_toast">System volume set to 30%</string>
+
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>
         <item>@string/high_sound</item>

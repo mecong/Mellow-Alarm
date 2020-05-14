@@ -99,6 +99,8 @@
     <string name="app_share_text">Делікатний Будильник - щоб добре виспатися!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Якщо будильник не спрацьовує, вам потрібно додати Делікатний Будильник в Автозапуск:</string>
 
+    <string name="system_volume_toast">Системна гучність встановлена на 30%</string>
+
 
     <plurals name="alarm_turn_off_prompt">
         <item quantity="one">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
