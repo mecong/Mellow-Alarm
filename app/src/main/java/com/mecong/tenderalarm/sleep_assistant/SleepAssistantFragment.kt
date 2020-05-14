@@ -293,7 +293,7 @@ class SleepAssistantFragment : Fragment() {
         }
 
         dbHelper.setPropertyString(PropertyName.ACTIVE_TAB, activeTab)
-        dbHelper.setPropertyString(PropertyName.TRACK_POSITION, playList.index.toString())
+        dbHelper.setPropertyString(PropertyName.TRACK_NUMBER, playList.index.toString())
         dbHelper.setPropertyString(PropertyName.PLAYLIST_ID, playList.playListId.toString())
     }
 

@@ -42,7 +42,7 @@ enum class RadioServiceStatus {
 
 class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     private val iBinder: IBinder = LocalBinder()
-    private lateinit var sleepAssistantPlayList: SleepAssistantPlayList
+    private var sleepAssistantPlayList: SleepAssistantPlayList? = null
     private lateinit var notificationManager: MediaNotificationManager
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var mediaSession: MediaSession
@@ -55,6 +55,7 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     private var bandwidthMeter: DefaultBandwidthMeter? = null
     private var dataSourceFactory: DataSource.Factory? = null
     private var currentMediaSource: ConcatenatingMediaSource? = null
+    private var playErrorsCount = 0
 
     var audioVolume = 0f
         set(value) {
@@ -277,16 +278,19 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     }
 
     fun setMediaList(sleepAssistantPlayList: SleepAssistantPlayList) {
+        if (this.sleepAssistantPlayList == sleepAssistantPlayList)
+            return
+
         this.sleepAssistantPlayList = sleepAssistantPlayList
         currentMediaSource = ConcatenatingMediaSource()
-        for (media: Media in this.sleepAssistantPlayList.media) {
+        for (media: Media in this.sleepAssistantPlayList!!.media) {
             currentMediaSource!!.addMediaSource(
                     ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(media.url)))
         }
 
         exoPlayer.prepare(currentMediaSource!!)
 
-        when (this.sleepAssistantPlayList.mediaType) {
+        when (this.sleepAssistantPlayList!!.mediaType) {
             SleepMediaType.LOCAL -> {
                 exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
                 exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
@@ -300,26 +304,30 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
                 exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
             }
         }
+
+        playErrorsCount = 0
         exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
     }
 
     override fun onPlayerError(error: ExoPlaybackException) {
         //HyperLog.e(AlarmUtils.TAG, "Can't play: $error")
         EventBus.getDefault().postSticky(RadioServiceStatus.ERROR)
+        playErrorsCount++
+        if (playErrorsCount < currentMediaSource!!.size) {
+            val nextIndex = exoPlayer.nextWindowIndex
 
-        val nextIndex = exoPlayer.nextWindowIndex
+            exoPlayer.prepare(currentMediaSource!!)
+            exoPlayer.seekTo(nextIndex, 0)
 
-        exoPlayer.prepare(currentMediaSource!!)
-        exoPlayer.seekTo(nextIndex, 0)
-
-        exoPlayer.playWhenReady = true
+            exoPlayer.playWhenReady = true
+        }
     }
 
     private val userAgent: String
         get() = Util.getUserAgent(this, javaClass.simpleName)
 
     fun hasPlayList(): Boolean {
-        return sleepAssistantPlayList != null && sleepAssistantPlayList.media.isNotEmpty()
+        return sleepAssistantPlayList?.media?.isNotEmpty() ?: false
     }
 
     val isPlaying: Boolean
@@ -388,15 +396,15 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     override fun onPositionDiscontinuity(reason: Int) {
         //HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
         if (hasPlayList()) {
-            sleepAssistantPlayList.index = exoPlayer.currentWindowIndex
+            sleepAssistantPlayList!!.index = exoPlayer.currentWindowIndex
             //HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
-            val playingMedia = sleepAssistantPlayList.media[exoPlayer.currentWindowIndex]
+            val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
             EventBus.getDefault().post(
-                    SleepAssistantPlayList(sleepAssistantPlayList.index,
-                            sleepAssistantPlayList.media,
-                            sleepAssistantPlayList.mediaType,
-                            sleepAssistantPlayList.playListId))
+                    SleepAssistantPlayList(sleepAssistantPlayList!!.index,
+                            sleepAssistantPlayList!!.media,
+                            sleepAssistantPlayList!!.mediaType,
+                            sleepAssistantPlayList!!.playListId))
 
             currentTrackTitle = playingMedia.title!!
         }

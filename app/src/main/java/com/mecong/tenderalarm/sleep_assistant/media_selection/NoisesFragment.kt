@@ -21,11 +21,6 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
     private lateinit var adapter: NoisesItemViewAdapter
     private lateinit var noises: List<Media>
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        selectedPosition = arguments?.getInt(SELECTED_POSITION) ?: 0
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_noises, container, false)
     }
@@ -40,11 +35,11 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
 
         selectedPosition = -1
         if (savedActiveTab == 2) {
-            selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_POSITION) ?: 0
+            selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_NUMBER) ?: 0
             initPlaylist(selectedPosition, false)
         }
 
-        adapter = NoisesItemViewAdapter(view.context, noises, selectedPosition)
+        adapter = NoisesItemViewAdapter(this.context, noises, selectedPosition)
         adapter.setClickListener(this)
         noisesList.adapter = adapter
         noisesList.scrollToPosition(selectedPosition)
@@ -65,22 +60,6 @@ class NoisesFragment : Fragment(), NoisesItemClickListener {
 
     companion object {
         private const val SELECTED_POSITION = "selectedPosition"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param selectedPosition - selected item in the list
-         * @return A new instance of fragment NoisesFragment.
-         */
-        @JvmStatic
-        fun noisesFragmentNewInstance(selectedPosition: Int): NoisesFragment {
-            val fragment = NoisesFragment()
-            val args = Bundle()
-            args.putInt(SELECTED_POSITION, selectedPosition)
-            fragment.arguments = args
-            return fragment
-        }
     }
 
 }

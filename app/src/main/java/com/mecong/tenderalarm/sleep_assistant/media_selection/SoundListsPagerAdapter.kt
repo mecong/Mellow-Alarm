@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.mecong.tenderalarm.R
 
-class SoundListsPagerAdapter(fm: FragmentManager?, context: Context) : FragmentPagerAdapter(fm!!, 99) {
+class SoundListsPagerAdapter(fm: FragmentManager?, context: Context) : FragmentPagerAdapter(fm!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private val pageTitles = arrayOfNulls<String>(3)
     private val localFilesMediaFragment = LocalFilesMediaFragment()
     private val onlineMediaFragment = OnlineMediaFragment()

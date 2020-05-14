@@ -42,7 +42,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
 
     private fun initializeDefaultProperties(database: SQLiteDatabase) {
         setPropertyString(PropertyName.ACTIVE_TAB, "2", database)
-        setPropertyString(PropertyName.TRACK_POSITION, "0", database)
+        setPropertyString(PropertyName.TRACK_NUMBER, "0", database)
         setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "0", database)
         setPropertyString(PropertyName.FIRST_ALARM_ADDED, "0", database)
     }
@@ -213,7 +213,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         return getPropertyString(propertyName)?.toLong()
     }
 
-    private fun getPropertyString(propertyName: PropertyName): String? {
+    fun getPropertyString(propertyName: PropertyName): String? {
         val sql = "SELECT property_value FROM  $TABLE_PROPERTIES WHERE property_name=?"
         val cursor = this.readableDatabase.rawQuery(sql, arrayOf(propertyName.toString()))
         return if (cursor.count > 0) {
@@ -224,7 +224,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         } else null
     }
 
-    private fun setPropertyString(property: PropertyName, propertyValue: String, database: SQLiteDatabase) {
+    private fun setPropertyString(property: PropertyName, propertyValue: String?, database: SQLiteDatabase) {
         val propertyName = property.toString()
         val sql = "SELECT _id, property_value FROM  $TABLE_PROPERTIES WHERE property_name=?"
         val cursor = database.rawQuery(sql, arrayOf(propertyName))
@@ -246,7 +246,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         }
     }
 
-    fun setPropertyString(property: PropertyName, propertyValue: String) {
+    fun setPropertyString(property: PropertyName, propertyValue: String?) {
         this.writableDatabase.use { writableDatabase -> setPropertyString(property, propertyValue, writableDatabase) }
     }
 

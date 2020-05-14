@@ -53,7 +53,7 @@ class OnlineMediaFragment : Fragment(), FileItemClickListener {
 
         var selectedPosition = -1
         if (savedActiveTab == 1) {
-            selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_POSITION) ?: 0
+            selectedPosition = sqLiteDBHelper.getPropertyInt(PropertyName.TRACK_NUMBER) ?: 0
             initPlaylist(selectedPosition, false)
         }
 

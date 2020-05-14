@@ -37,6 +37,8 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
     private var playlistViewAdapter: PlaylistViewAdapter? = null
     private var currentPlaylistID: Long = -1
+    private var currentPlaylistTitle: String? = null
+    private var myState: Bundle? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -46,50 +48,58 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         return inflater.inflate(R.layout.fragment_local_media, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-        mediaListView.layoutManager = LinearLayoutManager(view.context)
 
-        val list = sqLiteDBHelper.getAllPlaylists().use {
+        val listOfPlaylists = sqLiteDBHelper.getAllPlaylists().use {
             generateSequence { if (it.moveToNext()) it else null }
                     .map { PlaylistEntity.fromCursor(it) }
                     .toList()
         }
 
-        playlistViewAdapter = PlaylistViewAdapter(this.context!!, list, this)
-
+        playlistViewAdapter = PlaylistViewAdapter(this.context!!, listOfPlaylists, this)
 
         mediaItemViewAdapter =
                 MediaItemViewAdapter(this.context!!, 0, emptyList(), this, false)
 
-
         val savedActiveTab = sqLiteDBHelper.getPropertyInt(ACTIVE_TAB)
 
-        currentPlaylistID = (sqLiteDBHelper.getPropertyInt(PLAYLIST_ID) ?: -1).toLong()
+        val myStatePlaylistID: Long = myState?.getLong(PLAYLIST_ID_KEY, -1) ?: -1
+        currentPlaylistID = sqLiteDBHelper.getPropertyLong(PLAYLIST_ID) ?: myStatePlaylistID
+
 
         val selectedPosition: Int
-        if (savedActiveTab == 0) {
-            selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_POSITION) ?: 0
+        if (savedActiveTab == 0 && myState == null) {
+            selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_NUMBER) ?: 0
             initPlaylist(selectedPosition, false)
         }
+
+        currentPlaylistTitle = sqLiteDBHelper.getPropertyString(PLAYLIST_TITLE)
+                ?: context?.getString(R.string.local_audio)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+        mediaListView.layoutManager = LinearLayoutManager(this.context!!)
 
         setMode(sqLiteDBHelper)
 
         val goBack: (v: View) -> Unit = {
-            fragmentTitle.text = context?.getString(R.string.local_audio)
+            currentPlaylistTitle = context?.getString(R.string.local_audio)
             currentPlaylistID = -1
             setMode(sqLiteDBHelper)
         }
+
         fragmentTitle.setOnClickListener(goBack)
         backButton.setOnClickListener(goBack)
     }
 
     @Subscribe
     fun onPlayFileChanged(playList: SleepAssistantPlayList) {
-        //HyperLog.i(AlarmUtils.TAG, "Sleep assistant message received ")
-
         if (currentPlaylistID == playList.playListId) {
             mediaListView?.scrollToPosition(playList.index)
             mediaItemViewAdapter?.selectedPosition = playList.index
@@ -98,38 +108,34 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     }
 
     private fun setMode(sqLiteDBHelper: SQLiteDBHelper) {
-        var selectedPosition = -1
+        var trackPosition = -1
         mediaListView.adapter = when (currentPlaylistID) {
             -1L -> {
+                buttonAdd.setOnClickListener { addPlaylist() }
                 backButton.visibility = GONE
                 playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
                 playlistViewAdapter
             }
 
             else -> {
+                buttonAdd.setOnClickListener { performFileSearch() }
+
                 backButton.visibility = VISIBLE
                 val savedActiveTab = sqLiteDBHelper.getPropertyInt(ACTIVE_TAB)
                 val savedPlayListId: Long = (sqLiteDBHelper.getPropertyInt(PLAYLIST_ID) ?: -1).toLong()
 
                 if (savedActiveTab == 0 && savedPlayListId == currentPlaylistID) {
-                    selectedPosition = sqLiteDBHelper.getPropertyInt(TRACK_POSITION) ?: 0
+                    trackPosition = sqLiteDBHelper.getPropertyInt(TRACK_NUMBER) ?: 0
                 }
 
                 mediaItemViewAdapter?.updateDataSet(sqLiteDBHelper.getLocalMedia(currentPlaylistID))
-                mediaItemViewAdapter?.selectedPosition = selectedPosition
+                mediaItemViewAdapter?.selectedPosition = trackPosition
                 mediaItemViewAdapter
             }
         }
 
-        mediaListView.scrollToPosition(selectedPosition)
-
-        buttonAdd.setOnClickListener {
-            if (currentPlaylistID == -1L) {
-                addPlaylist()
-            } else {
-                performFileSearch()
-            }
-        }
+        fragmentTitle.text = currentPlaylistTitle
+        mediaListView.scrollToPosition(trackPosition)
     }
 
     private fun addPlaylist() {
@@ -311,8 +317,10 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     override fun onPlaylistItemClick(title: String?, id: Long, position: Int) {
         currentPlaylistID = id
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+        currentPlaylistTitle = title
+        sqLiteDBHelper.setPropertyString(PLAYLIST_TITLE, title)
+
         setMode(sqLiteDBHelper)
-        fragmentTitle.text = title
     }
 
     override fun onPlaylistItemEditClick(newTitle: String, id: Long, position: Int) {
@@ -327,13 +335,21 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
         val savedPlaylistId = sqLiteDBHelper.getPropertyLong(PLAYLIST_ID)
         if (savedPlaylistId == id) {
+            currentPlaylistID = -1
             sqLiteDBHelper.setPropertyString(PLAYLIST_ID, "-1")
             sqLiteDBHelper.setPropertyString(ACTIVE_TAB, "2")
-            sqLiteDBHelper.setPropertyString(TRACK_POSITION, "0")
+            sqLiteDBHelper.setPropertyString(TRACK_NUMBER, "0")
+            sqLiteDBHelper.setPropertyString(PLAYLIST_TITLE, null)
+
+            setMode(sqLiteDBHelper)
         }
 
         sqLiteDBHelper.deletePlaylist(id)
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
     }
 
+    companion object {
+        val PLAYLIST_ID_KEY = "playlist_id_key"
+        val FRAGMENT_TITLE_KEY = "fragment_title_key"
+    }
 }
