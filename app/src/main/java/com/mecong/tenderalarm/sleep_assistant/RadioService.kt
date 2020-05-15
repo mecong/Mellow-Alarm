@@ -313,7 +313,7 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
         //HyperLog.e(AlarmUtils.TAG, "Can't play: $error")
         EventBus.getDefault().postSticky(RadioServiceStatus.ERROR)
         playErrorsCount++
-        if (playErrorsCount < currentMediaSource!!.size) {
+        if (playErrorsCount < currentMediaSource!!.size && sleepAssistantPlayList!!.mediaType == SleepMediaType.LOCAL) {
             val nextIndex = exoPlayer.nextWindowIndex
 
             exoPlayer.prepare(currentMediaSource!!)

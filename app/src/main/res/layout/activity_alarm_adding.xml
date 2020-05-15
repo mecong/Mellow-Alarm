@@ -285,6 +285,8 @@
                 android:id="@+id/txtMelodyCaption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
                 android:text="@string/alarm_sound"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -322,6 +324,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:clickable="false"
+                android:focusable="false"
                 android:text=""
                 tools:text="Tender alarm %d minute before" />
 
@@ -354,6 +358,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:clickable="false"
+                android:focusable="false"
                 android:text="@string/ticks_type_label" />
 
             <Spinner
@@ -381,9 +387,11 @@
                 android:id="@+id/txtSnooze"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:clickable="false"
+                android:focusable="false"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="snooze" />
 
             <SeekBar
                 android:id="@+id/seekBarSnooze"
@@ -416,6 +424,8 @@
                 android:id="@+id/txtComplexity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
                 android:text="@string/alarm_complexity"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
