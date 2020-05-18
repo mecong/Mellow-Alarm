@@ -49,7 +49,7 @@ class MyRecyclerViewAdapter internal constructor(context: Context?, data: List<S
     inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var myTextView: TextView = itemView.findViewById(R.id.log_row)
         override fun onClick(view: View) {
-            if (mClickListener != null) mClickListener!!.onItemClick(view, adapterPosition)
+            if (mClickListener != null) mClickListener!!.onItemClick(view, absoluteAdapterPosition)
         }
 
         init {

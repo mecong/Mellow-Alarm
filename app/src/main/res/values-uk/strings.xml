@@ -100,13 +100,14 @@
     <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Якщо будильник не спрацьовує, вам потрібно додати Делікатний Будильник в Автозапуск:</string>
 
     <string name="system_volume_toast">Системна гучність встановлена на 30%</string>
+    <string name="vibrate_with_alarm">Будити вібрацією</string>
 
 
     <plurals name="alarm_turn_off_prompt">
-        <item quantity="one">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> раз</item>
-        <item quantity="few">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> рази</item>
-        <item quantity="many">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
-        <item quantity="other">Перетягніть кола на їх місця або струсіть телефон <big>%d</big> разів</item>
+        <item quantity="one">Перетягніть кола на їх місця або струсіть пристрій <big>%d</big> раз</item>
+        <item quantity="few">Перетягніть кола на їх місця або струсіть пристрій <big>%d</big> рази</item>
+        <item quantity="many">Перетягніть кола на їх місця або струсіть пристрій <big>%d</big> разів</item>
+        <item quantity="other">Перетягніть кола на їх місця або струсіть пристрій <big>%d</big> разів</item>
     </plurals>
 
     <plurals name="next_alarm">
@@ -150,7 +151,6 @@
         <item quantity="many">Делікатний будильник за %d хвилин</item>
         <item quantity="other">Делікатний будильник за %d хвилин</item>
     </plurals>
-
 
     <plurals name="snooze">
         <item quantity="one">Дрімати щонайбільше %d хвилину</item>

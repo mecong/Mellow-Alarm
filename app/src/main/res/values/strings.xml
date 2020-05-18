@@ -34,7 +34,7 @@
     <string name="alarm_time" translatable="false">%1$02d:%2$02d</string>
     <string name="alarm_time_chunk" translatable="false">%1$02d</string>
     <string name="sleep_timer">Snooze %1$tM:%1$tS</string>
-    <string name="work_days">Work days</string>
+    <string name="work_days">Weekdays</string>
     <string name="every_day">Every day</string>
     <string name="never">Never</string>
     <string name="single_day" translatable="false">%1$td.%1$tm.%1$tY</string>
@@ -130,6 +130,10 @@
     <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">If alarms do not fire you need to add Tender Alarm to Autostart:</string>
 
     <string name="system_volume_toast">System volume set to 30%</string>
+    <string name="vibrate_with_alarm">Vibrate with alarm</string>
+
+    <string name="play_time" translatable="false">%02d:%02d</string>
+    <string name="play_time_with_hour" translatable="false">%d:%02d:%02d</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>
@@ -172,8 +176,8 @@
     </plurals>
 
     <plurals name="alarm_turn_off_prompt">
-        <item quantity="one">Drag circles to their places. Or shake phone <big>%d</big> time</item>
-        <item quantity="other">Drag circles to their places. Or shake phone <big>%d</big> times</item>
+        <item quantity="one">Drag circles to their places. Or shake device <big>%d</big> time</item>
+        <item quantity="other">Drag circles to their places. Or shake device <big>%d</big> times</item>
     </plurals>
 
 </resources>

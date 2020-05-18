@@ -56,10 +56,10 @@ class PlaylistViewAdapter constructor(
         var id: Long = -1L
 
         override fun onClick(view: View) {
-            if (adapterPosition == RecyclerView.NO_POSITION) return
-            notifyItemChanged(adapterPosition)
-            mClickListenerPlaylist.onPlaylistItemClick(title.tag.toString(), id, adapterPosition)
-            notifyItemChanged(adapterPosition)
+            if (absoluteAdapterPosition == RecyclerView.NO_POSITION) return
+            notifyItemChanged(absoluteAdapterPosition)
+            mClickListenerPlaylist.onPlaylistItemClick(title.tag.toString(), id, absoluteAdapterPosition)
+            notifyItemChanged(absoluteAdapterPosition)
         }
 
         init {
@@ -67,23 +67,20 @@ class PlaylistViewAdapter constructor(
             val btnEditItem = itemView.findViewById<ImageButton>(R.id.btnEditItem)
 
             btnDeleteItem.setOnClickListener(View.OnClickListener {
-                if (adapterPosition == RecyclerView.NO_POSITION) return@OnClickListener
+                if (absoluteAdapterPosition == RecyclerView.NO_POSITION) return@OnClickListener
 
                 val wrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
                 val popup = PopupMenu(wrapper, btnDeleteItem)
-//                val popup = PopupMenu(context, btnDeleteItem)
-                //Inflating the Popup using xml file
                 popup.menuInflater.inflate(R.menu.menu_media_element, popup.menu)
-                //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener {
-                    mClickListenerPlaylist.onPlaylistDeleteClick(id, adapterPosition)
+                    mClickListenerPlaylist.onPlaylistDeleteClick(id, absoluteAdapterPosition)
                     true
                 }
                 popup.show() //showing popup menu
             })
 
             btnEditItem.setOnClickListener {
-                if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+                if (absoluteAdapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
 
                 val dialog = Dialog(context, R.style.UrlDialogCustom)
                 dialog.setContentView(R.layout.url_input_dialog)
@@ -102,10 +99,10 @@ class PlaylistViewAdapter constructor(
                 val okOnclickListener: (v: View) -> Unit = {
                     val title = textUrl.text.toString()
                     if (title.isNotBlank()) {
-                        mClickListenerPlaylist.onPlaylistItemEditClick(title, id, adapterPosition)
+                        mClickListenerPlaylist.onPlaylistItemEditClick(title, id, absoluteAdapterPosition)
                         dialog.dismiss()
                     } else {
-                        Toast.makeText(context, "Playlist name should not be empty", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.empty_playlist_name_warning), Toast.LENGTH_SHORT).show()
                     }
                 }
                 buttonOk.setOnClickListener(okOnclickListener)

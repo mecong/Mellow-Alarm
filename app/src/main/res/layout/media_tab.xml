@@ -21,7 +21,7 @@
         android:id="@+id/blackLine"
         android:layout_width="0dp"
         android:layout_height="2dp"
-        android:background="#030000"
+        android:background="#1A1B1D"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

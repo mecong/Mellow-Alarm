@@ -92,6 +92,12 @@ class MainActivity : AppCompatActivity() {
 
 
         val desiredFragment = intent.getStringExtra(FRAGMENT_NAME_PARAM)
+//        val desiredFragment = if (BuildConfig.DEBUG) {
+//            ASSISTANT_FRAGMENT
+//        } else {
+//            intent.getStringExtra(FRAGMENT_NAME_PARAM)
+//        }
+
 
         currentFragment = if (ASSISTANT_FRAGMENT == desiredFragment) {
             val alarmFragment: Fragment? = alarmFragmentInstance(supportFragmentManager, fragmentTransaction, false)
@@ -165,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                     .arrow(true)
                     .floatingAnimation(Tooltip.Animation.SLOW)
                     .closePolicy(TOUCH_ANYWHERE_NO_CONSUME)
-                    .showDuration(15 * 1000)
+                    .showDuration(10 * 1000)
                     .create()
 
             ibOpenAlarm.post { tooltip.show(ibOpenAlarm, Tooltip.Gravity.TOP, true) }
@@ -314,7 +320,6 @@ class MainActivity : AppCompatActivity() {
                     createNotificationChannel(alarmChannel)
                     createNotificationChannel(sleepAssistantChannel)
                 }
-
             }
         }
     }

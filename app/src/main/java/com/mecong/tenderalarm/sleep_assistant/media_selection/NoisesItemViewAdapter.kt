@@ -60,10 +60,10 @@ class NoisesItemViewAdapter constructor(context: Context?, private val mData: Li
         var headerText: TextView = itemView.findViewById(R.id.headerText)
 
         override fun onClick(view: View) {
-            if (adapterPosition == RecyclerView.NO_POSITION) return
+            if (absoluteAdapterPosition == RecyclerView.NO_POSITION) return
             notifyItemChanged(selectedPosition)
-            selectedPosition = adapterPosition
-            mClickListener?.onItemClick(view, adapterPosition)
+            selectedPosition = absoluteAdapterPosition
+            mClickListener?.onItemClick(view, absoluteAdapterPosition)
             notifyItemChanged(selectedPosition)
         }
 

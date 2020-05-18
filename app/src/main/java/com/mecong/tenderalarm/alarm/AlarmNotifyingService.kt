@@ -40,10 +40,12 @@ import java.util.concurrent.TimeUnit
 class AlarmNotifyingService : Service(), Player.EventListener {
     private lateinit var runnableVolume: Runnable
     private lateinit var runnableRealAlarm: Runnable
+    private lateinit var runnableVibro: Runnable
 
-    var handlerVolume: Handler? = null
-    var random = Random()
-    var handlerTicks: Handler? = null
+    private var random = Random()
+    private var handlerVolume: Handler = Handler()
+    private var handlerTicks: Handler = Handler()
+    private var handlerVibration: Handler = Handler()
     private lateinit var exoPlayer: SimpleExoPlayer
 
     override fun onPlayerError(error: ExoPlaybackException) {
@@ -107,7 +109,6 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 startSound(entity)
                 startAlarmNotification(this, entity)
             }
-
         }
         return START_NOT_STICKY
     }
@@ -142,7 +143,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
 
     private fun snooze(minutes: Int) {
         Timber.d("Snooze for $minutes min")
-        handlerTicks!!.removeCallbacksAndMessages(null)
+        handlerTicks.removeCallbacksAndMessages(null)
         cancelVolumeIncreasing()
 
         if (exoPlayer.isPlaying) {
@@ -152,11 +153,12 @@ class AlarmNotifyingService : Service(), Player.EventListener {
     }
 
     private fun cancelVolumeIncreasing() {
-        handlerVolume!!.removeCallbacks(runnableVolume)
+        handlerVolume.removeCallbacksAndMessages(null)
+        handlerVibration.removeCallbacksAndMessages(null)
     }
 
     private fun startSnoozedSound(entity: AlarmEntity?) {
-        handlerTicks!!.post(runnableRealAlarm)
+        handlerTicks.post(runnableRealAlarm)
     }
 
     private fun startSound(entity: AlarmEntity?) {
@@ -168,16 +170,13 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         val volumeIncreaseDelayMs = 2000L
         val ticksTimeMs = entity!!.ticksTime * 60 * 1000
         val amountIncreases = ticksTimeMs / volumeIncreaseDelayMs
-        var volumeIncreaseStep = if (amountIncreases.compareTo(0) == 0) 0.01f else (0.6f - defaultVolume) / amountIncreases
+        var volumeIncreaseStep = if (amountIncreases.compareTo(0) == 0) 0.01f else (0.9f - defaultVolume) / amountIncreases
 
-        val tick = if (entity.ticksType == 0) R.raw.tick else R.raw.ding1
-
-        // Create the Handler object (on the main thread by default)
-        handlerTicks = Handler()
+        val tickSound = if (entity.ticksType == 0) R.raw.tick else R.raw.ding1
 
         var volumeCounter = defaultVolume
         try {
-            initExoPlayer(RawResourceDataSource.buildRawResourceUri(tick), Player.REPEAT_MODE_OFF)
+            initExoPlayer(RawResourceDataSource.buildRawResourceUri(tickSound), Player.REPEAT_MODE_OFF)
             exoPlayer.volume = volumeCounter
         } catch (e: IOException) {
             //TODO: make correct reaction
@@ -199,14 +198,14 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 // Repeat this the same runnable code block again another 20 seconds
                 // 'this' is referencing the Runnable object
                 val twentySeconds = 20000
-                handlerTicks!!.postDelayed(this, random.nextInt(twentySeconds).toLong())
+                handlerTicks.postDelayed(this, random.nextInt(twentySeconds).toLong())
             }
         }
 
         runnableRealAlarm = Runnable {
             try {
                 // Removes pending code execution
-                handlerTicks!!.removeCallbacksAndMessages(predAlarm)
+                handlerTicks.removeCallbacksAndMessages(predAlarm)
 
                 if (exoPlayer.isPlaying) {
                     exoPlayer.stop()
@@ -218,8 +217,8 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 exoPlayer.volume = if (entity.increaseVolume > 0) {
                     val increaseVolumeMinutes = entity.increaseVolume * 60000
                     volumeIncreaseStep = (1 - defaultVolume) / (increaseVolumeMinutes / volumeIncreaseDelayMs)
-                    handlerVolume!!.removeCallbacks(runnableVolume)
-                    handlerVolume!!.post(runnableVolume)
+                    handlerVolume.removeCallbacks(runnableVolume)
+                    handlerVolume.post(runnableVolume)
                     volumeCounter = defaultVolume
                     volumeCounter
                 } else {
@@ -228,6 +227,10 @@ class AlarmNotifyingService : Service(), Player.EventListener {
 
                 exoPlayer.playWhenReady = true
 
+                if (entity.vibrationType != null) {
+                    handlerVibration.post(runnableVibro)
+                }
+
                 Timber.i("Real alarm started!")
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -235,7 +238,6 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         }
 
 
-        handlerVolume = Handler()
         runnableVolume = object : Runnable {
             override fun run() {
                 try {
@@ -249,16 +251,23 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                if (volumeCounter < 1) handlerVolume!!.postDelayed(this, volumeIncreaseDelayMs)
+                if (volumeCounter < 1) handlerVolume.postDelayed(this, volumeIncreaseDelayMs)
             }
         }
 
         if (ticksTimeMs > 0) {
-            handlerTicks!!.post(predAlarm)
-            handlerVolume!!.post(runnableVolume)
+            handlerTicks.post(predAlarm)
+            handlerVolume.post(runnableVolume)
         }
 
-        handlerTicks!!.postDelayed(runnableRealAlarm, ticksTimeMs.toLong())
+        handlerTicks.postDelayed(runnableRealAlarm, ticksTimeMs.toLong())
+
+        runnableVibro = object : Runnable {
+            override fun run() {
+                alarmNotificationVibration(-1)
+                handlerVibration.postDelayed(this, 10000)
+            }
+        }
     }
 
     private fun getMelody(entity: AlarmEntity?): Uri {
@@ -279,7 +288,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
             }
         }
 
-        handlerTicks!!.removeCallbacksAndMessages(null)
+        handlerTicks.removeCallbacksAndMessages(null)
         stopAlarmSound()
         cancelVolumeIncreasing()
         alarmEndVibration()
@@ -307,6 +316,16 @@ class AlarmNotifyingService : Service(), Player.EventListener {
                     VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             vibrator.vibrate(1000)
+        }
+    }
+
+    private fun alarmNotificationVibration(repeat: Int) {
+        val vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val mVibratePattern = longArrayOf(400, 400, 1000, 600, 600, 800, 500, 500)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createWaveform(mVibratePattern, repeat))
+        } else {
+            vibrator.vibrate(mVibratePattern, repeat)
         }
     }
 

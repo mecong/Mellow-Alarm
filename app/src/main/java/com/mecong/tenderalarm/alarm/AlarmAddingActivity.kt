@@ -315,6 +315,7 @@ class AlarmAddingActivity : AppCompatActivity() {
         chbHeadsUp!!.isChecked = entity.isHeadsUp
         chbTimeToSleepNotification!!.isChecked = entity.isTimeToSleepNotification
         chbIncreaseVolume.isChecked = entity.increaseVolume > 0
+        chbVibroAlarm.isChecked = entity.vibrationType != null
 
         spinnerTicksType.setSelection(entity.ticksType)
     }
@@ -329,6 +330,7 @@ class AlarmAddingActivity : AppCompatActivity() {
         seekBarComplexity!!.progress = 1
         chbHeadsUp!!.isChecked = true
         chbTimeToSleepNotification!!.isChecked = true
+        chbVibroAlarm.isChecked = false
     }
 
     private fun initLogsAndControls() {
@@ -356,7 +358,9 @@ class AlarmAddingActivity : AppCompatActivity() {
                 ticksTime = seekBarTicks!!.progress,
                 isHeadsUp = chbHeadsUp!!.isChecked,
                 increaseVolume = if (chbIncreaseVolume.isChecked) 5 else 0,
-                isTimeToSleepNotification = chbTimeToSleepNotification!!.isChecked)
+                isTimeToSleepNotification = chbTimeToSleepNotification!!.isChecked,
+                vibrationType = if (chbVibroAlarm!!.isChecked) "1" else null
+        )
 
         val sqLiteDBHelper = sqLiteDBHelper(this)
         alarmEntity.id = sqLiteDBHelper!!.addOrUpdateAlarm(alarmEntity)

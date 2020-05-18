@@ -22,14 +22,18 @@ import com.google.android.exoplayer2.Player.EventListener
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.BufferSizeAdaptationBuilder.DEFAULT_BUFFER_FOR_PLAYBACK_MS
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
 import org.greenrobot.eventbus.EventBus
+import timber.log.Timber
+import kotlin.math.roundToLong
 
 enum class RadioServiceStatus {
     IDLE,
@@ -42,7 +46,7 @@ enum class RadioServiceStatus {
 
 class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     private val iBinder: IBinder = LocalBinder()
-    private var sleepAssistantPlayList: SleepAssistantPlayList? = null
+    var sleepAssistantPlayList: SleepAssistantPlayList? = null
     private lateinit var notificationManager: MediaNotificationManager
     private lateinit var exoPlayer: SimpleExoPlayer
     private lateinit var mediaSession: MediaSession
@@ -130,8 +134,17 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
 //                        DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS)
 //                .createDefaultLoadControl()
 
+        val loadControlBuilder = DefaultLoadControl.Builder().setBufferDurationsMs(
+                1000 * 30,
+                1000 * 60 * 5,
+                DEFAULT_BUFFER_FOR_PLAYBACK_MS,
+                1000 * 10
+        ).createDefaultLoadControl()
+
+
+
         exoPlayer = SimpleExoPlayer.Builder(applicationContext)
-//                .setLoadControl(loadControl)
+                .setLoadControl(loadControlBuilder)
                 .build()
                 .apply {
                     setHandleAudioBecomingNoisy(true)
@@ -238,19 +251,19 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
         }
     }
 
-    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) { //        if (!status.equals(IDLE))
+    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         status = when (playbackState) {
             Player.STATE_BUFFERING -> RadioServiceStatus.LOADING
             Player.STATE_ENDED -> RadioServiceStatus.STOPPED
             Player.STATE_READY -> {
                 if (playWhenReady) {
                     notificationManager.startNotify(status, currentTrackTitle)
+//                    startTimelineWatcher()
                     RadioServiceStatus.PLAYING
                 } else {
                     RadioServiceStatus.PAUSED
                 }
             }
-            Player.STATE_IDLE -> RadioServiceStatus.IDLE
             else -> RadioServiceStatus.IDLE
         }
         EventBus.getDefault().postSticky(status)
@@ -307,6 +320,11 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
 
         playErrorsCount = 0
         exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
+    }
+
+    fun seekToPercent(percentPosition: Float) {
+        val pos: Long = (exoPlayer.contentDuration * percentPosition).roundToLong()
+        exoPlayer.seekTo(pos)
     }
 
     override fun onPlayerError(error: ExoPlaybackException) {
@@ -373,19 +391,21 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
         //HyperLog.v(AlarmUtils.TAG, ">>>>>>onTracksChanged>>>>>>")
         //        IcyHeaders: name="Enigmatic robot", genre="music", bitrate=256000, metadataInterval=16000
-//        for (i in 0 until trackGroups.length) {
-//            val trackGroup = trackGroups[i]
-//            for (j in 0 until trackGroup.length) {
-//                val trackMetadata = trackGroup.getFormat(j).metadata
-////                if (trackMetadata != null) {
-////                    for (k in 0 until trackMetadata.length()) {
-////                        //HyperLog.v(AlarmUtils.TAG, trackMetadata[k].toString())
-////                    }
-////                } else {
-////                    //HyperLog.v(AlarmUtils.TAG, "|||Metadata not found|||")
-////                }
-//            }
-//        }
+        if (BuildConfig.DEBUG) {
+            for (i in 0 until trackGroups.length) {
+                val trackGroup = trackGroups[i]
+                for (j in 0 until trackGroup.length) {
+                    val trackMetadata = trackGroup.getFormat(j).metadata
+                    if (trackMetadata != null) {
+                        for (k in 0 until trackMetadata.length()) {
+                            Timber.i(trackMetadata[k].toString())
+                        }
+                    } else {
+                        Timber.i("|||Metadata not found|||")
+                    }
+                }
+            }
+        }
     }
 
     /*
@@ -410,8 +430,18 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
         }
     }
 
-    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
-    override fun onSeekProcessed() {}
+    fun getBufferedPos(): Long {
+        return exoPlayer.contentBufferedPosition
+    }
+
+    fun getContentPos(): Long {
+        return exoPlayer.contentPosition
+    }
+
+    fun getContentDuration(): Long {
+        return exoPlayer.contentDuration
+    }
+
     internal inner class LocalBinder : Binder() {
         val service: RadioService
             get() = this@RadioService

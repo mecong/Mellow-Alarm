@@ -325,6 +325,10 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
     override fun onPlaylistItemEditClick(newTitle: String, id: Long, position: Int) {
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+        val storedPlaylistID = sqLiteDBHelper.getPropertyLong(PLAYLIST_ID)
+        if (storedPlaylistID == id) {
+            sqLiteDBHelper.setPropertyString(PLAYLIST_TITLE, newTitle)
+        }
 
         sqLiteDBHelper.renamePlaylist(id, newTitle)
         playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
@@ -350,6 +354,5 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
     companion object {
         val PLAYLIST_ID_KEY = "playlist_id_key"
-        val FRAGMENT_TITLE_KEY = "fragment_title_key"
     }
 }

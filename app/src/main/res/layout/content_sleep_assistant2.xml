@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
@@ -87,24 +87,6 @@
         app:layout_constraintStart_toStartOf="@+id/sliderVolume"
         app:layout_constraintTop_toBottomOf="@+id/sliderVolume" />
 
-    <com.mecong.tenderalarm.sleep_assistant.PlayPositionTextView
-        android:id="@+id/nowPlayingText"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/custom_border_playbar"
-        android:clickable="true"
-        android:ellipsize="start"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:singleLine="true"
-        android:textColor="#E7E8E2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
@@ -113,11 +95,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:tabMaxWidth="0dp"
         app:layout_constraintBottom_toTopOf="@+id/viewPager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nowPlayingText"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+
         app:tabGravity="fill"
         app:tabMode="fixed"
         app:tabPaddingEnd="4dp"
@@ -147,23 +129,40 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/custom_back_round_fill"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/nowPlayingText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tabs">
 
     </androidx.viewpager.widget.ViewPager>
 
+
+    <com.mecong.tenderalarm.sleep_assistant.PlayPositionTextView
+        android:id="@+id/nowPlayingText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/custom_border_playbar"
+        android:clickable="true"
+        android:ellipsize="start"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="3dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="3dp"
+        android:paddingBottom="5dp"
+        android:singleLine="true"
+        android:textColor="#E7E8E2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPager" />
+
     <TextView
         android:id="@+id/playerTime1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:background="@drawable/custom_border_playbar"
-        android:paddingStart="5dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
         android:textSize="12sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/nowPlayingText"
@@ -175,12 +174,8 @@
         android:id="@+id/playerTime2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:background="@drawable/custom_border_playbar"
-        android:paddingStart="5dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="2dp"
+
+
         android:textSize="12sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/nowPlayingText"

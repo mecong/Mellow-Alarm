@@ -27,17 +27,21 @@ import com.mecong.tenderalarm.sleep_assistant.media_selection.SoundListsPagerAda
 import kotlinx.android.synthetic.main.content_sleep_assistant.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class SleepAssistantFragment : Fragment() {
     var timeMinutes: Long = 0
     var timeMs: Long = 0
     var volume = 0f
     var volumeStep = 0f
-    private val handler: Handler = Handler()
-    private lateinit var runnable: Runnable
+    private val sleepTimeHandler: Handler = Handler()
+    private lateinit var sleepTimeRunnable: Runnable
+    private val progressHandler: Handler = Handler()
+    private lateinit var progressRunnable: Runnable
 
     var serviceBound = false
     lateinit var radioService: RadioService
@@ -92,10 +96,10 @@ class SleepAssistantFragment : Fragment() {
             }
         })
 
-        runnable = Runnable {
+        sleepTimeRunnable = Runnable {
             timeMs -= STEP_MILLIS
             if (timeMs <= 0) {
-                handler.removeCallbacks(runnable)
+                sleepTimeHandler.removeCallbacks(sleepTimeRunnable)
 
                 if (radioService.isPlaying) {
                     radioService.pause()
@@ -124,7 +128,7 @@ class SleepAssistantFragment : Fragment() {
 
                 textViewVolumePercent.text = context.getString(R.string.volume_percent, volume.roundToInt())
 
-                handler.postDelayed(runnable, STEP_MILLIS)
+                sleepTimeHandler.postDelayed(sleepTimeRunnable, STEP_MILLIS)
             }
         }
 
@@ -143,10 +147,8 @@ class SleepAssistantFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
         return inflater.inflate(
                 R.layout.content_sleep_assistant, container, false) as ViewGroup
-
     }
 
     private fun initializeTabsAndMediaFragments(context: Context?, activeTab: Int) {
@@ -160,12 +162,12 @@ class SleepAssistantFragment : Fragment() {
         tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.INVISIBLE
-                tab.customView?.background = resources.getDrawable(R.drawable.tr2_background)
+                tab.customView?.background = resources.getDrawable(R.drawable.tr2_background, null)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.VISIBLE
-                tab.customView?.background = resources.getDrawable(R.drawable.tr1_background)
+                tab.customView?.background = resources.getDrawable(R.drawable.tr1_background, null)
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
@@ -207,7 +209,7 @@ class SleepAssistantFragment : Fragment() {
     fun onEvent(status: RadioServiceStatus) {
         when (status) {
             RadioServiceStatus.LOADING -> {
-                handler.removeCallbacks(runnable)
+                sleepTimeHandler.removeCallbacks(sleepTimeRunnable)
             }
             RadioServiceStatus.ERROR -> {
                 nowPlayingText.text = getString(R.string.can_not_stream)
@@ -215,21 +217,23 @@ class SleepAssistantFragment : Fragment() {
                 playListModel.playing.setValue(false)
             }
             RadioServiceStatus.PLAYING -> {
+
+                startTimelineWatcher()
                 playListModel.playing.value = true
-                handler.removeCallbacks(runnable)
-                handler.postDelayed(runnable, STEP_MILLIS)
+                sleepTimeHandler.removeCallbacks(sleepTimeRunnable)
+                sleepTimeHandler.postDelayed(sleepTimeRunnable, STEP_MILLIS)
             }
             else -> {
                 playListModel.playing.value = false
-                handler.removeCallbacks(runnable)
+                sleepTimeHandler.removeCallbacks(sleepTimeRunnable)
             }
         }
     }
 
-
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
-        handler.removeCallbacks(runnable)
+        sleepTimeHandler.removeCallbacksAndMessages(null)
+        progressHandler.removeCallbacksAndMessages(null)
         if (::radioService.isInitialized) {
             if (radioService.isPlaying) {
                 radioService.stop()
@@ -266,8 +270,99 @@ class SleepAssistantFragment : Fragment() {
         }
     }
 
+    private fun startTimelineWatcher() {
+        val localFileProgress = Runnable {
+            Timber.v("Local: Buffered position %d, content %d", radioService.getBufferedPos(), radioService.getContentPos())
+            nowPlayingText?.setPlayPosition(radioService.getContentPos() / radioService.getContentDuration().toFloat())
+
+            playerTime1?.text = getElapsedTime()
+            playerTime2?.text = getTimeLeft()
+
+            if (radioService.isPlaying) {
+                progressHandler.postDelayed(progressRunnable, 300)
+            }
+        }
+
+        val onlineStreamProgress = Runnable {
+            Timber.v("Online: Buffered position %d, content %d", radioService.getBufferedPos(), radioService.getContentPos())
+
+            playerTime1?.text = getElapsedTime()
+            playerTime2?.text = getBufferedSize()
+
+            if (radioService.sleepAssistantPlayList?.mediaType == SleepMediaType.ONLINE) {
+                progressHandler.postDelayed(progressRunnable, 800)
+            }
+        }
+
+        progressHandler.removeCallbacksAndMessages(null)
+        when (radioService.sleepAssistantPlayList?.mediaType) {
+            SleepMediaType.LOCAL -> {
+                progressRunnable = localFileProgress
+                progressHandler.post(progressRunnable)
+                playerTime2.visibility = View.VISIBLE
+                playerTime1.visibility = View.VISIBLE
+            }
+            SleepMediaType.ONLINE -> {
+                progressRunnable = onlineStreamProgress
+                progressHandler.post(progressRunnable)
+                playerTime2.visibility = View.VISIBLE
+                playerTime1.visibility = View.VISIBLE
+            }
+            else -> {
+                playerTime2.visibility = View.GONE
+                playerTime1.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun getStringForTime(timeMs: Long, negative: Boolean): String? {
+        val totalSeconds = if (timeMs < 0) {
+            0
+        } else {
+            (timeMs + 500) / 1000
+        }
+
+        val seconds = totalSeconds % 60
+        val minutes = totalSeconds / 60 % 60
+
+        val formattedTime = if (totalSeconds > 3600) {
+            this.context?.getString(R.string.play_time_with_hour, totalSeconds / 3600, minutes, seconds)
+        } else {
+            this.context?.getString(R.string.play_time, minutes, seconds)
+        }
+
+        return if (negative) {
+            "-$formattedTime"
+        } else
+            formattedTime
+    }
+
+
+    fun getElapsedTime(percentPos: Float? = null): CharSequence? {
+        return if (percentPos == null) {
+            getStringForTime(radioService.getContentPos(), false)
+        } else {
+            getStringForTime((percentPos * radioService.getContentDuration()).roundToLong(), false)
+        }
+    }
+
+    fun getTimeLeft(percentPos: Float? = null): CharSequence? {
+        return if (percentPos == null) {
+            getStringForTime(radioService.getContentDuration() - radioService.getContentPos(), true)
+        } else {
+            getStringForTime(radioService.getContentDuration() - (percentPos * radioService.getContentDuration()).roundToLong(), true)
+        }
+    }
+
+    fun getBufferedSize(): CharSequence? {
+        val buff = radioService.getBufferedPos() - radioService.getContentPos()
+        return getStringForTime(buff, true)
+    }
+
+
     @Subscribe(sticky = true)
     fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
+        nowPlayingText.interactiveMode = playList.mediaType == SleepMediaType.LOCAL
         radioService.setMediaList(playList)
         playListModel.playlist.value = playList
         radioService.play()
@@ -276,16 +371,33 @@ class SleepAssistantFragment : Fragment() {
     @Subscribe(sticky = true)
     fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
         playListModel.playlist.value = playList
+        nowPlayingText?.interactiveMode = playList.mediaType == SleepMediaType.LOCAL
+
         radioService.setMediaList(playList)
     }
 
     @Subscribe
+    fun onPlayPosChanged(playPosition: PlayPosition) {
+        if (playPosition.final) {
+            radioService.seekToPercent(playPosition.playPositionPercent)
+            progressHandler.post(progressRunnable)
+        } else {
+            progressHandler.removeCallbacks(progressRunnable)
+        }
+
+        playerTime2.text = getTimeLeft(playPosition.playPositionPercent)
+        playerTime1.text = getElapsedTime(playPosition.playPositionPercent)
+    }
+
+    @Subscribe
     fun onPlayFileChanged(media: Media) {
-        nowPlayingText.text = media.title
+        nowPlayingText?.text = media.title ?: ""
     }
 
     @Subscribe
     fun persistMediaPosition(playList: SleepAssistantPlayList) {
+        if (this.context == null) return
+
         val dbHelper = sqLiteDBHelper(this.context!!)!!
 
         val activeTab = when (playList.mediaType) {

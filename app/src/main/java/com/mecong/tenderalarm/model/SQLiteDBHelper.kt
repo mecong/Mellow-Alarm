@@ -45,6 +45,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         setPropertyString(PropertyName.TRACK_NUMBER, "0", database)
         setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "0", database)
         setPropertyString(PropertyName.FIRST_ALARM_ADDED, "0", database)
+        setPropertyString(PropertyName.DB_CREATED, Calendar.getInstance().timeInMillis.toString(), database)
     }
 
     val allAlarms: Cursor
@@ -110,6 +111,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
                 put("next_not_canceled_time", entity.nextNotCanceledTime)
                 put("next_request_code", entity.nextRequestCode)// deprecated
                 put("tts_notification", entity.isTimeToSleepNotification)
+                put("vibration_type", entity.vibrationType)
                 put("heads_up", entity.isHeadsUp)
             }
 

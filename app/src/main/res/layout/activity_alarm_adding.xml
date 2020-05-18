@@ -478,6 +478,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/show_time_to_sleep_notification" />
+
+            <CheckBox
+                android:id="@+id/chbVibroAlarm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vibrate_with_alarm" />
         </LinearLayout>
 
         <LinearLayout
