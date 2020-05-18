@@ -17,7 +17,7 @@
         <item name="android:radioButtonStyle">@style/MyRadioButtonStyle</item>
         <item name="android:editTextStyle">@style/MyEditText</item>
 
-        <item name="android:textColorHint">@color/dimgray</item>
+        <item name="android:textColorHint">@color/colorPrimary</item>
 
         <item name="android:progressBackgroundTint">@color/dimgray</item>
         <item name="android:progressTint">@color/dimgray</item>

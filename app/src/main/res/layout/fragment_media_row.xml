@@ -8,7 +8,6 @@
     android:longClickable="true"
     tools:context=".sleep_assistant.media_selection.NoisesFragment">
 
-
     <TextView
         android:id="@+id/headerText"
         android:layout_width="0dp"
@@ -21,7 +20,7 @@
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:text="@string/cancel"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/urlText"
@@ -40,7 +39,7 @@
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:text="@string/cancel"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnDeleteItem"
         app:layout_constraintHorizontal_bias="0.0"
@@ -50,20 +49,19 @@
 
     <ImageButton
         android:id="@+id/btnDeleteItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="3dp"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
         android:adjustViewBounds="false"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:contentDescription="@string/delete"
         android:focusable="true"
-        android:minWidth="40sp"
         android:scaleType="center"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@android:drawable/ic_menu_delete"
         android:tint="@color/textColor3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/headerText"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

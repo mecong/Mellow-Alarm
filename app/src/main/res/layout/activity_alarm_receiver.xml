@@ -14,7 +14,7 @@
         android:format24Hour="hh:mm"
         android:gravity="center_horizontal"
         android:textAlignment="center"
-        android:textColor="#327C1F"
+        android:textColor="@color/colorAccent"
         android:textSize="44sp" />
 
     <TextView

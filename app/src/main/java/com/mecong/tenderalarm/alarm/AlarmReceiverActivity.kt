@@ -35,6 +35,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
         usePowerManagerWakeup()
         useWindowFlags()
         useActivityScreenMethods()
+        Timber.i("Trying to turn screen on")
     }
 
     override fun onPause() {
@@ -121,9 +122,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             Timber.i("Running alarm with id: $alarmId")
             val context = applicationContext
             if (alarmId == null) {
-                //HyperLog.e(TAG, "Alarm id is NULL")
                 exitProcess(0)
-                //                alarmId = "1";
             }
 
             initializeShaker()
@@ -140,7 +139,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             turnOffComponent.complexity = complexity
 
             val snoozeOnClickListener = View.OnClickListener { v ->
-                var time = v.tag.toString().toInt()
+                val time = v.tag.toString().toInt()
 //                if (BuildConfig.DEBUG) {
 //                    time = 1
 //                }
@@ -164,7 +163,6 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
                 sleepTimer.visibility = View.VISIBLE
 
                 val sleepText = Date(time * 60000L)
-                val handlerSleepTime = Handler()
                 sleepTimer.text = context.getString(R.string.sleep_timer, sleepText)
 
 

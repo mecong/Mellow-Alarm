@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/time"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         app:layout_constraintBottom_toTopOf="@+id/sliderSleepTime"
         app:layout_constraintStart_toStartOf="@+id/sliderSleepTime" />
 
@@ -62,7 +62,7 @@
         android:id="@+id/textViewMinutes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         app:layout_constraintEnd_toEndOf="@+id/sliderSleepTime"
         app:layout_constraintStart_toStartOf="@+id/sliderSleepTime"
         app:layout_constraintTop_toBottomOf="@+id/sliderSleepTime"
@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="1dp"
         android:text="@string/volume"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         app:layout_constraintBottom_toTopOf="@+id/sliderVolume"
         app:layout_constraintStart_toStartOf="@+id/sliderVolume" />
 
@@ -82,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="@string/volume_percent"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         app:layout_constraintEnd_toEndOf="@+id/sliderVolume"
         app:layout_constraintStart_toStartOf="@+id/sliderVolume"
         app:layout_constraintTop_toBottomOf="@+id/sliderVolume" />
@@ -152,7 +152,7 @@
         android:paddingEnd="3dp"
         android:paddingBottom="5dp"
         android:singleLine="true"
-        android:textColor="#E7E8E2"
+        android:textColor="@color/textColor3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

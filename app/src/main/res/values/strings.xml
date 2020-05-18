@@ -123,7 +123,7 @@
     <string name="all_alarms_are_off">All alarms are off</string>
     <string name="your_alarms">Your Alarm Clocks</string>
     <string name="next_alarm_soon">Alarm will go off soon</string>
-    <string name="next_alarm_today" comment="Alarm in %d h %d m">Alarm in %s %s</string>
+    <string name="next_alarm_today" comment="Alarm in %d h %02d m">Alarm in %s %s</string>
 
     <string name="first_alarm_prompt">Add your first alarm!</string>
     <string name="app_share_text">Tender Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>

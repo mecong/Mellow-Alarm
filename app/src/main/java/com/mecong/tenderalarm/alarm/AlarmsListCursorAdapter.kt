@@ -165,7 +165,7 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
         }
 
         if (BuildConfig.DEBUG) {
-            textRowAlarmTitle.text = """$alarmId::${entity.message}"""
+            textRowAlarmTitle.text = "$alarmId::${entity.message}"
         } else {
             textRowAlarmTitle.text = entity.message
         }
@@ -179,7 +179,7 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
                         .append(context.getString(key))
                         .append("</font>")
             } else {
-                builder.append("<font color='#555555'>")
+                builder.append("<font color='#666666'>")
                         .append(context.getString(key))
                         .append("</font>")
             }

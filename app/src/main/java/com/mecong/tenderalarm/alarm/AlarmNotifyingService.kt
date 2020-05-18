@@ -94,14 +94,13 @@ class AlarmNotifyingService : Service(), Player.EventListener {
             val sameId = intent.getBooleanExtra(ALARM_ID_PARAM_SAME_ID, false)
             val entity = sqLiteDBHelper(this)!!.getAlarmById(alarmId)
             Timber.i("Alarm notification service start: $entity")
-            Timber.i("Notification activity shown: ${AlarmReceiverActivity.IS_SHOWN}")
             usePowerManagerWakeup()
 
             if (sameId) {
                 val pm = this.getSystemService(Context.POWER_SERVICE) as PowerManager
                 val isScreenOn = pm.isInteractive
+                Timber.i("SameId received; Notification activity shown: ${AlarmReceiverActivity.IS_SHOWN}; Screen on: $isScreenOn")
                 if (!AlarmReceiverActivity.IS_SHOWN || !isScreenOn) {
-                    stopForeground(true)
                     startAlarmNotification(this, entity)
                 }
                 startSnoozedSound(entity)
@@ -368,6 +367,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         notificationManager.cancelAll()
         startForeground(43, alarmNotification.build())
     }
+
 
     companion object {
         const val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"

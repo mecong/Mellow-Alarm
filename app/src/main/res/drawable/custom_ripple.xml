@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/appGreen">
+    android:color="@color/colorAccent">
 
 
     <item android:id="@android:id/mask">
@@ -17,7 +17,7 @@
 
         <selector>
             <item android:state_selected="true">
-                <color android:color="@color/appGreen" />
+                <color android:color="@color/colorAccent" />
             </item>
 
             <item>
