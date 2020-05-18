@@ -42,6 +42,7 @@ class SleepAssistantFragment : Fragment() {
     private lateinit var sleepTimeRunnable: Runnable
     private val progressHandler: Handler = Handler()
     private lateinit var progressRunnable: Runnable
+    var showRadioBuffer = false
 
     var serviceBound = false
     lateinit var radioService: RadioService
@@ -69,6 +70,14 @@ class SleepAssistantFragment : Fragment() {
 
         val context = this.context!!
         val dbHelper = sqLiteDBHelper(context)!!
+
+        showRadioBuffer = dbHelper.getPropertyString(PropertyName.SHOW_RADIO_BUFFER) == "1"
+
+        textViewMinutes.setOnLongClickListener {
+            showRadioBuffer = !showRadioBuffer
+            dbHelper.setPropertyString(PropertyName.SHOW_RADIO_BUFFER, if (showRadioBuffer) "1" else "0")
+            true
+        }
 
         val activeTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
         initializeTabsAndMediaFragments(context, activeTab)
@@ -303,10 +312,15 @@ class SleepAssistantFragment : Fragment() {
                 playerTime1.visibility = View.VISIBLE
             }
             SleepMediaType.ONLINE -> {
-                progressRunnable = onlineStreamProgress
-                progressHandler.post(progressRunnable)
-                playerTime2.visibility = View.VISIBLE
-                playerTime1.visibility = View.VISIBLE
+                if (showRadioBuffer) {
+                    progressRunnable = onlineStreamProgress
+                    progressHandler.post(progressRunnable)
+                    playerTime2.visibility = View.VISIBLE
+                    playerTime1.visibility = View.VISIBLE
+                } else {
+                    playerTime2.visibility = View.GONE
+                    playerTime1.visibility = View.GONE
+                }
             }
             else -> {
                 playerTime2.visibility = View.GONE

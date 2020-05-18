@@ -45,6 +45,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         setPropertyString(PropertyName.TRACK_NUMBER, "0", database)
         setPropertyString(PropertyName.AUTOSTART_TURNED_ON, "0", database)
         setPropertyString(PropertyName.FIRST_ALARM_ADDED, "0", database)
+        setPropertyString(PropertyName.SHOW_RADIO_BUFFER, "0", database)
         setPropertyString(PropertyName.DB_CREATED, Calendar.getInstance().timeInMillis.toString(), database)
     }
 
