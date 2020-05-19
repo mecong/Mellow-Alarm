@@ -25,7 +25,7 @@ class UpcomingAlarmNotificationReceiver : BroadcastReceiver() {
         val sqLiteDBHelper = sqLiteDBHelper(context)
         val entity = sqLiteDBHelper!!.getAlarmById(alarmId) ?: return
         if (actionCancelAlarm == intent.action) {
-            //Timber.i( "Canceling alarm: $entity")
+            Timber.i("Canceling alarm: $entity")
             if (entity.isRepeatedAlarm) {
                 entity.canceledNextAlarms = 1
                 sqLiteDBHelper.addOrUpdateAlarm(entity)

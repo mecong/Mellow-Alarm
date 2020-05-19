@@ -19,7 +19,7 @@
         android:scrollHorizontally="true"
         android:textColor="@color/textColor3"
         tools:text="Playlist 1"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnEditItem"

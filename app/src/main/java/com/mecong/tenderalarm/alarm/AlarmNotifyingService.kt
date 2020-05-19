@@ -165,11 +165,11 @@ class AlarmNotifyingService : Service(), Player.EventListener {
         val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, streamMaxVolume, 0)
 
-        val defaultVolume = 0.01f
+        val defaultVolume = 0.1f
         val volumeIncreaseDelayMs = 2000L
         val ticksTimeMs = entity!!.ticksTime * 60 * 1000
         val amountIncreases = ticksTimeMs / volumeIncreaseDelayMs
-        var volumeIncreaseStep = if (amountIncreases.compareTo(0) == 0) 0.01f else (0.9f - defaultVolume) / amountIncreases
+        var volumeIncreaseStep = if (amountIncreases.compareTo(0) == 0) 0.01f else (0.7f - defaultVolume) / amountIncreases
 
         val tickSound = if (entity.ticksType == 0) R.raw.tick else R.raw.ding1
 

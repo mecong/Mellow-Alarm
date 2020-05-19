@@ -18,7 +18,7 @@
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:textColor="@color/textColor3"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
