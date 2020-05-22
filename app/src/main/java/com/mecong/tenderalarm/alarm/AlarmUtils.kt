@@ -105,7 +105,7 @@ object AlarmUtils {
         alarmMgr.cancel(operation)
         if (nextMorningAlarm != null) {
             var triggerAfter = (SystemClock.elapsedRealtime()
-                    + nextMorningAlarm.nextTime) - SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME * HOUR - Calendar.getInstance().timeInMillis
+                    + nextMorningAlarm.nextNotCanceledTime) - SleepTimeAlarmReceiver.RECOMMENDED_SLEEP_TIME * HOUR - Calendar.getInstance().timeInMillis
 
             triggerAfter = max(0, triggerAfter)
             alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, triggerAfter,
@@ -125,13 +125,13 @@ object AlarmUtils {
         turnOffSnoozeAlarm(entity, alarmMgr, context)
     }
 
-    fun turnOffPrimaryAlarm(entity: AlarmEntity, alarmMgr: AlarmManager, context: Context) {
+    private fun turnOffPrimaryAlarm(entity: AlarmEntity, alarmMgr: AlarmManager, context: Context) {
         val alarmIntent = primaryAlarmPendingIntent(entity, context)
 
         alarmMgr.cancel(alarmIntent)
     }
 
-    fun turnOffUpcomingNotificationAlarm(entity: AlarmEntity, alarmMgr: AlarmManager, context: Context) {
+    private fun turnOffUpcomingNotificationAlarm(entity: AlarmEntity, alarmMgr: AlarmManager, context: Context) {
         val intentToFire = Intent(context, UpcomingAlarmNotificationReceiver::class.java)
         val alarmIntent = PendingIntent.getBroadcast(context,
                 entity.upcomingAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)

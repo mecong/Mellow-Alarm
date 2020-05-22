@@ -51,7 +51,6 @@ class AlarmFragment : Fragment() {
 
         alarms_list.adapter = alarmsAdapter
         updateNextActiveAlarm(sqLiteDBHelper)
-
     }
 
     @Subscribe
@@ -118,7 +117,7 @@ class AlarmFragment : Fragment() {
             }
             textNextAlarmDate!!.text = ""
         }
-        setUpNextSleepTimeNotification(context)
+//        setUpNextSleepTimeNotification(context)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -129,6 +128,7 @@ class AlarmFragment : Fragment() {
         if (requestCode == ALARM_ADDING_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
             updateNextActiveAlarm(sqLiteDBHelper)
+            setUpNextSleepTimeNotification(context)
         }
     }
 
@@ -156,6 +156,7 @@ class AlarmFragment : Fragment() {
         sqLiteDBHelper!!.deleteAlarm(id!!)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
+        setUpNextSleepTimeNotification(context)
     }
 
     fun setActive(id: String, active: Boolean) {
@@ -169,6 +170,7 @@ class AlarmFragment : Fragment() {
         }
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
+        setUpNextSleepTimeNotification(context)
     }
 
     fun cancelNextAlarms(id: String, num: Int) {
@@ -180,6 +182,7 @@ class AlarmFragment : Fragment() {
         setUpNextAlarm(id, context, true)
         alarmsAdapter!!.changeCursor(sqLiteDBHelper.allAlarms)
         updateNextActiveAlarm(sqLiteDBHelper)
+        setUpNextSleepTimeNotification(context)
     }
 
     fun editAlarm(id: String) {
