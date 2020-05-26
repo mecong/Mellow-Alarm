@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.2995896" />
+        app:layout_constraintGuide_percent="0.33" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -184,5 +184,15 @@
         app:layout_constraintBottom_toTopOf="@+id/nowPlayingText"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="14:22" />
+
+    <ImageButton
+        android:id="@+id/ibPlayOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tint="@color/textColor3"
+        app:layout_constraintBottom_toTopOf="@+id/textViewVolumePercent"
+        app:layout_constraintEnd_toStartOf="@+id/sliderVolume"
+        app:layout_constraintStart_toEndOf="@+id/sliderSleepTime"
+        app:srcCompat="@drawable/ic_baseline_shuffle_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

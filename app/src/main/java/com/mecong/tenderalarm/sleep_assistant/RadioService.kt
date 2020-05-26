@@ -67,6 +67,14 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
             exoPlayer.volume = value
         }
 
+    var shuffleModeEnabled: Boolean
+        set(value) {
+            exoPlayer.shuffleModeEnabled = value
+        }
+        get() {
+            return exoPlayer.shuffleModeEnabled
+        }
+
     private var phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
         override fun onCallStateChanged(state: Int, incomingNumber: String) {
             if ((state == TelephonyManager.CALL_STATE_OFFHOOK
@@ -177,7 +185,6 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
                             .build()
                     this.setAudioAttributes(mPlaybackAttributes, true)
                 }
-
 
         notificationManager = MediaNotificationManager(this)
 

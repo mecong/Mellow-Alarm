@@ -42,7 +42,7 @@ class SleepAssistantFragment : Fragment() {
     private lateinit var sleepTimeRunnable: Runnable
     private val progressHandler: Handler = Handler()
     private lateinit var progressRunnable: Runnable
-    var showRadioBuffer = false
+    private var showRadioBuffer = false
 
     var serviceBound = false
     lateinit var radioService: RadioService
@@ -52,6 +52,18 @@ class SleepAssistantFragment : Fragment() {
             radioService = (binder as LocalBinder).service
             serviceBound = true
             radioService.audioVolume = volume / 100
+
+            val dbHelper = sqLiteDBHelper(this@SleepAssistantFragment.context!!)!!
+            val savedShuffle = dbHelper.getPropertyString(PropertyName.SHUFFLE)?.toBoolean() ?: false
+            radioService.shuffleModeEnabled = savedShuffle
+
+            ibPlayOrder.setImageResource(
+                    if (radioService.shuffleModeEnabled)
+                        R.drawable.ic_baseline_shuffle_24
+                    else
+                        R.drawable.ic_baseline_trending_flat_24
+            )
+
 
             if (!EventBus.getDefault().isRegistered(this@SleepAssistantFragment)) {
                 EventBus.getDefault().register(this@SleepAssistantFragment)
@@ -145,6 +157,20 @@ class SleepAssistantFragment : Fragment() {
         nowPlayingText.setOnClickListener {
             val currentTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
             tabs.getTabAt(currentTab % tabs.tabCount)!!.select()
+        }
+
+        ibPlayOrder.setOnClickListener {
+            radioService.shuffleModeEnabled = !radioService.shuffleModeEnabled
+
+            ibPlayOrder.setImageResource(
+                    if (radioService.shuffleModeEnabled) {
+                        dbHelper.setPropertyString(PropertyName.SHUFFLE, "true")
+                        R.drawable.ic_baseline_shuffle_24
+                    } else {
+                        dbHelper.setPropertyString(PropertyName.SHUFFLE, "false")
+                        R.drawable.ic_baseline_trending_flat_24
+                    }
+            )
         }
 
     }
@@ -310,6 +336,7 @@ class SleepAssistantFragment : Fragment() {
                 progressHandler.post(progressRunnable)
                 playerTime2.visibility = View.VISIBLE
                 playerTime1.visibility = View.VISIBLE
+                ibPlayOrder.visibility = View.VISIBLE
             }
             SleepMediaType.ONLINE -> {
                 if (showRadioBuffer) {
@@ -321,10 +348,13 @@ class SleepAssistantFragment : Fragment() {
                     playerTime2.visibility = View.GONE
                     playerTime1.visibility = View.GONE
                 }
+                ibPlayOrder.visibility = View.INVISIBLE
             }
             else -> {
                 playerTime2.visibility = View.GONE
                 playerTime1.visibility = View.GONE
+                ibPlayOrder.visibility = View.INVISIBLE
+
             }
         }
     }
