@@ -1,11 +1,16 @@
 package com.mecong.tenderalarm.sleep_assistant.media_selection
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.ContentResolver
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.OpenableColumns
 import android.view.*
 import android.view.View.GONE
@@ -13,6 +18,8 @@ import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
@@ -24,9 +31,13 @@ import com.mecong.tenderalarm.sleep_assistant.Media
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayList
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListActive
 import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListIdle
+import com.zaphlabs.filechooser.KnotFileChooser
+import com.zaphlabs.filechooser.Sorter
 import kotlinx.android.synthetic.main.fragment_local_media.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import timber.log.Timber
+import java.io.File
 import java.util.*
 
 
@@ -118,7 +129,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
             }
 
             else -> {
-                buttonAdd.setOnClickListener { performFileSearch() }
+                buttonAdd.setOnClickListener { performNewFileSearch() }
 
                 backButton.visibility = VISIBLE
                 val savedActiveTab = sqLiteDBHelper.getPropertyInt(ACTIVE_TAB)
@@ -156,9 +167,9 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
             val title = textUrl.text.toString()
             if (title.isNotBlank()) {
                 val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-                sqLiteDBHelper.addPlaylist(title)
+                val addedPlaylistId = sqLiteDBHelper.addPlaylist(title)
                 dialog.dismiss()
-                playlistViewAdapter?.updateDataSet(sqLiteDBHelper.getAllPlaylists())
+                onPlaylistItemClick(title, addedPlaylistId, -1)
             } else {
                 Toast.makeText(context, context!!.getString(R.string.empty_playlist_name_warning), Toast.LENGTH_SHORT).show()
             }
@@ -186,12 +197,18 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         super.onActivityResult(requestCode, resultCode, resultData)
         // The ACTION_OPEN_DOCUMENT intent was sent with the request code
         // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
+
+        // Gets a content resolver instance
+        // Gets a content resolver instance
+        val cr: ContentResolver = this.context!!.contentResolver
+
         // response to some other intent, and the code below shouldn't run at all.
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
             // provided to this method as a parameter.
             // Pull that URI using resultData.getData().
+            var folderName: String? = null
 
             val uriList = mutableListOf<Uri?>()
             val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
@@ -199,30 +216,59 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
                 val clipData = resultData.clipData
                 if (clipData == null) {
-                    val uri = resultData.data
+                    val uri = resultData.data!!
+                    val type = cr.getType(uri)
+                    Timber.i("type: $type")
+
+
+                    //content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FEnigma%2FOST%2BTunguska%2BSecret%2BFiles%2B3%2BQueen%2Bfor%2Ba%2BDay%2BSecret%2BFiles%2B3%2BOST.mp3
+                    //content://com.android.providers.downloads.documents/document/msf%3A25
+
+                    if (folderName == null) {
+                        val realPath = RealPathUtil.getRealPath(this.context!!, uri)
+                        Timber.i("RealPath: $realPath")
+                        if (realPath != null) {
+                            val file = File(realPath)
+                            folderName = file.parentFile?.name
+                        }
+                    }
                     uriList.add(uri)
+
                     //HyperLog.i(AlarmUtils.TAG, "Uri: " + uri?.path)
-                    sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), dumpFileMetaData(uri))
+                    sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), getFileNameFromContentProvider(uri))
                 } else {
                     for (i in 0 until clipData.itemCount) {
                         val uri = clipData.getItemAt(i).uri
+                        if (folderName == null) {
+                            val realPath = RealPathUtil.getRealPath(this.context!!, uri!!)
+                            Timber.i("RealPath: $realPath")
+                            if (realPath != null) {
+                                val file = File(realPath)
+                                folderName = file.parentFile?.name
+                            }
+                        }
                         uriList.add(uri)
                         //HyperLog.i(AlarmUtils.TAG, "Uri: " + uri.path!! + " i=$i")
-                        sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), dumpFileMetaData(uri))
+                        sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, uri.toString(), getFileNameFromContentProvider(uri))
                     }
                 }
 
+                renamePlaylist(folderName)
+                val contentResolver = context!!.contentResolver
+                val persistedUriPermissions = contentResolver.persistedUriPermissions
+                Timber.i("persistedUriPermissions size: ${persistedUriPermissions.size}")
+
+                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
                 AsyncTask.execute {
+                    var count = 0
+
                     uriList.filterNotNull().forEach {
-                        var done = false
-                        while (!done) {
-                            try {
-                                val contentResolver = context!!.applicationContext.contentResolver
-                                val takeFlags: Int = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                contentResolver.takePersistableUriPermission(it, takeFlags)
-                                done = true
-                            } catch (ex: Exception) {
-                            }
+                        try {
+                            contentResolver.takePersistableUriPermission(it, takeFlags)
+                            count++
+                        } catch (ex: Exception) {
+                            Timber.e(ex, "Count: $count")
                         }
                     }
                 }
@@ -231,41 +277,118 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 mediaItemViewAdapter?.updateDataSet(cursor)
             }
         }
-
     }
 
-    private fun dumpFileMetaData(uri: Uri?): String? {
-        // The query, since it only applies to a single document, will only return
-        // one row. There's no need to filter, sort, or select fields, since we want
-        // all fields for one document.
+    private fun renamePlaylist(newTitle: String?) {
+        if (newTitle != null && mediaItemViewAdapter?.itemCount == 0) {
+            onPlaylistItemEditClick(newTitle, currentPlaylistID, -1)
+            currentPlaylistTitle = newTitle
+            fragmentTitle.text = newTitle
+        }
+    }
+
+    private fun getFileNameFromContentProvider(uri: Uri?): String? {
         activity?.contentResolver
-                ?.query(uri!!, null, null, null, null, null).use { cursor ->
+                ?.query(uri!!, arrayOf(OpenableColumns.DISPLAY_NAME), null,
+                        null, null, null).use { cursor ->
                     // moveToFirst() returns false if the cursor has 0 rows.  Very handy for
                     // "if there's anything to look at, look at it" conditionals.
                     if (cursor != null && cursor.moveToFirst()) {
                         // Note it's called "Display Name".  This is
                         // provider-specific, and might not necessarily be the file name.
-                        val displayName = cursor.getString(
+
+                        return cursor.getString(
                                 cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-
-                        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                        // If the size is unknown, the value stored is null.  But since an
-                        // int can't be null in Java, the behavior is implementation-specific,
-                        // which is just a fancy term for "unpredictable".  So as
-                        // a rule, check if it's null before assigning to an int.  This will
-                        // happen often:  The storage API allows for remote files, whose
-                        // size might not be locally known.
-
-                        val size: String = if (!cursor.isNull(sizeIndex)) {
-                            cursor.getString(sizeIndex)
-                        } else {
-                            "Unknown"
-                        }
-                        //HyperLog.i(AlarmUtils.TAG, "Size: $size")
-                        return displayName
                     }
                 }
         return null
+    }
+
+    private fun isReadStoragePermissionGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this.context!!, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Timber.v("Filesystem read Permission is granted1")
+                true
+            } else {
+                Timber.v("Filesystem read is revoked1")
+                ActivityCompat.requestPermissions(this.activity!!, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        3)
+                false
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Timber.v("Filesystem read Permission is granted automatically")
+            true
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            3 -> {
+                Timber.d("External storage1")
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Timber.v("""Permission: ${permissions[0]}was ${grantResults[0]}""")
+                    //resume tasks needing this permission
+                    openFilesViaKnot()
+                } else {
+                    performFileSearch()
+                }
+            }
+        }
+    }
+
+    private fun openFilesViaKnot() {
+
+        KnotFileChooser(this.context!!,
+                allowBrowsing = true, // Allow User Browsing
+                allowCreateFolder = false, // Allow User to create Folder
+                allowMultipleFiles = true, // Allow User to Select Multiple Files
+                allowSelectFolder = false, // Allow User to Select Folder
+                minSelectedFiles = 1, // Allow User to Selec Minimum Files Selected
+                maxSelectedFiles = 500, // Allow User to Selec Minimum Files Selected
+                showFiles = true, // Show Files or Show Folder Only
+                showFoldersFirst = true, // Show Folders First or Only Files
+                showFolders = true, //Show Folders
+                showHiddenFiles = false, // Show System Hidden Files
+                initialFolder = Environment.getExternalStorageDirectory(), //Initial Folder
+//                initialFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), //Initial Folder
+//                initialFolder = this.context!!.getExternalFilesDir(Environment.DIRECTORY_MUSIC)!!, //Initial Folder
+//                initialFolder = File("/storage/sdcard"),
+//                initialFolder = File("/"),
+                restoreFolder = false, //Restore Folder After Adding
+//                fileType = FileType.AUDIO, //Select Which Files you want to show (By Default : ALL)
+                cancelable = true) //Dismiss Dialog On Cancel (Optional)
+                .title("Select Media Files") // Title of Dialog
+                .sorter(Sorter.ByNameInAscendingOrder) // Sort Data (Optional)
+
+                .onSelectedFilesListener { filesList -> // Callback Returns Selected File Object  (Optional)
+//                    Toast.makeText(this.context!!, filesList.toString(), Toast.LENGTH_SHORT).show()
+                    val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
+                    filesList.filter {
+                        it.name.endsWith(".mp3", true) ||
+                                it.name.endsWith(".flac", true) ||
+                                it.name.endsWith(".ogg", true) ||
+                                it.name.endsWith(".wav", true) ||
+                                it.name.endsWith(".amr", true)
+                    }.forEach {
+                        sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, it.toString(), it.name)
+                    }
+
+                    renamePlaylist(filesList.firstOrNull()?.parentFile?.name)
+
+                    val cursor = sqLiteDBHelper.getLocalMedia(currentPlaylistID)
+                    mediaItemViewAdapter?.updateDataSet(cursor)
+                }
+
+                .show()
+    }
+
+
+    private fun performNewFileSearch() {
+        if (isReadStoragePermissionGranted()) {
+            openFilesViaKnot()
+        }
     }
 
     private fun performFileSearch() {
@@ -274,13 +397,34 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         // Filter to only show results that can be "opened", such as a
         // file (as opposed to a list of contacts or timezones)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        // Filter to show only images, using the image MIME data type.
-        // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+
         // To search for all documents available via installed storage providers,
-        // it would be "*/*".
-        //        intent.setType("audio/mpeg audio/aac audio/wav");
-        intent.type = "audio/*"
+        intent.type = "*/*"
+
+//        <data android:mimeType="application/mp4*"/>
+//        <data android:mimeType="application/mpeg*"/>
+//        <data android:mimeType="application/itunes"/>
+//        <data android:mimeType="application/ogg"/>
+//        <data android:mimeType="application/opus"/>
+//        <data android:mimeType="application/x-ogg"/>
+//        <data android:mimeType="application/x-flac"/>
+//        <data android:mimeType="application/x-mpegurl"/>
+//        <data android:mimeType="application/x-extension-mp4"/>
+//        <data android:mimeType="application/vnd.apple.mpegurl"/>
+//        <data android:mimeType="application/mpegurl"/>
+
+
+        val extraMimeTypes = arrayOf("audio/mpeg", "audio/aac", "audio/wav",
+                "audio/x-flac", "audio/flac", "audio/ogg", "audio/vorbis", "audio/mid")
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, extraMimeTypes)
+
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
         startActivityForResult(intent, READ_REQUEST_CODE)
     }
 

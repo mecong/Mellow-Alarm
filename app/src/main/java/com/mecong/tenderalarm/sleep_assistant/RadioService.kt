@@ -328,7 +328,7 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     }
 
     override fun onPlayerError(error: ExoPlaybackException) {
-        //HyperLog.e(AlarmUtils.TAG, "Can't play: $error")
+        Timber.e(error)
         EventBus.getDefault().postSticky(RadioServiceStatus.ERROR)
         playErrorsCount++
         if (playErrorsCount < currentMediaSource!!.size && sleepAssistantPlayList!!.mediaType == SleepMediaType.LOCAL) {
