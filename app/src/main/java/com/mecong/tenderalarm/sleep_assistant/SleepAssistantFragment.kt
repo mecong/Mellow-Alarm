@@ -57,14 +57,6 @@ class SleepAssistantFragment : Fragment() {
             val savedShuffle = dbHelper.getPropertyString(PropertyName.SHUFFLE)?.toBoolean() ?: false
             radioService.shuffleModeEnabled = savedShuffle
 
-            ibPlayOrder.setImageResource(
-                    if (radioService.shuffleModeEnabled)
-                        R.drawable.ic_baseline_shuffle_24
-                    else
-                        R.drawable.ic_baseline_trending_flat_24
-            )
-
-
             if (!EventBus.getDefault().isRegistered(this@SleepAssistantFragment)) {
                 EventBus.getDefault().register(this@SleepAssistantFragment)
             }
@@ -158,22 +150,13 @@ class SleepAssistantFragment : Fragment() {
             val currentTab = dbHelper.getPropertyInt(PropertyName.ACTIVE_TAB) ?: 2
             tabs.getTabAt(currentTab % tabs.tabCount)!!.select()
         }
-
-        ibPlayOrder.setOnClickListener {
-            radioService.shuffleModeEnabled = !radioService.shuffleModeEnabled
-
-            ibPlayOrder.setImageResource(
-                    if (radioService.shuffleModeEnabled) {
-                        dbHelper.setPropertyString(PropertyName.SHUFFLE, "true")
-                        R.drawable.ic_baseline_shuffle_24
-                    } else {
-                        dbHelper.setPropertyString(PropertyName.SHUFFLE, "false")
-                        R.drawable.ic_baseline_trending_flat_24
-                    }
-            )
-        }
-
     }
+
+    fun flipShuffleMode(): Boolean {
+        radioService.shuffleModeEnabled = !radioService.shuffleModeEnabled
+        return radioService.shuffleModeEnabled
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -189,7 +172,9 @@ class SleepAssistantFragment : Fragment() {
     private fun initializeTabsAndMediaFragments(context: Context?, activeTab: Int) {
         if (context == null) return
 
-        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager, context)
+        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager,
+                context,
+                this)
         viewPager.adapter = soundListsPagerAdapter
         tabs.setupWithViewPager(viewPager)
         tabs.setSelectedTabIndicator(null)
@@ -336,7 +321,6 @@ class SleepAssistantFragment : Fragment() {
                 progressHandler.post(progressRunnable)
                 playerTime2.visibility = View.VISIBLE
                 playerTime1.visibility = View.VISIBLE
-                ibPlayOrder.visibility = View.VISIBLE
             }
             SleepMediaType.ONLINE -> {
                 if (showRadioBuffer) {
@@ -348,13 +332,10 @@ class SleepAssistantFragment : Fragment() {
                     playerTime2.visibility = View.GONE
                     playerTime1.visibility = View.GONE
                 }
-                ibPlayOrder.visibility = View.INVISIBLE
             }
             else -> {
                 playerTime2.visibility = View.GONE
                 playerTime1.visibility = View.GONE
-                ibPlayOrder.visibility = View.INVISIBLE
-
             }
         }
     }

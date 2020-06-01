@@ -14,8 +14,8 @@
         android:background="@null"
         android:contentDescription="@string/back"
         android:src="@drawable/baseline_arrow_back_ios_24"
-        android:tint="#3BDC0E"
-        app:layout_constraintBottom_toTopOf="@+id/mediaListView"
+        android:tint="@color/appGreen"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,19 +30,49 @@
         android:text="@string/local_audio"
         android:textColor="@color/textColor3"
         android:textStyle="italic"
-        app:layout_constraintBottom_toTopOf="@+id/mediaListView"
-        app:layout_constraintEnd_toStartOf="@+id/buttonAdd"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toStartOf="@+id/ibPlayOrder"
         app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
+        android:id="@+id/ibPlayOrder"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="false"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/shuffle"
+        android:focusable="true"
+        android:scaleType="center"
+        android:tint="@color/textColor3"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintRight_toLeftOf="@+id/buttonAdd"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_shuffle_24" />
+
+    <ImageButton
         android:id="@+id/buttonAdd"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="false"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/add"
+        android:focusable="true"
+        android:scaleType="center"
+        android:tint="@color/textColor3"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_playlist_add_24" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="@string/add"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="50dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mediaListView"
@@ -50,7 +80,9 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonAdd" />
+        app:layout_constraintTop_toBottomOf="@+id/guideline3"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

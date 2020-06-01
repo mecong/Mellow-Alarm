@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -64,7 +65,7 @@ class OnlineMediaFragment : Fragment(), FileItemClickListener {
 
         mediaListView.adapter = mediaItemViewAdapter
 
-        val buttonAdd = view.findViewById<Button>(R.id.buttonAdd)
+        val buttonAdd = view.findViewById<ImageButton>(R.id.buttonAdd)
         buttonAdd.setOnClickListener {
             val dialog = Dialog(context!!, R.style.UrlDialogCustom)
             dialog.setContentView(R.layout.url_input_dialog)

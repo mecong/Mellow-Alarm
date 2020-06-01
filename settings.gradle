@@ -1,1 +1,2 @@
-include ':app'
+include ':app', ':filechooser'
+project(':filechooser').projectDir = new File('../../KnotFileChooser-Android/filechooser')

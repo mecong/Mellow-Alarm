@@ -18,21 +18,20 @@ import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
+import android.widget.Toast.LENGTH_SHORT
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.PlaylistEntity
+import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.PropertyName.*
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
-import com.mecong.tenderalarm.sleep_assistant.Media
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayList
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListActive
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantPlayListIdle
+import com.mecong.tenderalarm.sleep_assistant.*
 import com.zaphlabs.filechooser.KnotFileChooser
 import com.zaphlabs.filechooser.Sorter
+import com.zaphlabs.filechooser.filters.ExtensionFilter
 import kotlinx.android.synthetic.main.fragment_local_media.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -43,7 +42,7 @@ import java.util.*
 
 private const val READ_REQUEST_CODE = 42
 
-class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemClickListener {
+class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment) : Fragment(), FileItemClickListener, PlaylistItemClickListener {
 
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
     private var playlistViewAdapter: PlaylistViewAdapter? = null
@@ -107,6 +106,30 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
         fragmentTitle.setOnClickListener(goBack)
         backButton.setOnClickListener(goBack)
+
+        val savedShuffle = sqLiteDBHelper.getPropertyString(SHUFFLE)?.toBoolean() ?: false
+        ibPlayOrder.setImageResource(
+                if (savedShuffle) {
+                    R.drawable.ic_baseline_shuffle_24
+                } else {
+                    R.drawable.ic_baseline_trending_flat_24
+                }
+        )
+
+        ibPlayOrder.setOnClickListener {
+            val shuffleModeEnabled = sleepAssistantFragment.flipShuffleMode()
+            ibPlayOrder.setImageResource(
+                    if (shuffleModeEnabled) {
+                        Toast.makeText(this.context, R.string.shuffle_mode_on, LENGTH_SHORT).show()
+                        sqLiteDBHelper.setPropertyString(PropertyName.SHUFFLE, "true")
+                        R.drawable.ic_baseline_shuffle_24
+                    } else {
+                        Toast.makeText(this.context, R.string.shuffle_mode_off, LENGTH_SHORT).show()
+                        sqLiteDBHelper.setPropertyString(PropertyName.SHUFFLE, "false")
+                        R.drawable.ic_baseline_trending_flat_24
+                    }
+            )
+        }
     }
 
     @Subscribe
@@ -268,6 +291,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                             contentResolver.takePersistableUriPermission(it, takeFlags)
                             count++
                         } catch (ex: Exception) {
+                            //private static final int MAX_PERSISTED_URI_GRANTS = 128;
                             Timber.e(ex, "Count: $count")
                         }
                     }
@@ -312,8 +336,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 true
             } else {
                 Timber.v("Filesystem read is revoked1")
-                ActivityCompat.requestPermissions(this.activity!!, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        3)
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 3)
                 false
             }
         } else { //permission is automatically granted on sdk<23 upon installation
@@ -339,7 +362,6 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     }
 
     private fun openFilesViaKnot() {
-
         KnotFileChooser(this.context!!,
                 allowBrowsing = true, // Allow User Browsing
                 allowCreateFolder = false, // Allow User to create Folder
@@ -351,7 +373,9 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 showFoldersFirst = true, // Show Folders First or Only Files
                 showFolders = true, //Show Folders
                 showHiddenFiles = false, // Show System Hidden Files
-                initialFolder = Environment.getExternalStorageDirectory(), //Initial Folder
+//                initialFolder = Environment.getExternalStorageDirectory(), //Initial Folder
+//                initialFolder = File("/mnt/sdcard"),
+                initialFolder = Environment.getExternalStorageDirectory().absoluteFile,
 //                initialFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), //Initial Folder
 //                initialFolder = this.context!!.getExternalFilesDir(Environment.DIRECTORY_MUSIC)!!, //Initial Folder
 //                initialFolder = File("/storage/sdcard"),
@@ -360,18 +384,13 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 //                fileType = FileType.AUDIO, //Select Which Files you want to show (By Default : ALL)
                 cancelable = true) //Dismiss Dialog On Cancel (Optional)
                 .title("Select Media Files") // Title of Dialog
+                .addFilter(ExtensionFilter("mp3", "flac", "ogg", "wav", "amr"))
                 .sorter(Sorter.ByNameInAscendingOrder) // Sort Data (Optional)
 
                 .onSelectedFilesListener { filesList -> // Callback Returns Selected File Object  (Optional)
 //                    Toast.makeText(this.context!!, filesList.toString(), Toast.LENGTH_SHORT).show()
                     val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
-                    filesList.filter {
-                        it.name.endsWith(".mp3", true) ||
-                                it.name.endsWith(".flac", true) ||
-                                it.name.endsWith(".ogg", true) ||
-                                it.name.endsWith(".wav", true) ||
-                                it.name.endsWith(".amr", true)
-                    }.forEach {
+                    filesList.forEach {
                         sqLiteDBHelper.addLocalMediaUrl(currentPlaylistID, it.toString(), it.name)
                     }
 
@@ -380,7 +399,6 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                     val cursor = sqLiteDBHelper.getLocalMedia(currentPlaylistID)
                     mediaItemViewAdapter?.updateDataSet(cursor)
                 }
-
                 .show()
     }
 
@@ -390,6 +408,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
             openFilesViaKnot()
         }
     }
+
 
     private fun performFileSearch() {
         // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file browser.

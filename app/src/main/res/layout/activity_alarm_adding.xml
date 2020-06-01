@@ -71,6 +71,7 @@
                 android:onClick="timeTextViewClick"
                 android:textAlignment="center"
                 android:textSize="56sp"
+                style="?android:attr/textViewStyle"
                 tools:text="00:00" />
 
             <TextView

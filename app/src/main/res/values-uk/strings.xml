@@ -101,6 +101,9 @@
 
     <string name="system_volume_toast">Системна гучність встановлена на 30%</string>
     <string name="vibrate_with_alarm">Будити вібрацією</string>
+    <string name="shuffle">Випадково</string>
+    <string name="shuffle_mode_on">Випадковий порядок програвання увімкнено</string>
+    <string name="shuffle_mode_off">Випадковий порядок програвання вимкнено</string>
 
 
     <plurals name="alarm_turn_off_prompt">

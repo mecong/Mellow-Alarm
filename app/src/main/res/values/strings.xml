@@ -134,6 +134,9 @@
 
     <string name="play_time" translatable="false">%02d:%02d</string>
     <string name="play_time_with_hour" translatable="false">%d:%02d:%02d</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="shuffle_mode_on">Shuffle on</string>
+    <string name="shuffle_mode_off">Shuffle off</string>
 
     <string-array name="ticks_type_array">
         <item>@string/low_sound</item>

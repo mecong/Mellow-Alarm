@@ -13,7 +13,6 @@
         android:layout_marginTop="36dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/tr1_background"
-        app:color="#424040"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toStartOf="@+id/sliderVolume"
         app:layout_constraintHorizontal_bias="0.0"
@@ -36,8 +35,7 @@
         app:layout_constraintStart_toEndOf="@+id/sliderSleepTime"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        app:max="100"
-        app:mcolor="#C3C50F0F" />
+        app:max="100" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -122,7 +120,7 @@
         app:tabPaddingEnd="4dp"
         app:tabPaddingStart="4dp"
         app:tabRippleColor="@null"
-        app:tabTextColor="#555353">
+        app:tabTextColor="@color/textColor3">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -184,15 +182,5 @@
         app:layout_constraintBottom_toTopOf="@+id/nowPlayingText"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="14:22" />
-
-    <ImageButton
-        android:id="@+id/ibPlayOrder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="@color/textColor3"
-        app:layout_constraintBottom_toTopOf="@+id/textViewVolumePercent"
-        app:layout_constraintEnd_toStartOf="@+id/sliderVolume"
-        app:layout_constraintStart_toEndOf="@+id/sliderSleepTime"
-        app:srcCompat="@drawable/ic_baseline_shuffle_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
