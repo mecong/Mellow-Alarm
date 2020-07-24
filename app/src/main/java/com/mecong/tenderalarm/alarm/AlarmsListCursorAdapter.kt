@@ -175,7 +175,7 @@ class AlarmsListCursorAdapter constructor(private val activity: AlarmFragment, c
         val builder = StringBuilder()
         for ((key, value) in entity.daysAsMap) {
             if (java.lang.Boolean.TRUE == value) {
-                builder.append("<font color='#E9DEDE'>")
+                builder.append("<font color='#EEE9DEDE'>")
                         .append(context.getString(key))
                         .append("</font>")
             } else {

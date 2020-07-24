@@ -11,7 +11,7 @@ import com.mecong.tenderalarm.alarm.AlarmUtils.setUpNextAlarm
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import timber.log.Timber
 
-class TenderAlarmReceiver : BroadcastReceiver() {
+class MellowAlarmReceiver : BroadcastReceiver() {
     //adb shell dumpsys alarm > alarms.dump
     override fun onReceive(context: Context, intent: Intent) {
         val alarmId = intent.getStringExtra(ALARM_ID_PARAM) ?: return
@@ -21,7 +21,7 @@ class TenderAlarmReceiver : BroadcastReceiver() {
         UpcomingAlarmNotificationReceiver.cancelNotification(context)
         val canceledNextAlarms = entity!!.canceledNextAlarms
         Timber.i("TenderAlarmReceiver received alarm: $entity, ALARM_PLAYING: $ALARM_PLAYING")
-        if (canceledNextAlarms == 0) {
+        if (canceledNextAlarms == 0 && entity.isActive) {
             if (entity.days > 0) {
                 setUpNextAlarm(entity, context, false)
             } else {

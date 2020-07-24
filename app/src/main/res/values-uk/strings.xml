@@ -97,13 +97,14 @@
 
     <string name="first_alarm_prompt">Додайте перший будильник</string>
     <string name="app_share_text">Делікатний Будильник - щоб добре виспатися!\nhttps://play.google.com/store/apps/details?id=%s</string>
-    <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Якщо будильник не спрацьовує, вам потрібно додати Делікатний Будильник в Автозапуск:</string>
+    <string name="if_alarms_do_not_fire_you_need_to_add_mellow_alarm_to_autostart">Якщо будильник не спрацьовує, вам потрібно додати Делікатний Будильник в Автозапуск:</string>
 
     <string name="system_volume_toast">Системна гучність встановлена на 30%</string>
     <string name="vibrate_with_alarm">Будити вібрацією</string>
     <string name="shuffle">Випадково</string>
     <string name="shuffle_mode_on">Випадковий порядок програвання увімкнено</string>
     <string name="shuffle_mode_off">Випадковий порядок програвання вимкнено</string>
+    <string name="select_audio_files">Оберіть аудіо файли</string>
 
 
     <plurals name="alarm_turn_off_prompt">

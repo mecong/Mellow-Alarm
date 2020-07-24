@@ -3,14 +3,10 @@ package com.mecong.tenderalarm.sleep_assistant.media_selection
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
-import android.content.ContentResolver
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.AsyncTask
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
+import android.os.*
 import android.provider.OpenableColumns
 import android.view.*
 import android.view.View.GONE
@@ -24,7 +20,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.PlaylistEntity
-import com.mecong.tenderalarm.model.PropertyName
 import com.mecong.tenderalarm.model.PropertyName.*
 import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
@@ -42,13 +37,33 @@ import java.util.*
 
 private const val READ_REQUEST_CODE = 42
 
-class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment) : Fragment(), FileItemClickListener, PlaylistItemClickListener {
+class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemClickListener {
 
     private var mediaItemViewAdapter: MediaItemViewAdapter? = null
     private var playlistViewAdapter: PlaylistViewAdapter? = null
     private var currentPlaylistID: Long = -1
     private var currentPlaylistTitle: String? = null
     private var myState: Bundle? = null
+    private var buttonAddLastClickTime: Long = 0 // a hack to avoid double click on a button
+    private lateinit var radioService: RadioService
+    private var radioServiceBound = false
+
+
+    private var serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(arg0: ComponentName, binder: IBinder) {
+            radioService = (binder as RadioService.LocalBinder).service
+            radioServiceBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            radioServiceBound = false
+        }
+    }
+
+    private fun bindRadioService() {
+        val intent = Intent(this.context, RadioService::class.java)
+        this.activity!!.application.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -60,6 +75,7 @@ class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        bindRadioService()
 
         val sqLiteDBHelper = sqLiteDBHelper(this.context!!)!!
 
@@ -117,20 +133,23 @@ class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment
         )
 
         ibPlayOrder.setOnClickListener {
-            val shuffleModeEnabled = sleepAssistantFragment.flipShuffleMode()
+            radioService.shuffleModeEnabled = !radioService.shuffleModeEnabled
+            val shuffleModeEnabled = radioService.shuffleModeEnabled
+
             ibPlayOrder.setImageResource(
                     if (shuffleModeEnabled) {
                         Toast.makeText(this.context, R.string.shuffle_mode_on, LENGTH_SHORT).show()
-                        sqLiteDBHelper.setPropertyString(PropertyName.SHUFFLE, "true")
+                        sqLiteDBHelper.setPropertyString(SHUFFLE, "true")
                         R.drawable.ic_baseline_shuffle_24
                     } else {
                         Toast.makeText(this.context, R.string.shuffle_mode_off, LENGTH_SHORT).show()
-                        sqLiteDBHelper.setPropertyString(PropertyName.SHUFFLE, "false")
+                        sqLiteDBHelper.setPropertyString(SHUFFLE, "false")
                         R.drawable.ic_baseline_trending_flat_24
                     }
             )
         }
     }
+
 
     @Subscribe
     fun onPlayFileChanged(playList: SleepAssistantPlayList) {
@@ -332,10 +351,10 @@ class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment
         return if (Build.VERSION.SDK_INT >= 23) {
             if (ContextCompat.checkSelfPermission(this.context!!, Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                Timber.v("Filesystem read Permission is granted1")
+                Timber.v("Filesystem read Permission is granted")
                 true
             } else {
-                Timber.v("Filesystem read is revoked1")
+                Timber.v("Filesystem read is revoked")
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 3)
                 false
             }
@@ -380,11 +399,11 @@ class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment
 //                initialFolder = this.context!!.getExternalFilesDir(Environment.DIRECTORY_MUSIC)!!, //Initial Folder
 //                initialFolder = File("/storage/sdcard"),
 //                initialFolder = File("/"),
-                restoreFolder = false, //Restore Folder After Adding
+                restoreFolder = true, //Restore Folder After Adding
 //                fileType = FileType.AUDIO, //Select Which Files you want to show (By Default : ALL)
                 cancelable = true) //Dismiss Dialog On Cancel (Optional)
-                .title("Select Media Files") // Title of Dialog
-                .addFilter(ExtensionFilter("mp3", "flac", "ogg", "wav", "amr"))
+                .title(this.context?.getString(R.string.select_audio_files)) // Title of Dialog
+                .addFilter(ExtensionFilter("mp3", "flac", "ogg", "wav", "amr", "wma", "aac"))
                 .sorter(Sorter.ByNameInAscendingOrder) // Sort Data (Optional)
 
                 .onSelectedFilesListener { filesList -> // Callback Returns Selected File Object  (Optional)
@@ -404,8 +423,15 @@ class LocalFilesMediaFragment(val sleepAssistantFragment: SleepAssistantFragment
 
 
     private fun performNewFileSearch() {
+        if (SystemClock.elapsedRealtime() - buttonAddLastClickTime < 800) {
+            return
+        }
+        buttonAddLastClickTime = SystemClock.elapsedRealtime()
+
         if (isReadStoragePermissionGranted()) {
             openFilesViaKnot()
+        } else {
+            performFileSearch()
         }
     }
 

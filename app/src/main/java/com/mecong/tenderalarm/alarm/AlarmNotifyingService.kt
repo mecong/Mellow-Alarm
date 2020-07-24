@@ -70,7 +70,7 @@ class AlarmNotifyingService : Service(), Player.EventListener {
 
         exoPlayer.setAudioAttributes(audioAttributesAlarm, false)
 
-        val dataSourceFactory = DefaultDataSourceFactory(this.baseContext, "Tender Alarm")
+        val dataSourceFactory = DefaultDataSourceFactory(this.baseContext, "Mellow Alarm")
         val mediaSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(streamUrl)
         exoPlayer.prepare(mediaSource)

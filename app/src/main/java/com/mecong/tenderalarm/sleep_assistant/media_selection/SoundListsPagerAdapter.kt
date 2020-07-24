@@ -5,11 +5,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.mecong.tenderalarm.R
-import com.mecong.tenderalarm.sleep_assistant.SleepAssistantFragment
 
-class SoundListsPagerAdapter(fm: FragmentManager?, context: Context, sleepAssistantFragment: SleepAssistantFragment) : FragmentPagerAdapter(fm!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class SoundListsPagerAdapter(fm: FragmentManager?, context: Context) : FragmentPagerAdapter(fm!!, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     private val pageTitles = arrayOfNulls<String>(3)
-    private val localFilesMediaFragment = LocalFilesMediaFragment(sleepAssistantFragment)
+    private val localFilesMediaFragment = LocalFilesMediaFragment()
     private val onlineMediaFragment = OnlineMediaFragment()
     private val noisesFragment = NoisesFragment()
 

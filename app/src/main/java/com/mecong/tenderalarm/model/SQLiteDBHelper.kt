@@ -23,6 +23,10 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         values.put(URI, "https://securestreams.autopo.st:1180/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
 
+        values.put(TITLE, "Milano Lounge 320 kbps")
+        values.put(URI, "http://cristina.torontocast.com:8181/stream")
+        database.insert(TABLE_ONLINE_MEDIA, null, values)
+
         values.put(TITLE, "Zen noise")
         values.put(URI, "http://mynoise1.radioca.st/stream")
         database.insert(TABLE_ONLINE_MEDIA, null, values)
@@ -157,12 +161,21 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
     }
 
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldDbVersion: Int, newVersion: Int) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ALARMS")
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ONLINE_MEDIA")
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_OFFLINE_MEDIA")
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLISTS")
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_PROPERTIES")
-        onCreate(sqLiteDatabase)
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ALARMS")
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_ONLINE_MEDIA")
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_OFFLINE_MEDIA")
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_PLAYLISTS")
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS $TABLE_PROPERTIES")
+//        onCreate(sqLiteDatabase)
+
+        if (oldDbVersion == 54) {
+            if (newVersion == 55) {
+                val values = ContentValues(2)
+                values.put(TITLE, "Milano Lounge 320 kbps")
+                values.put(URI, "http://cristina.torontocast.com:8181/stream")
+                sqLiteDatabase.insert(TABLE_ONLINE_MEDIA, null, values)
+            }
+        }
     }
 
     private fun createAlarmTable(): String {
@@ -332,7 +345,7 @@ class SQLiteDBHelper private constructor(val context: Context) : SQLiteOpenHelpe
         private const val TITLE = "title"
         private const val URI = "uri"
         private const val PLAYLIST_ID = "playlist_id"
-        private const val DATABASE_VERSION = 54
+        private const val DATABASE_VERSION = 55
         private const val TABLE_ALARMS = "alarms"
         private const val TABLE_ONLINE_MEDIA = "online_media"
         private const val TABLE_OFFLINE_MEDIA = "offline_media"

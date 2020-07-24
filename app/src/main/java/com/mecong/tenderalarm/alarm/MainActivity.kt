@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         currentFragment = SLEEP_FRAGMENT
 
         fragmentTransaction.commit()
+        ibOpenSleepAssistant.isEnabled = false
         setButtons()
 
     }
@@ -201,15 +202,19 @@ class MainActivity : AppCompatActivity() {
             when (sleepAssistantStatus) {
                 RadioServiceStatus.LOADING -> {
                     ibOpenSleepAssistant.setImageResource(R.drawable.ic_hour_glass)
+                    ibOpenSleepAssistant.isEnabled = false
                 }
                 RadioServiceStatus.ERROR -> {
                     ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
+                    ibOpenSleepAssistant.isEnabled = true
                 }
                 RadioServiceStatus.PLAYING -> {
                     ibOpenSleepAssistant.setImageResource(R.drawable.pause_btn)
+                    ibOpenSleepAssistant.isEnabled = true
                 }
                 else -> {
                     ibOpenSleepAssistant.setImageResource(R.drawable.play_btn)
+                    ibOpenSleepAssistant.isEnabled = true
                 }
             }
 

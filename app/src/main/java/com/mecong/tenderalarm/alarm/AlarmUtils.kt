@@ -45,7 +45,7 @@ object AlarmUtils {
     fun snoozeAlarmNotification(minutes: Int, alarmEntity: AlarmEntity?, context: Context) {
         val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val intentToFire = Intent(context, TenderAlarmReceiver::class.java)
+        val intentToFire = Intent(context, MellowAlarmReceiver::class.java)
         intentToFire.putExtra(ALARM_ID_PARAM, alarmEntity!!.id.toString())
         intentToFire.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         val alarmIntent = PendingIntent.getBroadcast(context,
@@ -58,7 +58,7 @@ object AlarmUtils {
     }
 
     private fun primaryAlarmPendingIntent(alarmEntity: AlarmEntity?, context: Context): PendingIntent {
-        val intentToFire = Intent(context, TenderAlarmReceiver::class.java)
+        val intentToFire = Intent(context, MellowAlarmReceiver::class.java)
         intentToFire.putExtra(ALARM_ID_PARAM, alarmEntity!!.id.toString())
         intentToFire.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         return PendingIntent.getBroadcast(context,
@@ -140,7 +140,7 @@ object AlarmUtils {
     }
 
     fun turnOffSnoozeAlarm(entity: AlarmEntity, alarmMgr: AlarmManager, context: Context) {
-        val intentToFire = Intent(context, TenderAlarmReceiver::class.java)
+        val intentToFire = Intent(context, MellowAlarmReceiver::class.java)
         intentToFire.addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         val alarmIntent = PendingIntent.getBroadcast(context,
                 entity.snoozedAlarmRequestCode, intentToFire, PendingIntent.FLAG_CANCEL_CURRENT)

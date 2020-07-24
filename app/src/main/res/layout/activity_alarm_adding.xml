@@ -328,7 +328,7 @@
                 android:clickable="false"
                 android:focusable="false"
                 android:text=""
-                tools:text="Tender alarm %d minute before" />
+                tools:text="Soft alarm %d minute before" />
 
             <SeekBar
                 android:id="@+id/seekBarTicks"

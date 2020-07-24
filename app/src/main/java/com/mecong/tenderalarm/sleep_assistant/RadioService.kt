@@ -13,16 +13,20 @@ import android.media.session.MediaSession
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.Player.EventListener
+import com.google.android.exoplayer2.audio.*
+import com.google.android.exoplayer2.mediacodec.MediaCodecSelector
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.BufferSizeAdaptationBuilder.DEFAULT_BUFFER_FOR_PLAYBACK_MS
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
@@ -55,7 +59,7 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
     private var telephonyManager: TelephonyManager? = null
     private var audioManager: AudioManager? = null
     var status = RadioServiceStatus.IDLE
-    private var currentTrackTitle = "Tender Alarm"
+    private var currentTrackTitle = "Mellow Alarm"
     private var bandwidthMeter: DefaultBandwidthMeter? = null
     private var dataSourceFactory: DataSource.Factory? = null
     private var currentMediaSource: ConcatenatingMediaSource? = null
@@ -149,12 +153,46 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
                 1000 * 10
         ).createDefaultLoadControl()
 
+        val renderersFactory: RenderersFactory = object : DefaultRenderersFactory( /* context= */this) {
+            fun buildAudioRenderers(
+                    context: Context?,
+                    extensionRendererMode: Int,
+                    mediaCodecSelector: MediaCodecSelector?,
+                    enableDecoderFallback: Boolean,
+                    audioProcessors: Array<AudioProcessor>,
+                    eventHandler: Handler?,
+                    eventListener: AudioRendererEventListener?,
+                    out: ArrayList<Renderer?>) {
+                val audioRenderer = MediaCodecAudioRenderer(
+                        context!!,
+                        mediaCodecSelector!!,
+                        enableDecoderFallback,
+                        eventHandler,
+                        eventListener,
+                        DefaultAudioSink(
+                                AudioCapabilities.getCapabilities(context),
+                                DefaultAudioSink.DefaultAudioProcessorChain(
+                                        audioProcessors,
+                                        SilenceSkippingAudioProcessor( /* minimumSilenceDurationUs= */
+                                                150000,  /* paddingSilenceUs= */
+                                                20000,  /* silenceThresholdLevel= */
+                                                1024.toShort()),
+                                        SonicAudioProcessor()),
+                                false))
+                out.add(audioRenderer)
+            }
+        }
 
 
-        exoPlayer = SimpleExoPlayer.Builder(applicationContext)
-                .setLoadControl(loadControlBuilder)
-                .build()
+//        exoPlayer = SimpleExoPlayer.Builder(applicationContext)
+//                .setLoadControl(loadControlBuilder)
+//                .build()
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext,
+                renderersFactory,
+                DefaultTrackSelector(),
+                loadControlBuilder)
                 .apply {
+
                     setHandleAudioBecomingNoisy(true)
                     addListener(this@RadioService)
 
@@ -424,7 +462,7 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
         //HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
         if (hasPlayList()) {
             sleepAssistantPlayList!!.index = exoPlayer.currentWindowIndex
-            //HyperLog.v(AlarmUtils.TAG, sleepAssistantPlayList.media[exoPlayer.currentWindowIndex].title)
+
             val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex]
             EventBus.getDefault().postSticky(playingMedia)
             EventBus.getDefault().post(
@@ -434,6 +472,10 @@ class RadioService : Service(), EventListener, OnAudioFocusChangeListener {
                             sleepAssistantPlayList!!.playListId))
 
             currentTrackTitle = playingMedia.title!!
+
+            if (exoPlayer.playWhenReady) {
+                notificationManager.startNotify(status, currentTrackTitle)
+            }
         }
     }
 

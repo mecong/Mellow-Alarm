@@ -28,7 +28,7 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        if (oldw != 0 || oldh != 0) {
+        if (w != 0 && h != 0) {
             val viewPortBounds = Rect(paddingLeft, paddingTop,
                     this.right - paddingRight, this.height - paddingBottom)
             viewPortBoundsForEvent = Rect(paddingLeft, paddingTop,
@@ -36,11 +36,9 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
             viewPortBoundsForEvent!!.inset(50, 50)
 
 
-//            val maxRadius = minCircleRadius + circleStep * (MAX_COMPLEXITY - 1)
-//            var maxDiameter = maxRadius * 2
-            val square = viewPortBounds.width() * viewPortBounds.height()
-//            square/(maxDiameter*maxDiameter)= MAX_COMPLEXITY*2
-            val maxDiameter = sqrt(square / (MAX_COMPLEXITY * 2.0))
+            val viewPortSquare = viewPortBounds.width() * viewPortBounds.height()
+
+            val maxDiameter = sqrt(viewPortSquare / (MAX_COMPLEXITY * 2.0))
             minCircleRadius = ((maxDiameter / 2 - circleStep * (MAX_COMPLEXITY - 1)) * 0.9).toInt()
 
 
@@ -72,76 +70,6 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
 
         positions.shuffle()
         return positions
-    }
-
-    init {
-        val effect = DashPathEffect(floatArrayOf(10f, 20f), 0f)
-
-        spiritPaints[0] = Paint()
-        spiritPaints[0]!!.color = Color.rgb(30, 86, 49)
-        spiritPaints[0]!!.style = Paint.Style.STROKE
-        spiritPaints[0]!!.strokeWidth = STROKE_WIDTH.toFloat()
-        spiritPaints[0]!!.pathEffect = effect
-
-        spiritPaints[1] = Paint()
-        spiritPaints[1]!!.color = Color.rgb(164, 222, 2)
-        spiritPaints[1]!!.style = Paint.Style.STROKE
-        spiritPaints[1]!!.strokeWidth = STROKE_WIDTH.toFloat()
-        spiritPaints[1]!!.pathEffect = effect
-
-        spiritPaints[2] = Paint()
-        spiritPaints[2]!!.color = Color.rgb(118, 186, 27)
-        spiritPaints[2]!!.style = Paint.Style.STROKE
-        spiritPaints[2]!!.strokeWidth = STROKE_WIDTH.toFloat()
-        spiritPaints[2]!!.pathEffect = effect
-
-        spiritPaints[3] = Paint()
-        spiritPaints[3]!!.color = Color.rgb(76, 154, 42)
-        spiritPaints[3]!!.style = Paint.Style.STROKE
-        spiritPaints[3]!!.strokeWidth = STROKE_WIDTH.toFloat()
-        spiritPaints[3]!!.pathEffect = effect
-
-        spiritPaints[4] = Paint()
-        spiritPaints[4]!!.color = Color.rgb(104, 187, 89)
-        spiritPaints[4]!!.style = Paint.Style.STROKE
-        spiritPaints[4]!!.strokeWidth = STROKE_WIDTH.toFloat()
-        spiritPaints[4]!!.pathEffect = effect
-
-        for (i in 5 until spiritPaints.size) {
-            spiritPaints[i] = Paint()
-            spiritPaints[i]!!.color = Color.rgb(49, 99, 0)
-            spiritPaints[i]!!.style = Paint.Style.STROKE
-            spiritPaints[i]!!.strokeWidth = STROKE_WIDTH.toFloat()
-            spiritPaints[i]!!.pathEffect = effect
-        }
-    }
-
-    init {
-        draggableCirclePaints[0] = Paint()
-        draggableCirclePaints[0]!!.color = Color.rgb(30, 86, 49)
-        draggableCirclePaints[0]!!.style = Paint.Style.FILL
-
-        draggableCirclePaints[1] = Paint()
-        draggableCirclePaints[1]!!.color = Color.rgb(164, 222, 2)
-        draggableCirclePaints[1]!!.style = Paint.Style.FILL
-
-        draggableCirclePaints[2] = Paint()
-        draggableCirclePaints[2]!!.color = Color.rgb(118, 186, 27)
-        draggableCirclePaints[2]!!.style = Paint.Style.FILL
-
-        draggableCirclePaints[3] = Paint()
-        draggableCirclePaints[3]!!.color = Color.rgb(76, 154, 42)
-        draggableCirclePaints[3]!!.style = Paint.Style.FILL
-
-        draggableCirclePaints[4] = Paint()
-        draggableCirclePaints[4]!!.color = Color.rgb(104, 187, 89)
-        draggableCirclePaints[4]!!.style = Paint.Style.FILL
-
-        for (i in 5 until draggableCirclePaints.size) {
-            draggableCirclePaints[i] = Paint()
-            draggableCirclePaints[i]!!.color = Color.rgb(49, 99, 0)
-            draggableCirclePaints[i]!!.style = Paint.Style.FILL
-        }
     }
 
 
@@ -231,6 +159,76 @@ class AlarmTurnOffComponent(context: Context?, attrs: AttributeSet?) : View(cont
     companion object {
         const val STROKE_WIDTH = 9
         const val MAX_COMPLEXITY = 6
+    }
+
+    init {
+        val effect = DashPathEffect(floatArrayOf(10f, 20f), 0f)
+
+        spiritPaints[0] = Paint()
+        spiritPaints[0]!!.color = Color.rgb(30, 86, 49)
+        spiritPaints[0]!!.style = Paint.Style.STROKE
+        spiritPaints[0]!!.strokeWidth = STROKE_WIDTH.toFloat()
+        spiritPaints[0]!!.pathEffect = effect
+
+        spiritPaints[1] = Paint()
+        spiritPaints[1]!!.color = Color.rgb(164, 222, 2)
+        spiritPaints[1]!!.style = Paint.Style.STROKE
+        spiritPaints[1]!!.strokeWidth = STROKE_WIDTH.toFloat()
+        spiritPaints[1]!!.pathEffect = effect
+
+        spiritPaints[2] = Paint()
+        spiritPaints[2]!!.color = Color.rgb(118, 186, 27)
+        spiritPaints[2]!!.style = Paint.Style.STROKE
+        spiritPaints[2]!!.strokeWidth = STROKE_WIDTH.toFloat()
+        spiritPaints[2]!!.pathEffect = effect
+
+        spiritPaints[3] = Paint()
+        spiritPaints[3]!!.color = Color.rgb(76, 154, 42)
+        spiritPaints[3]!!.style = Paint.Style.STROKE
+        spiritPaints[3]!!.strokeWidth = STROKE_WIDTH.toFloat()
+        spiritPaints[3]!!.pathEffect = effect
+
+        spiritPaints[4] = Paint()
+        spiritPaints[4]!!.color = Color.rgb(104, 187, 89)
+        spiritPaints[4]!!.style = Paint.Style.STROKE
+        spiritPaints[4]!!.strokeWidth = STROKE_WIDTH.toFloat()
+        spiritPaints[4]!!.pathEffect = effect
+
+        for (i in 5 until spiritPaints.size) {
+            spiritPaints[i] = Paint()
+            spiritPaints[i]!!.color = Color.rgb(49, 99, 0)
+            spiritPaints[i]!!.style = Paint.Style.STROKE
+            spiritPaints[i]!!.strokeWidth = STROKE_WIDTH.toFloat()
+            spiritPaints[i]!!.pathEffect = effect
+        }
+    }
+
+    init {
+        draggableCirclePaints[0] = Paint()
+        draggableCirclePaints[0]!!.color = Color.rgb(30, 86, 49)
+        draggableCirclePaints[0]!!.style = Paint.Style.FILL
+
+        draggableCirclePaints[1] = Paint()
+        draggableCirclePaints[1]!!.color = Color.rgb(164, 222, 2)
+        draggableCirclePaints[1]!!.style = Paint.Style.FILL
+
+        draggableCirclePaints[2] = Paint()
+        draggableCirclePaints[2]!!.color = Color.rgb(118, 186, 27)
+        draggableCirclePaints[2]!!.style = Paint.Style.FILL
+
+        draggableCirclePaints[3] = Paint()
+        draggableCirclePaints[3]!!.color = Color.rgb(76, 154, 42)
+        draggableCirclePaints[3]!!.style = Paint.Style.FILL
+
+        draggableCirclePaints[4] = Paint()
+        draggableCirclePaints[4]!!.color = Color.rgb(104, 187, 89)
+        draggableCirclePaints[4]!!.style = Paint.Style.FILL
+
+        for (i in 5 until draggableCirclePaints.size) {
+            draggableCirclePaints[i] = Paint()
+            draggableCirclePaints[i]!!.color = Color.rgb(49, 99, 0)
+            draggableCirclePaints[i]!!.style = Paint.Style.FILL
+        }
     }
 
     init {

@@ -41,13 +41,13 @@ class AlarmFragment : Fragment() {
 
         ibtnInfo.setOnClickListener {
             val additionalIntent = Intent(context, AdditionalActivity::class.java)
-            this@AlarmFragment.startActivity(additionalIntent)
+            this@AlarmFragment.startActivityForResult(additionalIntent, 0)
         }
 
         AlarmUtils.resetupAllAlarms(context)
 
         val sqLiteDBHelper = sqLiteDBHelper(context)
-        alarmsAdapter = AlarmsListCursorAdapter(this, sqLiteDBHelper!!.allAlarms)
+        alarmsAdapter = AlarmsListCursorAdapter(this, sqLiteDBHelper?.allAlarms)
 
         alarms_list.adapter = alarmsAdapter
         updateNextActiveAlarm(sqLiteDBHelper)

@@ -172,9 +172,7 @@ class SleepAssistantFragment : Fragment() {
     private fun initializeTabsAndMediaFragments(context: Context?, activeTab: Int) {
         if (context == null) return
 
-        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager,
-                context,
-                this)
+        val soundListsPagerAdapter = SoundListsPagerAdapter(this.activity?.supportFragmentManager, context)
         viewPager.adapter = soundListsPagerAdapter
         tabs.setupWithViewPager(viewPager)
         tabs.setSelectedTabIndicator(null)

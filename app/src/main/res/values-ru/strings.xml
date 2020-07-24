@@ -103,12 +103,13 @@
     <string name="rate_it_prompt">Будьте добры оставить комментарий на странице «Деликатного Будильника» в Google Play:</string>
     <string name="first_alarm_prompt">Добавьте первый будильник</string>
     <string name="app_share_text">«Деликатный Будильник» - чтобы выспаться!\nhttps://play.google.com/store/apps/details?id=%s</string>
-    <string name="if_alarms_do_not_fire_you_need_to_add_tender_alarm_to_autostart">Если будильник не срабатывает, вам нужно добавить Деликатный Будильник в Автозапуск:</string>
+    <string name="if_alarms_do_not_fire_you_need_to_add_mellow_alarm_to_autostart">Если будильник не срабатывает, вам нужно добавить Деликатный Будильник в Автозапуск:</string>
     <string name="system_volume_toast">Системная громкость установлена в 30%</string>
     <string name="vibrate_with_alarm">Будить вибрацией</string>
     <string name="shuffle">Случайно</string>
     <string name="shuffle_mode_on">Включен случайный порядок проигрывания</string>
     <string name="shuffle_mode_off">Выключен случайный порядок проигрывания</string>
+    <string name="select_audio_files">Выберите аудио файлы</string>
 
 
     <plurals name="alarm_turn_off_prompt">

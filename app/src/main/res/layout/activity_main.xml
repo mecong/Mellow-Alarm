@@ -9,7 +9,6 @@
     android:paddingEnd="8dp"
     tools:context=".alarm.MainActivity">
 
-    <!--android:background="#121314"-->
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="0dp"

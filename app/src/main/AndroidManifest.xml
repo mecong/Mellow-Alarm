@@ -34,7 +34,7 @@
         android:xlargeScreens="true" />
 
     <application
-        android:name=".TenderAlarmApp"
+        android:name=".MellowAlarmApp"
         android:allowBackup="true"
         android:fullBackupContent="@xml/my_backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -97,7 +97,7 @@
             android:screenOrientation="portrait" />
 
         <receiver
-            android:name=".alarm.TenderAlarmReceiver"
+            android:name=".alarm.MellowAlarmReceiver"
             android:enabled="true" />
         <receiver
             android:name=".alarm.SleepTimeAlarmReceiver"
@@ -118,7 +118,6 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
