@@ -355,7 +355,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
                 true
             } else {
                 Timber.v("Filesystem read is revoked")
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 3)
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_EXTERNAL_STORAGE_CODE)
                 false
             }
         } else { //permission is automatically granted on sdk<23 upon installation
@@ -367,7 +367,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            3 -> {
+            READ_EXTERNAL_STORAGE_CODE -> {
                 Timber.d("External storage1")
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Timber.v("""Permission: ${permissions[0]}was ${grantResults[0]}""")
@@ -430,8 +430,6 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
         if (isReadStoragePermissionGranted()) {
             openFilesViaKnot()
-        } else {
-            performFileSearch()
         }
     }
 
@@ -543,5 +541,6 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
     companion object {
         val PLAYLIST_ID_KEY = "playlist_id_key"
+        val READ_EXTERNAL_STORAGE_CODE = 3
     }
 }

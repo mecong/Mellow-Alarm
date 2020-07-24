@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "com.mecong.tenderalarm"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 12
         versionName "Ray"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -36,7 +36,6 @@ android {
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'),
                     'proguard-rules.pro'
-
         }
     }
 
