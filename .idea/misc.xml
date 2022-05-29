@@ -5,6 +5,22 @@
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
     </configurations>
   </component>
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/drawable/back.xml" value="0.108" />
+        <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/drawable/txt.xml" value="0.108" />
+        <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/layout/dialog_empty_folder.xml" value="0.2" />
+        <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/layout/dialog_file_chooser.xml" value="0.2" />
+        <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/layout/file_item.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/activity_additional.xml" value="0.1859375" />
+        <entry key="app/src/main/res/layout/activity_alarm_adding.xml" value="0.3234375" />
+        <entry key="app/src/main/res/layout/activity_alarm_receiver.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/content_main.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/fragment_online_media.xml" value="0.3385416666666667" />
+      </map>
+    </option>
+  </component>
   <component name="EntryPointsManager">
     <list size="3">
       <item index="0" class="java.lang.String" itemvalue="butterknife.OnClick" />
@@ -12,7 +28,7 @@
       <item index="2" class="java.lang.String" itemvalue="org.greenrobot.eventbus.Subscribe" />
     </list>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
