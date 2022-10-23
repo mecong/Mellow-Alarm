@@ -139,6 +139,12 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
       }
     )
 
+    binding.ibBmAdd.setOnClickListener {
+      val sqLiteDBHelper = sqLiteDBHelper(this.requireContext())!!
+
+
+    }
+
     binding.ibPlayOrder.setOnClickListener {
       radioService.shuffleModeEnabled = !radioService.shuffleModeEnabled
       val shuffleModeEnabled = radioService.shuffleModeEnabled
@@ -223,9 +229,8 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
         Toast.makeText(
           context,
           requireContext().getString(R.string.empty_playlist_name_warning),
-          Toast.LENGTH_SHORT
-        )
-          .show()
+          LENGTH_SHORT
+        ).show()
       }
     }
 
@@ -560,6 +565,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
       sqLiteDBHelper.setPropertyString(PLAYLIST_ID, "-1")
       sqLiteDBHelper.setPropertyString(ACTIVE_TAB, "2")
       sqLiteDBHelper.setPropertyString(TRACK_NUMBER, "0")
+      sqLiteDBHelper.setPropertyString(POSITION_IN_TRACK, "-1")
       sqLiteDBHelper.setPropertyString(PLAYLIST_TITLE, null)
 
       setMode(sqLiteDBHelper)
@@ -570,7 +576,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
   }
 
   companion object {
-    val PLAYLIST_ID_KEY = "playlist_id_key"
-    val READ_EXTERNAL_STORAGE_CODE = 3
+    const val PLAYLIST_ID_KEY = "playlist_id_key"
+    const val READ_EXTERNAL_STORAGE_CODE = 3
   }
 }

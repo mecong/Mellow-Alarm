@@ -129,7 +129,7 @@
     <string name="app_share_text">Mellow Alarm Clock - to have a good sleep!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="if_alarms_do_not_fire_you_need_to_add_mellow_alarm_to_autostart">If alarms do not fire you need to add Mellow Alarm to Autostart:</string>
 
-    <string name="system_volume_toast">System volume set to 30%</string>
+    <string name="system_volume_toast">System volume set to 5%</string>
     <string name="vibrate_with_alarm">Vibrate with alarm</string>
 
     <string name="play_time" translatable="false">%02d:%02d</string>
@@ -184,5 +184,7 @@
         <item quantity="one">Drag circles to their places. Or shake device <big>%d</big> time</item>
         <item quantity="other">Drag circles to their places. Or shake device <big>%d</big> times</item>
     </plurals>
+    <string name="add_bookmark">Add bookmark</string>
+    <string name="show_bookmarks">Show bookmarks</string>
 
 </resources>

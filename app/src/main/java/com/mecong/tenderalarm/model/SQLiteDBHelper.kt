@@ -345,18 +345,20 @@ class SQLiteDBHelper private constructor(val context: Context) :
 
 
   companion object {
-    private const val TITLE = "title"
+    private const val DATABASE_VERSION = 57
+
+    private const val DATABASE_NAME = "my_alarm_database"
     private const val URI = "uri"
-    private const val PLAYLIST_ID = "playlist_id"
-    private const val DATABASE_VERSION = 55
+
+    private const val TITLE = "title"
     private const val TABLE_ALARMS = "alarms"
+    private const val PLAYLIST_ID = "playlist_id"
+    private const val TABLE_PROPERTIES = "properties"
     private const val TABLE_ONLINE_MEDIA = "online_media"
     private const val TABLE_OFFLINE_MEDIA = "offline_media"
     private const val TABLE_PLAYLISTS = "offline_media_playlists"
-    private const val TABLE_PROPERTIES = "properties"
     private const val SELECT_NEXT_ALARM =
       "SELECT * FROM $TABLE_ALARMS WHERE active=1 ORDER BY next_not_canceled_time LIMIT 1"
-    private const val DATABASE_NAME = "my_alarm_database"
 
     private var sInstance: SQLiteDBHelper? = null
 

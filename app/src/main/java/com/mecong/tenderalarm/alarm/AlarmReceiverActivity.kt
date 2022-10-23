@@ -1,7 +1,6 @@
 package com.mecong.tenderalarm.alarm
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.hardware.Sensor
@@ -121,9 +120,6 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
     try {
       turnScreenOnThroughKeyguard()
 
-      // Close dialogs and window shade, so this is fully visible
-      sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
-
       // Honor rotation on tablets; fix the orientation on phones.
       requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
       setContentView(binding.root)
@@ -181,23 +177,23 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
           }
 
           override fun onFinish() {
-            binding.sleepTimer!!.visibility = View.GONE
+            binding.sleepTimer.visibility = View.GONE
 
-            binding.btnSnooze2m!!.visibility = View.VISIBLE
-            binding.btnSnooze3m!!.visibility = View.VISIBLE
-            binding.btnSnooze5m!!.visibility = View.VISIBLE
+            binding.btnSnooze2m.visibility = View.VISIBLE
+            binding.btnSnooze3m.visibility = View.VISIBLE
+            binding.btnSnooze5m.visibility = View.VISIBLE
 
             val snoozedMinutesLeft = entity.snoozeMaxTimes - snoozedMinutes
             if (snoozedMinutesLeft < 1) {
-              binding.btnSnooze2m!!.visibility = View.GONE
+              binding.btnSnooze2m.visibility = View.GONE
             }
 
             if (snoozedMinutesLeft < 3) {
-              binding.btnSnooze3m!!.visibility = View.GONE
+              binding.btnSnooze3m.visibility = View.GONE
             }
 
             if (snoozedMinutesLeft < 5) {
-              binding.btnSnooze5m!!.visibility = View.GONE
+              binding.btnSnooze5m.visibility = View.GONE
             }
           }
         }.start()
@@ -207,15 +203,15 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
       }
 
       if (entity.snoozeMaxTimes < 1) {
-        binding.btnSnooze2m!!.visibility = View.GONE
+        binding.btnSnooze2m.visibility = View.GONE
       }
 
       if (entity.snoozeMaxTimes < 3) {
-        binding.btnSnooze3m!!.visibility = View.GONE
+        binding.btnSnooze3m.visibility = View.GONE
       }
 
       if (entity.snoozeMaxTimes < 5) {
-        binding.btnSnooze5m!!.visibility = View.GONE
+        binding.btnSnooze5m.visibility = View.GONE
       }
 
       binding.btnSnooze2m.setOnClickListener(snoozeOnClickListener)
@@ -280,7 +276,7 @@ class AlarmReceiverActivity : FragmentActivity(), SensorEventListener {
             //HyperLog.d(TAG, "Alarm stopped by accelerometer")
             turnOffAlarm()
           }
-          binding.taskNote!!.text =
+          binding.taskNote.text =
             this.resources.getQuantityString(R.plurals.alarm_turn_off_prompt, shakeCount, shakeCount)
         }
       }

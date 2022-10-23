@@ -101,7 +101,3 @@ dependencies {
         }
     }
 }
-
-repositories {
-    mavenCentral()
-}

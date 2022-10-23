@@ -99,7 +99,7 @@
     <string name="app_share_text">Делікатний Будильник - щоб добре виспатися!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="if_alarms_do_not_fire_you_need_to_add_mellow_alarm_to_autostart">Якщо будильник не спрацьовує, вам потрібно додати Делікатний Будильник в Автозапуск:</string>
 
-    <string name="system_volume_toast">Системна гучність встановлена на 30%</string>
+    <string name="system_volume_toast">Системна гучність встановлена на 5%</string>
     <string name="vibrate_with_alarm">Будити вібрацією</string>
     <string name="shuffle">Випадково</string>
     <string name="shuffle_mode_on">Випадковий порядок програвання увімкнено</string>
@@ -162,5 +162,7 @@
         <item quantity="many">Дрімати щонайбільше %d хвилин</item>
         <item quantity="other">Дрімати щонайбільше %d хвилин</item>
     </plurals>
+    <string name="add_bookmark">Додати закладку</string>
+    <string name="show_bookmarks">Показати закладки</string>
 
 </resources>

@@ -104,7 +104,7 @@
     <string name="first_alarm_prompt">Добавьте первый будильник</string>
     <string name="app_share_text">«Деликатный Будильник» - чтобы выспаться!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="if_alarms_do_not_fire_you_need_to_add_mellow_alarm_to_autostart">Если будильник не срабатывает, вам нужно добавить Деликатный Будильник в Автозапуск:</string>
-    <string name="system_volume_toast">Системная громкость установлена в 30%</string>
+    <string name="system_volume_toast">Системная громкость установлена в 5%</string>
     <string name="vibrate_with_alarm">Будить вибрацией</string>
     <string name="shuffle">Случайно</string>
     <string name="shuffle_mode_on">Включен случайный порядок проигрывания</string>
@@ -168,4 +168,7 @@
         <item quantity="many">Дремать максимум %d минут</item>
         <item quantity="other">Дремать максимум %d минут</item>
     </plurals>
+
+    <string name="add_bookmark">Добавить закладку</string>
+    <string name="show_bookmarks">Показать закладки</string>
 </resources>

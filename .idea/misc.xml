@@ -8,15 +8,31 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../layout/custom_preview.xml" value="0.1717325227963526" />
         <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/drawable/back.xml" value="0.108" />
         <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/drawable/txt.xml" value="0.108" />
         <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/layout/dialog_empty_folder.xml" value="0.2" />
         <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/layout/dialog_file_chooser.xml" value="0.2" />
         <entry key="../разобрать/Projects/KnotFileChooser-Android/filechooser/src/main/res/layout/file_item.xml" value="0.2" />
+        <entry key="app/src/main/res/drawable/baseline_arrow_back_ios_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/baseline_copyright_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/bookmark_add_48px.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/bookmarks-48px.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/custom_back_round_fill.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/custom_border7.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/custom_border_playbar.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/ic_baseline_shuffle_24.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/ic_round_add_alarm_24.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/nights_stay-48px.xml" value="0.155" />
+        <entry key="app/src/main/res/drawable/nights_stay_48px.xml" value="0.2215" />
+        <entry key="app/src/main/res/drawable/tr1_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/tr2_background.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_additional.xml" value="0.1859375" />
         <entry key="app/src/main/res/layout/activity_alarm_adding.xml" value="0.3234375" />
         <entry key="app/src/main/res/layout/activity_alarm_receiver.xml" value="0.19479166666666667" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.19479166666666667" />
+        <entry key="app/src/main/res/layout/content_sleep_assistant.xml" value="0.3385416666666667" />
+        <entry key="app/src/main/res/layout/fragment_local_media.xml" value="0.3385416666666667" />
         <entry key="app/src/main/res/layout/fragment_online_media.xml" value="0.3385416666666667" />
       </map>
     </option>

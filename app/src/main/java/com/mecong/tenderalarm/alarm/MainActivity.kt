@@ -249,7 +249,7 @@ class MainActivity : AppCompatActivity() {
       binding.ibOpenAlarm.setOnClickListener(addAlarmListener)
       binding.ibOpenSleepAssistant.setOnClickListener(sleepAssistantFragmentOpenListener)
 
-      binding.ibOpenSleepAssistant.setImageResource(R.drawable.sleep_active)
+      binding.ibOpenSleepAssistant.setImageResource(R.drawable.nights_stay_48px)
 //            binding.ibOpenSleepAssistant.clearColorFilter()
     }
   }

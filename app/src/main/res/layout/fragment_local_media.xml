@@ -14,10 +14,11 @@
         android:background="@null"
         android:contentDescription="@string/back"
         android:src="@drawable/baseline_arrow_back_ios_24"
-        android:tint="@color/appGreen"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/appGreen"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <TextView
         android:id="@+id/fragmentTitle"
@@ -31,13 +32,13 @@
         android:textColor="@color/textColor3"
         android:textStyle="italic"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
-        app:layout_constraintEnd_toStartOf="@+id/ibPlayOrder"
+        app:layout_constraintEnd_toStartOf="@+id/ibBookmarks"
         app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/ibPlayOrder"
-        android:layout_width="40dp"
+        android:id="@+id/ibBookmarks"
+        android:layout_width="48dp"
         android:layout_height="0dp"
         android:adjustViewBounds="false"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -45,15 +46,47 @@
         android:contentDescription="@string/shuffle"
         android:focusable="true"
         android:scaleType="center"
-        android:tint="@color/textColor3"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintRight_toLeftOf="@+id/ibBmAdd"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bookmarks_48px"
+        app:tint="@color/textColor3" />
+
+    <ImageButton
+        android:id="@+id/ibBmAdd"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="false"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/add_bookmark"
+        android:focusable="true"
+        android:scaleType="center"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintRight_toLeftOf="@+id/ibPlayOrder"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bookmark_add_48px"
+        app:tint="@color/textColor3" />
+
+    <ImageButton
+        android:id="@+id/ibPlayOrder"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="false"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="@string/show_bookmarks"
+        android:focusable="true"
+        android:scaleType="center"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintRight_toLeftOf="@+id/buttonAdd"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_shuffle_24" />
+        app:srcCompat="@drawable/ic_baseline_shuffle_24"
+        app:tint="@color/textColor3" />
 
     <ImageButton
         android:id="@+id/buttonAdd"
-        android:layout_width="40dp"
+        android:layout_width="48dp"
         android:layout_height="0dp"
         android:adjustViewBounds="false"
         android:background="?attr/selectableItemBackgroundBorderless"
@@ -61,11 +94,11 @@
         android:contentDescription="@string/add"
         android:focusable="true"
         android:scaleType="center"
-        android:tint="@color/textColor3"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_playlist_add_24" />
+        app:srcCompat="@drawable/ic_baseline_playlist_add_24"
+        app:tint="@color/textColor3" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"

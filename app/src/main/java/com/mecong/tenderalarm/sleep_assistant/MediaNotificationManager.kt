@@ -40,7 +40,7 @@ class MediaNotificationManager(private val service: RadioService) {
       .setContentTitle(service.getString(R.string.sleep_assistant))
       .setContentText(contentText)
       .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.cat_purr))
-      .setSmallIcon(R.drawable.sleep_active)
+      .setSmallIcon(R.drawable.nights_stay_48px)
       .setContentIntent(pendingIntent)
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
       .addAction(android.R.drawable.ic_menu_close_clear_cancel, service.getString(R.string.stop), stopAction)

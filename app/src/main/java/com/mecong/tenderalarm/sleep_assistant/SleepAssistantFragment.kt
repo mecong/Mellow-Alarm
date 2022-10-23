@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
@@ -34,10 +35,10 @@ import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 class SleepAssistantFragment : Fragment() {
-  var timeMinutes: Long = 0
-  var timeMs: Long = 0
   var volume = 0f
   var volumeStep = 0f
+  var timeMs: Long = 0
+  var timeMinutes: Long = 0
   private val sleepTimeHandler: Handler = Handler()
   private lateinit var sleepTimeRunnable: Runnable
   private val progressHandler: Handler = Handler()
@@ -109,7 +110,7 @@ class SleepAssistantFragment : Fragment() {
 
     binding.sliderVolume.addListener(object : SleepTimerViewValueListener {
       override fun onValueChanged(newValue: Long) {
-        binding.textViewVolumePercent!!.text = context.getString(R.string.volume_percent, newValue)
+        binding.textViewVolumePercent.text = context.getString(R.string.volume_percent, newValue)
         volume = newValue.toFloat()
         radioService.audioVolume = volume / 100f
         volumeStep = volume * STEP_MILLIS / timeMs
@@ -197,12 +198,12 @@ class SleepAssistantFragment : Fragment() {
     binding.tabs.addOnTabSelectedListener(object : OnTabSelectedListener {
       override fun onTabSelected(tab: TabLayout.Tab) {
         tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.INVISIBLE
-        tab.customView?.background = resources.getDrawable(R.drawable.tr2_background, null)
+        tab.customView?.background = ResourcesCompat.getDrawable(resources, R.drawable.tr2_background, null)
       }
 
       override fun onTabUnselected(tab: TabLayout.Tab) {
         tab.customView?.findViewById<View>(R.id.blackLine)?.visibility = View.VISIBLE
-        tab.customView?.background = resources.getDrawable(R.drawable.tr1_background, null)
+        tab.customView?.background = ResourcesCompat.getDrawable(resources, R.drawable.tr1_background, null)
       }
 
       override fun onTabReselected(tab: TabLayout.Tab) {
@@ -288,8 +289,8 @@ class SleepAssistantFragment : Fragment() {
       val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
       val systemVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
       var volumeCoefficient = systemVolume.toFloat() / streamMaxVolume
-      if (volumeCoefficient < 0.3f || volumeCoefficient > 0.7f) {
-        volumeCoefficient = 0.32f
+      if (volumeCoefficient >= 0.3f) {
+        volumeCoefficient = 0.05f
         audioManager.setStreamVolume(
           AudioManager.STREAM_MUSIC, (streamMaxVolume * volumeCoefficient).roundToInt(), 0
         )
@@ -297,8 +298,7 @@ class SleepAssistantFragment : Fragment() {
           this.requireActivity(),
           requireContext().getString(R.string.system_volume_toast),
           Toast.LENGTH_SHORT
-        )
-          .show()
+        ).show()
       }
 
       volume = 105 - 100 * volumeCoefficient
@@ -370,11 +370,7 @@ class SleepAssistantFragment : Fragment() {
   }
 
   private fun getStringForTime(timeMs: Long, negative: Boolean): String? {
-    val totalSeconds = if (timeMs < 0) {
-      0
-    } else {
-      (timeMs + 500) / 1000
-    }
+    val totalSeconds = if (timeMs < 0) 0 else (timeMs + 500) / 1000
 
     val seconds = totalSeconds % 60
     val minutes = totalSeconds / 60 % 60
@@ -391,8 +387,7 @@ class SleepAssistantFragment : Fragment() {
       formattedTime
   }
 
-
-  fun getElapsedTime(percentPos: Float? = null): CharSequence? {
+  private fun getElapsedTime(percentPos: Float? = null): CharSequence? {
     return if (percentPos == null) {
       getStringForTime(radioService.getContentPos(), false)
     } else {
@@ -400,7 +395,7 @@ class SleepAssistantFragment : Fragment() {
     }
   }
 
-  fun getTimeLeft(percentPos: Float? = null): CharSequence? {
+  private fun getTimeLeft(percentPos: Float? = null): CharSequence? {
     return if (percentPos == null) {
       getStringForTime(radioService.getContentDuration() - radioService.getContentPos(), true)
     } else {
@@ -411,26 +406,25 @@ class SleepAssistantFragment : Fragment() {
     }
   }
 
-  fun getBufferedSize(): CharSequence? {
+  private fun getBufferedSize(): CharSequence? {
     val buff = radioService.getBufferedPos() - radioService.getContentPos()
     return getStringForTime(buff, true)
   }
-
 
   @Subscribe(sticky = true)
   fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
     binding.nowPlayingText.interactiveMode = playList.mediaType == SleepMediaType.LOCAL
     radioService.setMediaList(playList)
     playListModel.playlist.value = playList
+
     radioService.play()
   }
 
   @Subscribe(sticky = true)
   fun onPlayFileChanged(playList: SleepAssistantPlayListIdle) {
-    playListModel.playlist.value = playList
-    binding.nowPlayingText?.interactiveMode = playList.mediaType == SleepMediaType.LOCAL
-
+    binding.nowPlayingText.interactiveMode = playList.mediaType == SleepMediaType.LOCAL
     radioService.setMediaList(playList)
+    playListModel.playlist.value = playList
   }
 
   @Subscribe
@@ -448,7 +442,7 @@ class SleepAssistantFragment : Fragment() {
 
   @Subscribe
   fun onPlayFileChanged(media: Media) {
-    binding.nowPlayingText?.text = media.title ?: ""
+    binding.nowPlayingText.text = media.title
   }
 
   @Subscribe
@@ -466,6 +460,7 @@ class SleepAssistantFragment : Fragment() {
     dbHelper.setPropertyString(PropertyName.ACTIVE_TAB, activeTab)
     dbHelper.setPropertyString(PropertyName.TRACK_NUMBER, playList.index.toString())
     dbHelper.setPropertyString(PropertyName.PLAYLIST_ID, playList.playListId.toString())
+    dbHelper.setPropertyString(PropertyName.POSITION_IN_TRACK, radioService.getContentPos().toString())
   }
 
   private fun bindRadioService() {

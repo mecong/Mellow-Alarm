@@ -301,15 +301,14 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
       return
     }
 
-    this.sleepAssistantPlayList = sleepAssistantPlayList
 
-    currentMediaItems = this.sleepAssistantPlayList!!.media
+    currentMediaItems = sleepAssistantPlayList.media
       .map { MediaItem.fromUri(it.url) }.toList()
 
     exoPlayer.setMediaItems(currentMediaItems)
     exoPlayer.prepare()
 
-    when (this.sleepAssistantPlayList!!.mediaType) {
+    when (sleepAssistantPlayList.mediaType) {
       SleepMediaType.LOCAL -> {
         exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
         exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
@@ -323,6 +322,8 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
       }
     }
+
+    this.sleepAssistantPlayList = sleepAssistantPlayList
 
     playErrorsCount = 0
     exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
@@ -441,12 +442,16 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
   DISCONTINUITY_REASON_SEEK, DISCONTINUITY_REASON_SEEK_ADJUSTMENT,
   DISCONTINUITY_REASON_AD_INSERTION or DISCONTINUITY_REASON_INTERNAL.
    */
-  override fun onPositionDiscontinuity(reason: Int) {
+  override fun onPositionDiscontinuity(
+    oldPosition: Player.PositionInfo,
+    newPosition: Player.PositionInfo,
+    reason: Int
+  ) {
     //HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
     if (hasPlayList()) {
-      sleepAssistantPlayList!!.index = exoPlayer.currentWindowIndex
+      sleepAssistantPlayList!!.index = exoPlayer.currentMediaItemIndex
 
-      val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentWindowIndex]
+      val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentMediaItemIndex]
       EventBus.getDefault().postSticky(playingMedia)
       EventBus.getDefault().post(
         SleepAssistantPlayList(
@@ -484,7 +489,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
   companion object {
     const val ACTION_PLAY = "com.mecong.myalarm.ACTION_PLAY"
-    const val ACTION_PAUSE = "com.mecong.myalarm.ACTION_PAUSE"
     const val ACTION_STOP = "com.mecong.myalarm.ACTION_STOP"
+    const val ACTION_PAUSE = "com.mecong.myalarm.ACTION_PAUSE"
   }
 }
