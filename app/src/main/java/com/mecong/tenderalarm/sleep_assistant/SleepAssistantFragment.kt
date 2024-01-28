@@ -413,6 +413,8 @@ class SleepAssistantFragment : Fragment() {
 
   @Subscribe(sticky = true)
   fun onPlayFileChanged(playList: SleepAssistantPlayListActive) {
+//    radioService.pause()
+
     binding.nowPlayingText.interactiveMode = playList.mediaType == SleepMediaType.LOCAL
     radioService.setMediaList(playList)
     playListModel.playlist.value = playList

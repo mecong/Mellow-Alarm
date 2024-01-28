@@ -7,17 +7,27 @@ import android.app.Service
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.graphics.BitmapFactory
 import android.media.AudioManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.IBinder
+import android.os.PowerManager
 import android.os.Process.killProcess
 import android.os.Process.myPid
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC
 import com.google.android.exoplayer2.C.USAGE_ALARM
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
@@ -29,7 +39,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import java.io.IOException
-import java.util.*
+import java.util.Random
 import java.util.concurrent.TimeUnit
 
 class AlarmNotifyingService : Service(), Player.Listener {
@@ -365,7 +375,16 @@ class AlarmNotifyingService : Service(), Player.Listener {
 
     val notificationManager = NotificationManagerCompat.from(context)
     notificationManager.cancelAll()
-    startForeground(43, alarmNotification.build())
+    val notification = alarmNotification.build()
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      startForeground(43, notification)
+    } else {
+      startForeground(
+        43, notification,
+        FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+      )
+    }
   }
 
 

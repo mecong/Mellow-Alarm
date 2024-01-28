@@ -16,12 +16,17 @@ import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.text.TextUtils
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Tracks
 import com.google.android.exoplayer2.metadata.Metadata
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
@@ -69,9 +74,6 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     get() {
       return exoPlayer.shuffleModeEnabled
     }
-
-//    private var phoneStateListener31: TelephonyCallback.CallStateListener = object : TelephonyCallback.CallStateListener() {
-//    }
 
   private var phoneStateListener: PhoneStateListener = object : PhoneStateListener() {
     override fun onCallStateChanged(state: Int, incomingNumber: String) {
@@ -153,7 +155,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
         val mPlaybackAttributes = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
           .setUsage(C.USAGE_MEDIA)
-          .setContentType(C.CONTENT_TYPE_MUSIC)
+          .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
           .build()
         this.setAudioAttributes(mPlaybackAttributes, true)
       }
@@ -176,13 +178,15 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
     transportControls = mediaSession.controller.transportControls
 
-    telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+//    telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
     //TODO: security exception
 //        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
 
-    bandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
-    dataSourceFactory = DefaultDataSourceFactory(this, userAgent, bandwidthMeter)
+//    bandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
+
+//    dataSourceFactory = DefaultDataSourceFactory(this, userAgent, bandwidthMeter)
+//    dataSourceFactory = DefaultDataSource.Factory(this)
   }
 
   override fun onMetadata(metadata: Metadata) {
@@ -202,6 +206,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         }
         if (this@RadioService.exoPlayer.playWhenReady) {
           notificationManager.startNotify(status, currentTrackTitle)
+//          mediaSession.setPlaybackState(null)
         }
       }
     }
@@ -256,22 +261,32 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     }
   }
 
-
-  override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+  override fun onPlaybackStateChanged(playbackState: Int) {
     status = when (playbackState) {
       Player.STATE_BUFFERING -> RadioServiceStatus.LOADING
       Player.STATE_ENDED -> RadioServiceStatus.STOPPED
       Player.STATE_READY -> {
-        if (playWhenReady) {
+        if (exoPlayer.playWhenReady) {
           notificationManager.startNotify(status, currentTrackTitle)
-//                    startTimelineWatcher()
           RadioServiceStatus.PLAYING
         } else {
           RadioServiceStatus.PAUSED
         }
       }
+
       else -> RadioServiceStatus.IDLE
     }
+    EventBus.getDefault().postSticky(status)
+  }
+
+  override fun onPlayWhenReadyChanged(playWhenReady: Boolean, playbackState: Int) {
+    if (playWhenReady) {
+      status = RadioServiceStatus.PLAYING
+      notificationManager.startNotify(status, currentTrackTitle)
+    } else {
+      status = RadioServiceStatus.PAUSED
+    }
+
     EventBus.getDefault().postSticky(status)
   }
 
@@ -301,12 +316,11 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
       return
     }
 
+    this.sleepAssistantPlayList = sleepAssistantPlayList
 
-    currentMediaItems = sleepAssistantPlayList.media
-      .map { MediaItem.fromUri(it.url) }.toList()
+    currentMediaItems = sleepAssistantPlayList.media.map { MediaItem.fromUri(it.url) }.toList()
 
-    exoPlayer.setMediaItems(currentMediaItems)
-    exoPlayer.prepare()
+    exoPlayer.setMediaItems(currentMediaItems, sleepAssistantPlayList.index, 0)
 
     when (sleepAssistantPlayList.mediaType) {
       SleepMediaType.LOCAL -> {
@@ -317,16 +331,16 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
         exoPlayer.setWakeMode(C.WAKE_MODE_NETWORK)
       }
+
       SleepMediaType.NOISE -> {
         exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
         exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
       }
     }
 
-    this.sleepAssistantPlayList = sleepAssistantPlayList
-
     playErrorsCount = 0
-    exoPlayer.seekTo(sleepAssistantPlayList.index, 0)
+
+    exoPlayer.prepare()
   }
 
   fun seekToPercent(percentPosition: Float) {
@@ -398,56 +412,9 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
    */
 
-  override fun onTracksInfoChanged(tracksInfo: TracksInfo) {
-    super.onTracksInfoChanged(tracksInfo)
-    if (BuildConfig.DEBUG) {
-      tracksInfo.trackGroupInfos.forEach {
-        for (j in 0 until it.trackGroup.length) {
-          val trackMetadata = it.trackGroup.getFormat(j).metadata
-          if (trackMetadata != null) {
-            for (k in 0 until trackMetadata.length()) {
-              Timber.i(trackMetadata[k].toString())
-            }
-          } else {
-            Timber.i("|||Metadata not found|||")
-          }
-        }
-      }
-    }
+  override fun onTracksChanged(tracksInfo: Tracks) {
+    super.onTracksChanged(tracksInfo)
 
-  }
-//
-//  override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
-//    //HyperLog.v(AlarmUtils.TAG, ">>>>>>onTracksChanged>>>>>>")
-//    //        IcyHeaders: name="Enigmatic robot", genre="music", bitrate=256000, metadataInterval=16000
-//    if (BuildConfig.DEBUG) {
-//      for (i in 0 until trackGroups.length) {
-//        val trackGroup = trackGroups[i]
-//        for (j in 0 until trackGroup.length) {
-//          val trackMetadata = trackGroup.getFormat(j).metadata
-//          if (trackMetadata != null) {
-//            for (k in 0 until trackMetadata.length()) {
-//              Timber.i(trackMetadata[k].toString())
-//            }
-//          } else {
-//            Timber.i("|||Metadata not found|||")
-//          }
-//        }
-//      }
-//    }
-//  }
-
-  /*
-  Reasons for position discontinuities. One of DISCONTINUITY_REASON_PERIOD_TRANSITION,
-  DISCONTINUITY_REASON_SEEK, DISCONTINUITY_REASON_SEEK_ADJUSTMENT,
-  DISCONTINUITY_REASON_AD_INSERTION or DISCONTINUITY_REASON_INTERNAL.
-   */
-  override fun onPositionDiscontinuity(
-    oldPosition: Player.PositionInfo,
-    newPosition: Player.PositionInfo,
-    reason: Int
-  ) {
-    //HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
     if (hasPlayList()) {
       sleepAssistantPlayList!!.index = exoPlayer.currentMediaItemIndex
 
@@ -468,6 +435,59 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         notificationManager.startNotify(status, currentTrackTitle)
       }
     }
+
+    if (BuildConfig.DEBUG) {
+      tracksInfo.groups.forEach {
+        for (j in 0 until it.mediaTrackGroup.length) {
+          val trackMetadata = it.mediaTrackGroup.getFormat(j).metadata
+          if (trackMetadata != null) {
+            for (k in 0 until trackMetadata.length()) {
+              Timber.i(trackMetadata[k].toString())
+            }
+          } else {
+            Timber.i("|||Metadata not found|||")
+          }
+        }
+      }
+    }
+
+  }
+
+  /*
+  Reasons for position discontinuities. One of DISCONTINUITY_REASON_PERIOD_TRANSITION,
+  DISCONTINUITY_REASON_SEEK, DISCONTINUITY_REASON_SEEK_ADJUSTMENT,
+  DISCONTINUITY_REASON_AD_INSERTION or DISCONTINUITY_REASON_INTERNAL.
+   */
+//  override fun onPositionDiscontinuity(
+//    oldPosition: Player.PositionInfo,
+//    newPosition: Player.PositionInfo,
+//    reason: Int
+//  ) {
+//    //HyperLog.v(AlarmUtils.TAG, "Playing new media > reason: $reason")
+//    if (hasPlayList()) {
+//      sleepAssistantPlayList!!.index = exoPlayer.currentMediaItemIndex
+//
+//      val playingMedia = sleepAssistantPlayList!!.media[exoPlayer.currentMediaItemIndex]
+//      EventBus.getDefault().postSticky(playingMedia)
+//      EventBus.getDefault().post(
+//        SleepAssistantPlayList(
+//          sleepAssistantPlayList!!.index,
+//          sleepAssistantPlayList!!.media,
+//          sleepAssistantPlayList!!.mediaType,
+//          sleepAssistantPlayList!!.playListId
+//        )
+//      )
+//
+//      currentTrackTitle = playingMedia.title
+//
+//      if (exoPlayer.playWhenReady) {
+//        notificationManager.startNotify(status, currentTrackTitle)
+//      }
+//    }
+//  }
+
+  override fun onEvents(player: Player, events: Player.Events) {
+
   }
 
   fun getBufferedPos(): Long {

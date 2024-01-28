@@ -3,8 +3,10 @@ package com.mecong.tenderalarm.sleep_assistant
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.content.res.Resources
 import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.MainActivity
@@ -45,9 +47,19 @@ class MediaNotificationManager(private val service: RadioService) {
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
       .addAction(android.R.drawable.ic_menu_close_clear_cancel, service.getString(R.string.stop), stopAction)
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+      .setShowWhen(true)
       .setWhen(System.currentTimeMillis())
 
-    service.startForeground(NOTIFICATION_ID, builder.build())
+    val notification = builder.build()
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      service.startForeground(NOTIFICATION_ID, notification)
+    } else {
+      service.startForeground(
+        NOTIFICATION_ID, notification,
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+      )
+    }
   }
 
   fun cancelNotify() {

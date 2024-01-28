@@ -3,6 +3,8 @@
 
     <permission android:name="${applicationId}.permission.RECEIVE_ALERT_BROADCASTS" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -20,10 +22,11 @@
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-
     <uses-permission android:name="android.permission.ACCESS_ALL_DOWNLOADS" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />-->
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        android:minSdkVersion="34" />
 
 
     <supports-screens
@@ -45,16 +48,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AdditionalActivity" />
 
         <service
             android:name=".alarm.AlarmNotifyingService"
             android:enabled="true"
+            android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
 
         <service
             android:name=".sleep_assistant.RadioService"
             android:enabled="true"
+            android:foregroundServiceType="mediaPlayback"
             android:exported="false" />
 
         <activity
@@ -72,9 +76,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".AdditionalActivity" />
+
         <activity
             android:name=".logs.LogsActivity"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".alarm.AlarmReceiverActivity"
             android:directBootAware="true"
@@ -95,6 +103,7 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".alarm.AlarmAddingActivity"
             android:screenOrientation="portrait" />

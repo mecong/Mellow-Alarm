@@ -39,16 +39,16 @@ class PlayPositionTextView(context: Context, attributes: android.util.AttributeS
     thirdOfHeight = this.height / 3f
   }
 
-  override fun onDraw(canvas: Canvas?) {
+  override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
 
     if (interactiveMode) {
       val xx = playPositionPercent * this.width
 
       if (touchActive) {
-        canvas?.drawRoundRect(0f, 0f, xx, this.height.toFloat(), 10f, 10f, caretColor)
+        canvas.drawRoundRect(0f, 0f, xx, this.height.toFloat(), 10f, 10f, caretColor)
       } else {
-        canvas?.drawRoundRect(0f, 0f, xx, this.height.toFloat(), 10f, 10f, progressColor)
+        canvas.drawRoundRect(0f, 0f, xx, this.height.toFloat(), 10f, 10f, progressColor)
       }
     }
   }

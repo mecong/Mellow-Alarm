@@ -70,7 +70,7 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
     this.requireActivity().application.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
     if (!EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().register(this)
@@ -141,8 +141,6 @@ class LocalFilesMediaFragment : Fragment(), FileItemClickListener, PlaylistItemC
 
     binding.ibBmAdd.setOnClickListener {
       val sqLiteDBHelper = sqLiteDBHelper(this.requireContext())!!
-
-
     }
 
     binding.ibPlayOrder.setOnClickListener {
