@@ -1,7 +1,6 @@
 package com.mecong.tenderalarm.alarm
 
 import android.app.AlarmManager
-import android.app.AlarmManager.AlarmClockInfo
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.ComponentName
@@ -9,13 +8,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import android.os.SystemClock
+import android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
+import android.provider.Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+import android.provider.Settings.EXTRA_APP_PACKAGE
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.model.AlarmEntity
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import timber.log.Timber
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
@@ -36,7 +42,7 @@ object AlarmUtils {
     alarmEntity!!.updateNextAlarmDate(manually)
     val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     val alarmIntent = primaryAlarmPendingIntent(alarmEntity, context)
-    setTheAlarm(alarmEntity.nextTime, alarmIntent, alarmMgr)
+    setTheAlarm(context, alarmEntity.nextTime, alarmIntent, alarmMgr)
     sqLiteDBHelper(context)!!.addOrUpdateAlarm(alarmEntity)
     Timber.i(
       "%s %s",
@@ -61,7 +67,7 @@ object AlarmUtils {
     val calendarSnoozeEnd = Calendar.getInstance()
     calendarSnoozeEnd.add(Calendar.MINUTE, minutes)
 
-    setTheAlarm(calendarSnoozeEnd.timeInMillis, alarmIntent, alarmMgr)
+    setTheAlarm(context, calendarSnoozeEnd.timeInMillis, alarmIntent, alarmMgr)
   }
 
   private fun primaryAlarmPendingIntent(alarmEntity: AlarmEntity?, context: Context): PendingIntent {
@@ -74,13 +80,68 @@ object AlarmUtils {
     )
   }
 
-  private fun setTheAlarm(time: Long, alarmIntent: PendingIntent, alarmMgr: AlarmManager) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      val alarmClockInfo = AlarmClockInfo(time, alarmIntent)
-      alarmMgr.setAlarmClock(alarmClockInfo, alarmIntent)
+  private fun setTheAlarm(context: Context, time: Long, alarmIntent: PendingIntent, alarmManager: AlarmManager) {
+//    val notificationPermission = ContextCompat.checkSelfPermission(
+//      context,
+//      ACTION_APP_NOTIFICATION_SETTINGS
+//    )
+//
+//    val fullScreenPermission = ContextCompat.checkSelfPermission(
+//      context,
+//      Manifest.permission.SYSTEM_ALERT_WINDOW
+//    )
+//
+//    val alarmPermission = ContextCompat.checkSelfPermission(
+//      context,
+//      Manifest.permission.SET_ALARM
+//    )
+//
+//
+//    ActivityCompat.requestPermissions(
+//      context,
+//      arrayOf(
+//        Manifest.permission.NOTIFICATION_POLICY_ACCESS,
+//        Manifest.permission.SYSTEM_ALERT_WINDOW,
+//        Manifest.permission.SET_ALARM
+//      ),
+//      requestCode
+//    )
+
+
+    val notificationManager = NotificationManagerCompat.from(context)
+
+    if (!notificationManager.areNotificationsEnabled()) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        startActivity(context, Intent().apply {
+          action = ACTION_APP_NOTIFICATION_SETTINGS
+          putExtra(EXTRA_APP_PACKAGE, "com.mecong.tenderalarm")
+        }, Bundle.EMPTY)
+      }
     } else {
-      alarmMgr.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
-      Timber.v("set Exact alarm:$time")
+      // Permission already granted, proceed with notification creation
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      if (!notificationManager.canUseFullScreenIntent()) {
+        // Ask users to go to exact alarm page in system settings.
+        startActivity(context, Intent(ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT), Bundle.EMPTY)
+        return
+      }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      when {
+        // If permission is granted, proceed with scheduling exact alarms.
+        alarmManager.canScheduleExactAlarms() -> {
+          alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, alarmIntent)
+          Timber.v("set Exact alarm:$time")
+        }
+
+        else -> {
+          // Ask users to go to exact alarm page in system settings.
+          startActivity(context, Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM), Bundle.EMPTY)
+        }
+      }
     }
   }
 

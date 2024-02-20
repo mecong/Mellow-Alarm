@@ -16,18 +16,20 @@ import android.os.IBinder
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.text.TextUtils
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Tracks
-import com.google.android.exoplayer2.metadata.Metadata
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
-import com.google.android.exoplayer2.util.Util
+import androidx.annotation.OptIn
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Metadata
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.Tracks
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
+import androidx.media3.datasource.DataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.sleep_assistant.media_selection.SleepMediaType
@@ -136,6 +138,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     return iBinder
   }
 
+  @OptIn(UnstableApi::class)
   override fun onCreate() {
     super.onCreate()
 
@@ -153,7 +156,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
       .apply {
         addListener(this@RadioService)
 
-        val mPlaybackAttributes = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
+        val mPlaybackAttributes = androidx.media3.common.AudioAttributes.Builder()
           .setUsage(C.USAGE_MEDIA)
           .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
           .build()
@@ -189,6 +192,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 //    dataSourceFactory = DefaultDataSource.Factory(this)
   }
 
+  @OptIn(UnstableApi::class)
   override fun onMetadata(metadata: Metadata) {
     super.onMetadata(metadata)
 
@@ -221,9 +225,11 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
       ACTION_PLAY.equals(action, ignoreCase = true) -> {
         transportControls.play()
       }
+
       ACTION_PAUSE.equals(action, ignoreCase = true) -> {
         transportControls.pause()
       }
+
       ACTION_STOP.equals(action, ignoreCase = true) -> {
         transportControls.stop()
       }
@@ -327,6 +333,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
         exoPlayer.setWakeMode(C.WAKE_MODE_LOCAL)
       }
+
       SleepMediaType.ONLINE -> {
         exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
         exoPlayer.setWakeMode(C.WAKE_MODE_NETWORK)
@@ -364,6 +371,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     }
   }
 
+  @OptIn(UnstableApi::class)
   private val userAgent: String
     get() = Util.getUserAgent(this, javaClass.simpleName)
 
@@ -412,6 +420,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
    */
 
+  @OptIn(UnstableApi::class)
   override fun onTracksChanged(tracksInfo: Tracks) {
     super.onTracksChanged(tracksInfo)
 

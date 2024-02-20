@@ -6,9 +6,9 @@ import android.database.Cursor
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.google.android.exoplayer2.database.DatabaseProvider
+import androidx.media3.database.DatabaseProvider
 import timber.log.Timber
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 class SQLiteDBHelper private constructor(val context: Context) :

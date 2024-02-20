@@ -19,16 +19,17 @@ import android.os.Process.killProcess
 import android.os.Process.myPid
 import android.os.VibrationEffect
 import android.os.Vibrator
+import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC
-import com.google.android.exoplayer2.C.USAGE_ALARM
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.PlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import androidx.media3.common.C
+import androidx.media3.common.C.USAGE_ALARM
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.RawResourceDataSource
+import androidx.media3.exoplayer.ExoPlayer
 import com.mecong.tenderalarm.BuildConfig
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.alarm.AlarmUtils.ALARM_ID_PARAM
@@ -51,8 +52,9 @@ class AlarmNotifyingService : Service(), Player.Listener {
   private var handlerVolume: Handler = Handler()
   private var handlerTicks: Handler = Handler()
   private var handlerVibration: Handler = Handler()
-  private lateinit var exoPlayer: SimpleExoPlayer
+  private lateinit var exoPlayer: ExoPlayer
 
+  @OptIn(UnstableApi::class)
   override fun onPlayerError(error: PlaybackException) {
     super.onPlayerError(error)
     initExoPlayer(RawResourceDataSource.buildRawResourceUri(R.raw.dance_of_kaschey), Player.REPEAT_MODE_ONE)
@@ -60,7 +62,7 @@ class AlarmNotifyingService : Service(), Player.Listener {
   }
 
   private fun initExoPlayer(streamUrl: Uri, repeatMode: Int) {
-    exoPlayer = SimpleExoPlayer.Builder(applicationContext)
+    exoPlayer = ExoPlayer.Builder(applicationContext)
       .build()
       .apply {
         setWakeMode(C.WAKE_MODE_LOCAL)
@@ -68,8 +70,8 @@ class AlarmNotifyingService : Service(), Player.Listener {
         addListener(this@AlarmNotifyingService)
       }
 
-    val audioAttributesAlarm = com.google.android.exoplayer2.audio.AudioAttributes.Builder()
-      .setContentType(CONTENT_TYPE_MUSIC)
+    val audioAttributesAlarm = androidx.media3.common.AudioAttributes.Builder()
+      .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
       .setUsage(USAGE_ALARM)
       .build()
 
@@ -128,15 +130,19 @@ class AlarmNotifyingService : Service(), Player.Listener {
       message === AlarmMessage.CANCEL_VOLUME_INCREASE -> {
         cancelVolumeIncreasing()
       }
+
       message === AlarmMessage.STOP_ALARM -> {
         stopAlarmNotification()
       }
+
       message === AlarmMessage.SNOOZE2M -> {
         snooze(2)
       }
+
       message === AlarmMessage.SNOOZE3M -> {
         snooze(3)
       }
+
       message === AlarmMessage.SNOOZE5M -> {
         snooze(5)
       }
@@ -163,6 +169,7 @@ class AlarmNotifyingService : Service(), Player.Listener {
     handlerTicks.post(runnableRealAlarm)
   }
 
+  @OptIn(UnstableApi::class)
   private fun startSound(entity: AlarmEntity?) {
     val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
     val streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
@@ -273,6 +280,7 @@ class AlarmNotifyingService : Service(), Player.Listener {
     }
   }
 
+  @OptIn(UnstableApi::class)
   private fun getMelody(entity: AlarmEntity?): Uri {
     return if (entity!!.melodyUrl != null) {
       Uri.parse(entity.melodyUrl)
@@ -371,7 +379,7 @@ class AlarmNotifyingService : Service(), Player.Listener {
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
       .setLocalOnly(false)
       .setDefaults(NotificationCompat.FLAG_SHOW_LIGHTS or NotificationCompat.FLAG_ONGOING_EVENT or NotificationCompat.FLAG_NO_CLEAR)
-      .setPriority(NotificationCompat.PRIORITY_HIGH)
+      .setPriority(NotificationCompat.PRIORITY_MAX)
 
     val notificationManager = NotificationManagerCompat.from(context)
     notificationManager.cancelAll()

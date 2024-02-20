@@ -1,7 +1,9 @@
 package com.mecong.tenderalarm.sleep_assistant.media_selection
 
 import android.content.Context
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.RawResourceDataSource
 import com.mecong.tenderalarm.R
 import com.mecong.tenderalarm.sleep_assistant.Media
 
@@ -32,6 +34,7 @@ class SleepNoise {
       )
     }
 
+    @OptIn(UnstableApi::class)
     private fun getNoiseUri(id: Int) =
       RawResourceDataSource.buildRawResourceUri(id).toString()
   }

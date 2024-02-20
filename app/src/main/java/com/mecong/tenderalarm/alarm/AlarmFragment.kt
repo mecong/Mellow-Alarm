@@ -21,7 +21,9 @@ import com.mecong.tenderalarm.model.SQLiteDBHelper
 import com.mecong.tenderalarm.model.SQLiteDBHelper.Companion.sqLiteDBHelper
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 
 class AlarmFragment : Fragment() {
